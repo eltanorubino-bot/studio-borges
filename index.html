@@ -437,17 +437,31 @@
 
         .map-filters {
             position: absolute;
-            top: 60px;
-            left: 8px;
-            right: 8px;
-            z-index: 400;
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 8px;
-            padding: 8px;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            padding: 0 10px;
             display: flex;
-            flex-wrap: wrap;
             gap: 6px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .map-filters::-webkit-scrollbar { display: none; }
+        .map-filters .btn-filter {
+            white-space: nowrap;
+            flex-shrink: 0;
+            background: rgba(26,26,26,0.9);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            padding: 6px 10px;
+            transition: all 0.2s;
+        }
+        .map-filters .btn-filter.active {
+            background: rgba(201,169,110,0.25);
+            border-color: #c9a96e;
         }
 
         /* Discover Page */
@@ -1374,24 +1388,46 @@
             const list = document.getElementById('eventsList');
             list.innerHTML = '';
             const sorted = [...events].sort((a, b) => a.date.localeCompare(b.date));
+
+            // Group events by date
+            const grouped = {};
             sorted.forEach(event => {
-                const card = document.createElement('div');
-                card.className = 'event-card';
-                card.innerHTML = `
-                    <div class="event-header">
-                        <div class="event-icon">${event.icon}</div>
-                        <div>
-                            <h3 class="event-title">${event.name}</h3>
-                            <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;">${event.category ? event.category.toUpperCase() : ''}</div>
+                if (!grouped[event.date]) grouped[event.date] = [];
+                grouped[event.date].push(event);
+            });
+
+            // Render grouped by date
+            Object.entries(grouped).forEach(([date, dateEvents]) => {
+                // Date header
+                const dateObj = new Date(date + 'T12:00:00');
+                const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+                const monthDay = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+
+                const dateHeader = document.createElement('div');
+                dateHeader.style.cssText = 'margin: 20px 0 10px 0; padding: 8px 0; border-bottom: 1px solid rgba(201,169,110,0.3);';
+                dateHeader.innerHTML = `<div style="font-family: 'Playfair Display', serif; font-size: 18px; color: #c9a96e; font-weight: 700;">${dayName}</div><div style="font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 2px;">${monthDay}, 2026</div>`;
+                list.appendChild(dateHeader);
+
+                // Events for this date
+                dateEvents.forEach(event => {
+                    const card = document.createElement('div');
+                    card.className = 'event-card';
+                    card.innerHTML = `
+                        <div class="event-header">
+                            <div class="event-icon">${event.icon}</div>
+                            <div style="flex: 1;">
+                                <h3 class="event-title">${event.name}</h3>
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;">${event.category ? event.category.toUpperCase() : ''}</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-meta">
-                        <div>⏰ ${event.time}</div>
-                        <div>📍 ${event.location}</div>
-                    </div>
-                `;
-                card.onclick = () => showEventModal(event);
-                list.appendChild(card);
+                        <div class="event-meta">
+                            <div>⏰ ${event.time}</div>
+                            <div>📍 ${event.location}</div>
+                        </div>
+                    `;
+                    card.onclick = () => showEventModal(event);
+                    list.appendChild(card);
+                });
             });
         }
 
@@ -1408,55 +1444,129 @@
         loadEvents();
 
         // Map
-        function initMap() {
-            const mapDiv = document.getElementById('map');
+        let mapMarkers = {};
+        let mapFilterState = {};
 
+        function initMap() {
             mapInstance = L.map('map', { scrollWheelZoom: true }).setView([-34.5875, -58.4274], 14);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 attribution: 'CartoDB',
                 maxZoom: 19
             }).addTo(mapInstance);
 
-            // Studio Borges marker
-            L.circleMarker([-34.5875, -58.4274], {
-                radius: 8,
-                fillColor: '#c9a96e',
-                color: '#c9a96e',
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.8
-            }).addTo(mapInstance).bindPopup('Studio Borges').openPopup();
+            // Studio Borges marker (home)
+            L.marker([-34.5875, -58.4274], {
+                icon: L.divIcon({
+                    className: '',
+                    html: '<div style="background:#c9a96e;color:#111;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.5);">🏠</div>',
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 14]
+                })
+            }).addTo(mapInstance).bindPopup('<strong style="color:#111;">Studio Borges</strong><br>Jorge Luis Borges 2018, Apt 6');
 
-            // Define locations for restaurants, bars, etc.
-            const poiCategories = {
-                'Restaurants': { color: '#EF5350', locs: [[-34.583, -58.423], [-34.582, -58.421], [-34.584, -58.420], [-34.590, -58.418]] },
-                'Bars': { color: '#42A5F5', locs: [[-34.591, -58.421], [-34.583, -58.425], [-34.587, -58.423], [-34.585, -58.424]] },
-                'Pharmacies': { color: '#66BB6A', locs: [[-34.586, -58.422], [-34.584, -58.419]] },
-                'Supermarkets': { color: '#29B6F6', locs: [[-34.588, -58.423], [-34.582, -58.421]] },
-                'ATMs': { color: '#AB47BC', locs: [[-34.585, -58.420], [-34.583, -58.424]] },
-                'Transport': { color: '#FF9800', locs: [[-34.575, -58.424], [-34.582, -58.425]] }
+            // POI data with real coordinates
+            const poiData = {
+                'Restaurants': {
+                    color: '#EF5350', emoji: '🍽️',
+                    places: [
+                        { name: 'Don Julio', addr: 'Guatemala 4699', lat: -34.5862, lng: -58.4250, desc: 'Premium steakhouse with exceptional beef cuts' },
+                        { name: 'Proper', addr: 'Aráoz 1676', lat: -34.5888, lng: -58.4285, desc: 'Modern Argentine cuisine' },
+                        { name: 'La Cabrera', addr: 'José A. Cabrera 5099', lat: -34.5859, lng: -58.4261, desc: 'Famous parrilla' },
+                        { name: 'Narda Comedor', addr: 'Humboldt 1573', lat: -34.5895, lng: -58.4310, desc: 'Home-style gourmet cooking' },
+                        { name: 'Tegui', addr: 'Costa Rica 5852', lat: -34.5852, lng: -58.4338, desc: 'Innovative cuisine' },
+                        { name: 'Crizia', addr: 'Gorriti 5143', lat: -34.5872, lng: -58.4290, desc: 'Italian fine dining' },
+                        { name: 'Anafe', addr: 'Arévalo 1402', lat: -34.5865, lng: -58.4345, desc: 'Contemporary bistro' }
+                    ]
+                },
+                'Bars': {
+                    color: '#42A5F5', emoji: '🍸',
+                    places: [
+                        { name: 'Florería Atlántico', addr: 'Arroyo 872', lat: -34.5930, lng: -58.3905, desc: 'Hidden speakeasy with craft cocktails' },
+                        { name: 'Cuervo', addr: 'Thames 1750', lat: -34.5882, lng: -58.4320, desc: 'Craft cocktail bar' },
+                        { name: 'Victoria Brown', addr: 'Costa Rica 4827', lat: -34.5855, lng: -58.4288, desc: 'Sophisticated cocktails' },
+                        { name: 'Lattente', addr: 'Thames 1891', lat: -34.5870, lng: -58.4322, desc: 'Specialty coffee roasted on-site' },
+                        { name: 'Verne Club', addr: 'Av. Medrano 1475', lat: -34.5902, lng: -58.4218, desc: 'Speakeasy-themed bar' },
+                        { name: 'Negro Cueva de Café', addr: 'Guatemala 4532', lat: -34.5866, lng: -58.4232, desc: 'Artisan coffee shop' }
+                    ]
+                },
+                'Nightlife': {
+                    color: '#AB47BC', emoji: '🎶',
+                    places: [
+                        { name: 'Niceto Club', addr: 'Niceto Vega 5510', lat: -34.5850, lng: -58.4330, desc: 'Live music and parties' },
+                        { name: 'Kika', addr: 'Honduras 5339', lat: -34.5860, lng: -58.4310, desc: 'Multi-floor club' },
+                        { name: 'Tequila', addr: 'Honduras 5318', lat: -34.5861, lng: -58.4305, desc: 'Bar and club with live DJ sets' },
+                        { name: 'Club Araoz', addr: 'Araoz 2424', lat: -34.5835, lng: -58.4265, desc: 'Underground electronic venue' },
+                        { name: 'Congo', addr: 'Honduras 5329', lat: -34.5860, lng: -58.4308, desc: 'Electronic & techno' }
+                    ]
+                },
+                'Listening Bars': {
+                    color: '#FF9800', emoji: '🎵',
+                    places: [
+                        { name: 'Hifi Bar', addr: 'Thames 1885', lat: -34.5872, lng: -58.4318, desc: 'Vinyl-only listening bar' },
+                        { name: 'Apóstoles', addr: 'Uriarte 1603', lat: -34.5878, lng: -58.4338, desc: 'Wine and vinyl bar' },
+                        { name: 'Boris Club', addr: 'Gorriti 5568', lat: -34.5870, lng: -58.4325, desc: 'Cocktails with curated playlists' },
+                        { name: 'Uptown BA', addr: 'Arévalo 1462', lat: -34.5863, lng: -58.4348, desc: 'Jazz and soul listening room' },
+                        { name: 'Doppelgänger', addr: 'Av. Juan de Garay 500', lat: -34.6230, lng: -58.3828, desc: 'Vinyl bar, dark atmosphere' }
+                    ]
+                },
+                'Activities': {
+                    color: '#66BB6A', emoji: '🎭',
+                    places: [
+                        { name: 'MALBA', addr: 'Av. Figueroa Alcorta 3415', lat: -34.5775, lng: -58.4030, desc: 'Museum of Latin American Art' },
+                        { name: 'Teatro Colón', addr: 'Cerrito 628', lat: -34.6011, lng: -58.3833, desc: 'World-class opera house' },
+                        { name: 'Jardín Botánico', addr: 'Av. Santa Fe 3951', lat: -34.5830, lng: -58.4165, desc: 'Beautiful botanical garden' },
+                        { name: 'Mercado de San Telmo', addr: 'Defensa Street', lat: -34.6210, lng: -58.3720, desc: 'Historic antiques market' },
+                        { name: 'Cementerio de Recoleta', addr: 'Junín 1760', lat: -34.5877, lng: -58.3930, desc: 'Historic cemetery, impressive architecture' },
+                        { name: 'Planetario', addr: 'Av. Sarmiento 4200', lat: -34.5710, lng: -58.4118, desc: 'Planetarium with astronomy shows' }
+                    ]
+                }
             };
 
-            Object.entries(poiCategories).forEach(([cat, data]) => {
-                data.locs.forEach(loc => {
-                    L.circleMarker(loc, {
-                        radius: 6,
+            // Create markers for each category
+            Object.entries(poiData).forEach(([cat, data]) => {
+                mapMarkers[cat] = [];
+                mapFilterState[cat] = true;
+                data.places.forEach(place => {
+                    const marker = L.circleMarker([place.lat, place.lng], {
+                        radius: 7,
                         fillColor: data.color,
-                        color: data.color,
-                        weight: 1,
+                        color: '#fff',
+                        weight: 1.5,
                         opacity: 1,
-                        fillOpacity: 0.7
+                        fillOpacity: 0.85
                     }).addTo(mapInstance);
+
+                    marker.bindPopup(`
+                        <div style="min-width:160px;">
+                            <strong style="color:#111;font-size:13px;">${data.emoji} ${place.name}</strong><br>
+                            <span style="color:#555;font-size:11px;">📍 ${place.addr}</span><br>
+                            <span style="color:#333;font-size:11px;">${place.desc}</span>
+                        </div>
+                    `);
+
+                    mapMarkers[cat].push(marker);
                 });
             });
 
             // Filter buttons
             const filterDiv = document.getElementById('mapFilters');
             filterDiv.innerHTML = '';
-            Object.keys(poiCategories).forEach(cat => {
+            Object.entries(poiData).forEach(([cat, data]) => {
                 const btn = document.createElement('button');
                 btn.className = 'btn-filter active';
-                btn.textContent = cat;
+                btn.style.cssText = `border: 1px solid ${data.color}; color: #fff; font-size: 11px; padding: 6px 10px;`;
+                btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${data.color};margin-right:4px;"></span>${cat}`;
+                btn.onclick = () => {
+                    mapFilterState[cat] = !mapFilterState[cat];
+                    btn.classList.toggle('active');
+                    mapMarkers[cat].forEach(m => {
+                        if (mapFilterState[cat]) {
+                            m.addTo(mapInstance);
+                        } else {
+                            mapInstance.removeLayer(m);
+                        }
+                    });
+                };
                 filterDiv.appendChild(btn);
             });
         }
