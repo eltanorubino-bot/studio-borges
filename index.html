@@ -66,7 +66,7 @@
         .content {
             flex: 1;
             overflow-y: auto;
-            padding-bottom: 70px;
+            padding-bottom: 16px;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -644,12 +644,8 @@
 
         /* Bottom Navigation */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            flex-shrink: 0;
             width: 100%;
-            max-width: 480px;
             background: #1a1a1a;
             border-top: 1px solid rgba(255,255,255,0.08);
             display: flex;
