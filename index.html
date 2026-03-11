@@ -79,6 +79,12 @@
             display: block;
         }
 
+        #mapPage.active {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
         /* Typography */
         h1 {
             font-family: 'Playfair Display', serif;
@@ -418,9 +424,15 @@
         }
 
         /* Map Page */
+        #mapPage {
+            position: relative;
+            height: 100%;
+        }
+
         #map {
             width: 100%;
-            height: 100%;
+            flex: 1;
+            min-height: 300px;
         }
 
         .map-filters {
@@ -1444,8 +1456,12 @@
         const originalShowPage = showPage;
         showPage = function(pageId) {
             originalShowPage.call(this, pageId);
-            if (pageId === 'mapPage' && !mapInstance) {
-                setTimeout(() => initMap(), 100);
+            if (pageId === 'mapPage') {
+                if (!mapInstance) {
+                    setTimeout(() => initMap(), 200);
+                } else {
+                    setTimeout(() => mapInstance.invalidateSize(), 200);
+                }
             }
         };
 
