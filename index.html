@@ -1187,11 +1187,16 @@
         ];
 
         const events = [
-            { name: 'Tango Night', location: 'La Viruta, Armenia 1366', time: 'Fridays 11PM', icon: '💃', description: 'Authentic milonga experience with live tango music and dancing.' },
-            { name: 'San Telmo Market', location: 'Defensa Street', time: 'Sundays 10AM-5PM', icon: '🛍️', description: 'Antiques, crafts, and street performers in historic neighborhood.' },
-            { name: 'Free Walking Tour', location: 'Plaza de Mayo', time: 'Daily 10AM & 3PM', icon: '🚶', description: 'Guided tours covering Buenos Aires history and highlights.' },
-            { name: 'Polo in Palermo', location: 'Campo Argentino de Polo', time: 'Seasonal', icon: '🐴', description: 'Watch world-class polo matches in prestigious venue.' },
-            { name: 'Live Jazz Night', location: 'Thelonious Club, Salguero 1884', time: 'Thu-Sat 9PM', icon: '🎷', description: 'Quality live jazz performances in intimate club setting.' }
+            { name: 'La Bomba de Tiempo', date: '2026-03-09', location: 'Ciudad Cultural Konex, Sarmiento 3131', time: 'Mon Mar 9 · 7PM', icon: '🥁', description: 'Legendary percussion show with improvised rhythms. An unmissable Buenos Aires experience every Monday night. Tickets at the door.', category: 'music' },
+            { name: 'San Telmo Market', date: '2026-03-09', location: 'Defensa Street, San Telmo', time: 'Every Sunday · 10AM-5PM', icon: '🛍️', description: 'Antiques, crafts, tango, and street performers in the historic San Telmo neighborhood. One of the best open-air markets in South America.', category: 'culture' },
+            { name: 'Tango Night at La Viruta', date: '2026-03-11', location: 'La Viruta, Armenia 1366, Palermo', time: 'Every Tue, Wed, Fri · 11PM', icon: '💃', description: 'Authentic milonga experience with live tango orchestra. Classes for beginners earlier in the evening. Walking distance from Studio Borges.', category: 'music' },
+            { name: 'Free Walking Tour', date: '2026-03-11', location: 'Plaza de Mayo (start point)', time: 'Daily · 10AM & 3PM', icon: '🚶', description: 'Free guided walking tours covering Buenos Aires history, architecture and culture. Tips-based. Available in English and Spanish.', category: 'culture' },
+            { name: 'Lollapalooza Argentina 2026', date: '2026-03-13', location: 'Hipódromo de San Isidro', time: 'Fri Mar 13 - Sun Mar 15 · 11AM', icon: '🎸', description: 'One of the biggest music festivals in South America. Three days of international and local artists across multiple stages. Get tickets at lollapaloozaar.com', category: 'music' },
+            { name: 'TC2000 Street Circuit', date: '2026-03-14', location: 'Villa Soldati, Av. Roca y Escalada', time: 'Sat Mar 14 - Sun Mar 15', icon: '🏎️', description: 'Historic TC2000 season opener on a special street circuit in Buenos Aires. Free viewing areas available.', category: 'sports' },
+            { name: 'Live Jazz at Thelonious', date: '2026-03-14', location: 'Thelonious Club, Salguero 1884', time: 'Thu-Sat · 9PM', icon: '🎷', description: 'Intimate live jazz performances in one of Buenos Aires best jazz clubs. Reservations recommended.', category: 'music' },
+            { name: 'San Patricio Celebrations', date: '2026-03-15', location: 'Various venues across BA', time: 'Sun Mar 15 - Tue Mar 17', icon: '🍀', description: 'St. Patrick celebrations across Buenos Aires with Irish pubs, live music, parades and cultural events. Main party in Retiro area on March 17.', category: 'culture' },
+            { name: 'Museo MALBA', date: '2026-03-11', location: 'Av. Figueroa Alcorta 3415, Palermo', time: 'Wed free · Thu-Mon 12-8PM', icon: '🎨', description: 'Latin American art museum with world-class exhibitions. Free admission on Wednesdays. 15 min walk from Studio Borges.', category: 'culture' },
+            { name: 'Feria de Mataderos', date: '2026-03-15', location: 'Av. Lisandro de la Torre 2200', time: 'Sundays · 11AM-7PM', icon: '🇦🇷', description: 'Traditional gaucho fair with folk music, dancing, artisan crafts and authentic Argentine street food. A true cultural immersion.', category: 'culture' }
         ];
 
         const allDiscover = [...restaurants, ...bars, ...nightlife, ...listeningBars, ...activities];
@@ -1368,17 +1373,21 @@
         function loadEvents() {
             const list = document.getElementById('eventsList');
             list.innerHTML = '';
-            events.forEach(event => {
+            const sorted = [...events].sort((a, b) => a.date.localeCompare(b.date));
+            sorted.forEach(event => {
                 const card = document.createElement('div');
                 card.className = 'event-card';
                 card.innerHTML = `
                     <div class="event-header">
                         <div class="event-icon">${event.icon}</div>
-                        <h3 class="event-title">${event.name}</h3>
+                        <div>
+                            <h3 class="event-title">${event.name}</h3>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;">${event.category ? event.category.toUpperCase() : ''}</div>
+                        </div>
                     </div>
                     <div class="event-meta">
-                        <div>📍 ${event.location}</div>
                         <div>⏰ ${event.time}</div>
+                        <div>📍 ${event.location}</div>
                     </div>
                 `;
                 card.onclick = () => showEventModal(event);
