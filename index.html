@@ -1464,60 +1464,79 @@
                 })
             }).addTo(mapInstance).bindPopup('<strong style="color:#111;">Studio Borges</strong><br>Jorge Luis Borges 2018, Apt 6');
 
-            // POI data with real coordinates
+            // POI data with geocoded coordinates from Nominatim
             const poiData = {
                 'Restaurants': {
                     color: '#EF5350', emoji: '🍽️',
                     places: [
-                        { name: 'Don Julio', addr: 'Guatemala 4699', lat: -34.5862, lng: -58.4250, desc: 'Premium steakhouse with exceptional beef cuts' },
-                        { name: 'Proper', addr: 'Aráoz 1676', lat: -34.5888, lng: -58.4285, desc: 'Modern Argentine cuisine' },
-                        { name: 'La Cabrera', addr: 'José A. Cabrera 5099', lat: -34.5859, lng: -58.4261, desc: 'Famous parrilla' },
-                        { name: 'Narda Comedor', addr: 'Humboldt 1573', lat: -34.5895, lng: -58.4310, desc: 'Home-style gourmet cooking' },
-                        { name: 'Tegui', addr: 'Costa Rica 5852', lat: -34.5852, lng: -58.4338, desc: 'Innovative cuisine' },
-                        { name: 'Crizia', addr: 'Gorriti 5143', lat: -34.5872, lng: -58.4290, desc: 'Italian fine dining' },
-                        { name: 'Anafe', addr: 'Arévalo 1402', lat: -34.5865, lng: -58.4345, desc: 'Contemporary bistro' }
+                        { name: 'Don Julio', addr: 'Guatemala 4699', lat: -34.5863, lng: -58.4243, desc: 'Premium steakhouse with exceptional beef cuts' },
+                        { name: 'Proper', addr: 'Aráoz 1676', lat: -34.5910, lng: -58.4235, desc: 'Modern Argentine cuisine' },
+                        { name: 'Crizia', addr: 'Gorriti 5143', lat: -34.5955, lng: -58.4190, desc: 'Italian fine dining' },
+                        { name: 'La Cabrera', addr: 'José A. Cabrera 5099', lat: -34.5894, lng: -58.4329, desc: 'Famous parrilla' },
+                        { name: 'Chila', addr: 'Av. A. Moreau de Justo 1160', lat: -34.6240, lng: -58.3640, desc: 'Fine dining with seasonal menus' },
+                        { name: 'Elena', addr: 'Posadas 1086', lat: -34.5906, lng: -58.3826, desc: 'Upscale dining at Four Seasons' },
+                        { name: 'Aramburu', addr: 'Sarmiento 1207', lat: -34.6051, lng: -58.3838, desc: 'Tasting menu, local ingredients' },
+                        { name: 'Narda Comedor', addr: 'Humboldt 1573', lat: -34.5859, lng: -58.4365, desc: 'Home-style gourmet cooking' },
+                        { name: 'Anafe', addr: 'Arévalo 1402', lat: -34.5836, lng: -58.4436, desc: 'Contemporary bistro' },
+                        { name: 'Tegui', addr: 'Costa Rica 5852', lat: -34.5807, lng: -58.4372, desc: 'Innovative cuisine' }
                     ]
                 },
                 'Bars': {
                     color: '#42A5F5', emoji: '🍸',
                     places: [
-                        { name: 'Florería Atlántico', addr: 'Arroyo 872', lat: -34.5930, lng: -58.3905, desc: 'Hidden speakeasy with craft cocktails' },
-                        { name: 'Cuervo', addr: 'Thames 1750', lat: -34.5882, lng: -58.4320, desc: 'Craft cocktail bar' },
-                        { name: 'Victoria Brown', addr: 'Costa Rica 4827', lat: -34.5855, lng: -58.4288, desc: 'Sophisticated cocktails' },
-                        { name: 'Lattente', addr: 'Thames 1891', lat: -34.5870, lng: -58.4322, desc: 'Specialty coffee roasted on-site' },
-                        { name: 'Verne Club', addr: 'Av. Medrano 1475', lat: -34.5902, lng: -58.4218, desc: 'Speakeasy-themed bar' },
-                        { name: 'Negro Cueva de Café', addr: 'Guatemala 4532', lat: -34.5866, lng: -58.4232, desc: 'Artisan coffee shop' }
+                        { name: 'Florería Atlántico', addr: 'Arroyo 872', lat: -34.5916, lng: -58.3797, desc: 'Hidden speakeasy with craft cocktails' },
+                        { name: 'Gran Dabbang', addr: 'Scalabrini Ortiz 1543', lat: -34.5911, lng: -58.4255, desc: 'Fusion cocktails, Asian-Argentine' },
+                        { name: 'Presidente Bar', addr: 'Alvear 1891', lat: -34.5876, lng: -58.3888, desc: 'Classic cocktail bar, Hotel Alvear' },
+                        { name: 'Café Tortoni', addr: 'Av. de Mayo 825', lat: -34.6087, lng: -58.3781, desc: 'Historic café since 1858' },
+                        { name: 'LAB Training Center', addr: 'Honduras 5507', lat: -34.5847, lng: -58.4354, desc: 'Specialty coffee and training' },
+                        { name: 'Cuervo', addr: 'Thames 1750', lat: -34.5871, lng: -58.4295, desc: 'Craft cocktail bar' },
+                        { name: 'Victoria Brown', addr: 'Costa Rica 4827', lat: -34.5871, lng: -58.4284, desc: 'Sophisticated cocktails' },
+                        { name: 'Lattente', addr: 'Thames 1891', lat: -34.5862, lng: -58.4280, desc: 'Specialty coffee roasted on-site' },
+                        { name: 'Negro Cueva de Café', addr: 'Guatemala 4532', lat: -34.5876, lng: -58.4230, desc: 'Artisan coffee shop' },
+                        { name: 'Verne Club', addr: 'Av. Medrano 1475', lat: -34.6032, lng: -58.4208, desc: 'Speakeasy-themed bar' }
                     ]
                 },
                 'Nightlife': {
                     color: '#AB47BC', emoji: '🎶',
                     places: [
-                        { name: 'Niceto Club', addr: 'Niceto Vega 5510', lat: -34.5850, lng: -58.4330, desc: 'Live music and parties' },
-                        { name: 'Kika', addr: 'Honduras 5339', lat: -34.5860, lng: -58.4310, desc: 'Multi-floor club' },
-                        { name: 'Tequila', addr: 'Honduras 5318', lat: -34.5861, lng: -58.4305, desc: 'Bar and club with live DJ sets' },
-                        { name: 'Club Araoz', addr: 'Araoz 2424', lat: -34.5835, lng: -58.4265, desc: 'Underground electronic venue' },
-                        { name: 'Congo', addr: 'Honduras 5329', lat: -34.5860, lng: -58.4308, desc: 'Electronic & techno' }
+                        { name: 'Crobar', addr: 'Paseo de la Infanta', lat: -34.5706, lng: -58.4215, desc: 'Mega club with world-class DJs' },
+                        { name: 'Jet Lounge', addr: 'Av. Rafael Obligado', lat: -34.5522, lng: -58.4264, desc: 'Upscale club, Costanera Norte' },
+                        { name: 'Tequila', addr: 'Honduras 5318', lat: -34.5867, lng: -58.4333, desc: 'Bar and club with live DJ sets' },
+                        { name: 'Club Araoz', addr: 'Araoz 2424', lat: -34.5863, lng: -58.4164, desc: 'Underground electronic venue' },
+                        { name: 'Niceto Club', addr: 'Niceto Vega 5510', lat: -34.5874, lng: -58.4389, desc: 'Live music and parties' },
+                        { name: 'Kika', addr: 'Honduras 5339', lat: -34.5862, lng: -58.4331, desc: 'Multi-floor club' },
+                        { name: 'The Roxy', addr: 'Niceto Vega 5542', lat: -34.5871, lng: -58.4390, desc: 'Rock club with live bands' },
+                        { name: 'Bahrein', addr: 'Lavalle 345', lat: -34.6020, lng: -58.3750, desc: 'Downtown mega club' },
+                        { name: 'Terrazas del Este', addr: 'Cecilia Grierson 225', lat: -34.5983, lng: -58.3648, desc: 'Open-air club, river views' },
+                        { name: 'Congo', addr: 'Honduras 5329', lat: -34.5865, lng: -58.4332, desc: 'Electronic & techno' }
                     ]
                 },
                 'Listening Bars': {
                     color: '#FF9800', emoji: '🎵',
                     places: [
-                        { name: 'Hifi Bar', addr: 'Thames 1885', lat: -34.5872, lng: -58.4318, desc: 'Vinyl-only listening bar' },
-                        { name: 'Apóstoles', addr: 'Uriarte 1603', lat: -34.5878, lng: -58.4338, desc: 'Wine and vinyl bar' },
-                        { name: 'Boris Club', addr: 'Gorriti 5568', lat: -34.5870, lng: -58.4325, desc: 'Cocktails with curated playlists' },
-                        { name: 'Uptown BA', addr: 'Arévalo 1462', lat: -34.5863, lng: -58.4348, desc: 'Jazz and soul listening room' },
-                        { name: 'Doppelgänger', addr: 'Av. Juan de Garay 500', lat: -34.6230, lng: -58.3828, desc: 'Vinyl bar, dark atmosphere' }
+                        { name: 'Pony Line', addr: 'Posadas 1086', lat: -34.5906, lng: -58.3826, desc: 'Vinyl bar at Four Seasons' },
+                        { name: 'Hifi Bar', addr: 'Thames 1885', lat: -34.5862, lng: -58.4282, desc: 'Vinyl-only listening bar' },
+                        { name: 'Apóstoles', addr: 'Uriarte 1603', lat: -34.5874, lng: -58.4319, desc: 'Wine and vinyl bar' },
+                        { name: 'Le Piano du Lac', addr: 'Humboldt 1882', lat: -34.5835, lng: -58.4340, desc: 'Jazz and vinyl, intimate setting' },
+                        { name: 'Bar El Federal', addr: 'Carlos Calvo 599', lat: -34.6196, lng: -58.3742, desc: 'Historic bar with live music' },
+                        { name: 'Boris Club', addr: 'Gorriti 5568', lat: -34.5845, lng: -58.4380, desc: 'Cocktails with curated playlists' },
+                        { name: 'Uptown BA', addr: 'Arévalo 1462', lat: -34.5830, lng: -58.4429, desc: 'Jazz and soul listening room' },
+                        { name: 'The Harrison Speakeasy', addr: 'Malabia 1738', lat: -34.5898, lng: -58.4258, desc: 'Hidden bar, vinyl sessions' },
+                        { name: "Magdalena's Party", addr: 'Thames 1795', lat: -34.5869, lng: -58.4292, desc: 'Wine bar, curated music' },
+                        { name: 'Doppelgänger', addr: 'Av. Juan de Garay 500', lat: -34.6220, lng: -58.3795, desc: 'Vinyl bar, dark atmosphere' }
                     ]
                 },
                 'Activities': {
                     color: '#66BB6A', emoji: '🎭',
                     places: [
-                        { name: 'MALBA', addr: 'Av. Figueroa Alcorta 3415', lat: -34.5775, lng: -58.4030, desc: 'Museum of Latin American Art' },
-                        { name: 'Teatro Colón', addr: 'Cerrito 628', lat: -34.6011, lng: -58.3833, desc: 'World-class opera house' },
+                        { name: 'MALBA', addr: 'Av. Figueroa Alcorta 3415', lat: -34.5775, lng: -58.4035, desc: 'Museum of Latin American Art' },
+                        { name: 'Teatro Colón', addr: 'Cerrito 628', lat: -34.6011, lng: -58.3832, desc: 'World-class opera house' },
                         { name: 'Jardín Botánico', addr: 'Av. Santa Fe 3951', lat: -34.5830, lng: -58.4165, desc: 'Beautiful botanical garden' },
-                        { name: 'Mercado de San Telmo', addr: 'Defensa Street', lat: -34.6210, lng: -58.3720, desc: 'Historic antiques market' },
-                        { name: 'Cementerio de Recoleta', addr: 'Junín 1760', lat: -34.5877, lng: -58.3930, desc: 'Historic cemetery, impressive architecture' },
-                        { name: 'Planetario', addr: 'Av. Sarmiento 4200', lat: -34.5710, lng: -58.4118, desc: 'Planetarium with astronomy shows' }
+                        { name: 'Mercado de San Telmo', addr: 'Defensa 950', lat: -34.6190, lng: -58.3715, desc: 'Historic antiques market' },
+                        { name: 'Cementerio de Recoleta', addr: 'Junín 1760', lat: -34.5991, lng: -58.3973, desc: 'Historic cemetery, architecture' },
+                        { name: 'Planetario', addr: 'Av. Sarmiento 4200', lat: -34.5710, lng: -58.4118, desc: 'Planetarium with astronomy shows' },
+                        { name: 'Museo Bellas Artes', addr: 'Av. del Libertador 1473', lat: -34.5854, lng: -58.3933, desc: 'Argentine and European art' },
+                        { name: 'Feria San Telmo', addr: 'Plaza Dorrego', lat: -34.6205, lng: -58.3718, desc: 'Sunday market, antiques & art' }
                     ]
                 }
             };
