@@ -58,9 +58,39 @@
             color: #c9a96e;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .header-time {
             font-size: 12px;
             color: rgba(255,255,255,0.6);
+        }
+
+        .lang-toggle {
+            display: flex;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .lang-toggle button {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 9px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .lang-toggle button.active {
+            background: #c9a96e;
+            color: #111111;
         }
 
         /* Main Content */
@@ -421,6 +451,103 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 13px;
+        }
+
+        /* Payment Section */
+        .payment-intro {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 14px;
+        }
+
+        .payment-card {
+            background: #1a1a1a;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .payment-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .payment-flag {
+            font-size: 22px;
+        }
+
+        .payment-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #c9a96e;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .payment-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .payment-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            flex-shrink: 0;
+        }
+
+        .payment-value {
+            font-size: 13px;
+            font-weight: 600;
+            text-align: right;
+            color: #ffffff;
+            font-family: 'DM Sans', sans-serif;
+            letter-spacing: 0.2px;
+        }
+
+        .payment-masked {
+            color: rgba(255,255,255,0.55);
+            font-weight: 500;
+        }
+
+        .payment-note {
+            background: rgba(201,169,110,0.05);
+            border-left: 3px solid #c9a96e;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .payment-whatsapp {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #25D366;
+            color: #111111;
+            font-weight: 700;
+            font-size: 12px;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .payment-whatsapp svg {
+            width: 14px;
+            height: 14px;
+            fill: #111111;
         }
 
         /* Map Page */
@@ -819,7 +946,13 @@
         <!-- Header -->
         <div class="header">
             <div class="header-title">Studio Borges</div>
-            <div class="header-time" id="currentTime">--:--</div>
+            <div class="header-right">
+                <div class="lang-toggle">
+                    <button id="langEnBtn" onclick="setLang('en')">EN</button>
+                    <button id="langEsBtn" onclick="setLang('es')">ES</button>
+                </div>
+                <div class="header-time" id="currentTime">--:--</div>
+            </div>
         </div>
 
         <!-- Main Content -->
@@ -827,7 +960,7 @@
             <!-- HOME PAGE -->
             <div class="page active" id="homePage">
                 <div class="home-content">
-                    <h1 class="greeting">Hello, Welcome!</h1>
+                    <h1 class="greeting" data-i18n="home.greeting">Hello, Welcome!</h1>
                     <div class="underline"></div>
 
                     <div class="hero">
@@ -848,7 +981,7 @@
                                 <div class="wifi-password" id="passwordDisplay">internet2019</div>
                             </div>
                         </div>
-                        <button class="wifi-copy" id="wifiCopyBtn">Copy</button>
+                        <button class="wifi-copy" id="wifiCopyBtn" data-i18n="wifi.copy">Copy</button>
                     </div>
 
                     <!-- Weather & Exchange -->
@@ -866,7 +999,7 @@
                     </div>
 
                     <!-- 7-Day Forecast -->
-                    <h3>7-Day Forecast</h3>
+                    <h3 data-i18n="home.forecastTitle">7-Day Forecast</h3>
                     <div class="scroll-container">
                         <div class="scroll-content" id="forecastContainer">
                             <div class="scroll-card">
@@ -880,53 +1013,53 @@
                     <!-- Check-in/out -->
                     <div class="row">
                         <div class="card-small">
-                            <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px;">CHECK-IN</div>
+                            <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px;" data-i18n="home.checkin">CHECK-IN</div>
                             <div style="font-size: 20px; font-weight: 700; color: #c9a96e;">3:00 PM</div>
                         </div>
                         <div class="card-small">
-                            <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px;">CHECK-OUT</div>
+                            <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px;" data-i18n="home.checkout">CHECK-OUT</div>
                             <div style="font-size: 20px; font-weight: 700; color: #c9a96e;">11:00 AM</div>
                         </div>
                     </div>
 
                     <!-- Quick Navigation -->
-                    <h3 style="margin-top: 20px;">Explore</h3>
+                    <h3 style="margin-top: 20px;" data-i18n="home.exploreTitle">Explore</h3>
                     <div class="grid-4">
-                        <button class="btn" onclick="showPage('guidePage')"><span>📖</span> Guide</button>
-                        <button class="btn" onclick="showPage('mapPage')"><span>🗺️</span> Map</button>
-                        <button class="btn" onclick="showPage('discoverPage')"><span>🧭</span> Discover</button>
-                        <button class="btn" onclick="showPage('eventsPage')"><span>📅</span> Events</button>
+                        <button class="btn" onclick="showPage('guidePage')"><span>📖</span> <span data-i18n="nav.guide">Guide</span></button>
+                        <button class="btn" onclick="showPage('mapPage')"><span>🗺️</span> <span data-i18n="nav.map">Map</span></button>
+                        <button class="btn" onclick="showPage('discoverPage')"><span>🧭</span> <span data-i18n="nav.discover">Discover</span></button>
+                        <button class="btn" onclick="showPage('eventsPage')"><span>📅</span> <span data-i18n="nav.events">Events</span></button>
                     </div>
 
                     <!-- Events Section -->
-                    <h3 style="margin-top: 20px;">Upcoming Events</h3>
+                    <h3 style="margin-top: 20px;" data-i18n="home.eventsTitle">Upcoming Events</h3>
                     <div class="scroll-container">
                         <div class="scroll-content" id="homeEventsContainer">
                             <div class="scroll-card">
-                                <h4>Loading...</h4>
+                                <h4 data-i18n="home.loading">Loading...</h4>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tips Section -->
-                    <h3 style="margin-top: 20px;">Tips & Recommendations</h3>
+                    <h3 style="margin-top: 20px;" data-i18n="home.tipsTitle">Tips & Recommendations</h3>
                     <div class="scroll-container">
                         <div class="scroll-content">
                             <div class="scroll-card">
-                                <h4>🚇 Subte</h4>
-                                <p>Fast & efficient public transport</p>
+                                <h4>🚇 <span data-i18n="tips.subte.title">Subte</span></h4>
+                                <p data-i18n="tips.subte.desc">Fast & efficient public transport</p>
                             </div>
                             <div class="scroll-card">
-                                <h4>🌙 Nightlife</h4>
-                                <p>Vibrant bars & clubs until dawn</p>
+                                <h4>🌙 <span data-i18n="tips.nightlife.title">Nightlife</span></h4>
+                                <p data-i18n="tips.nightlife.desc">Vibrant bars & clubs until dawn</p>
                             </div>
                             <div class="scroll-card">
-                                <h4>🥩 Asados</h4>
-                                <p>Try traditional parrillas</p>
+                                <h4>🥩 <span data-i18n="tips.asados.title">Asados</span></h4>
+                                <p data-i18n="tips.asados.desc">Try traditional parrillas</p>
                             </div>
                             <div class="scroll-card">
-                                <h4>☕ Coffee</h4>
-                                <p>Café culture is everywhere</p>
+                                <h4>☕ <span data-i18n="tips.coffee.title">Coffee</span></h4>
+                                <p data-i18n="tips.coffee.desc">Café culture is everywhere</p>
                             </div>
                         </div>
                     </div>
@@ -935,120 +1068,173 @@
                 <!-- Footer -->
                 <div class="footer">
                     <div class="hosts-section">
-                        <h3>Your Host</h3>
+                        <h3 data-i18n="home.hostTitle">Your Host</h3>
                         <div class="host-item">Paola: <a href="tel:+5491161909090">+54 911 6190 9090</a></div>
                     </div>
-                    <div class="footer-message">We hope you enjoy your stay in Buenos Aires!</div>
+                    <div class="footer-message" data-i18n="home.footerMsg">We hope you enjoy your stay in Buenos Aires!</div>
                 </div>
             </div>
 
             <!-- GUIDE PAGE -->
             <div class="page" id="guidePage">
                 <div class="guide-content">
-                    <h2>Your Guide</h2>
+                    <h2 data-i18n="guide.title">Your Guide</h2>
 
                     <!-- Apartment Info -->
-                    <h3>About Studio Borges</h3>
+                    <h3 data-i18n="guide.aboutTitle">About Studio Borges</h3>
                     <div class="card">
-                        <p><strong>Address:</strong> Jorge Luis Borges 2018, Apartment 6</p>
-                        <p style="margin-top: 12px;"><strong>Host:</strong> Paola</p>
+                        <p><strong data-i18n="guide.addressLabel">Address:</strong> Jorge Luis Borges 2018, Apartment 6</p>
+                        <p style="margin-top: 12px;"><strong data-i18n="guide.hostLabel">Host:</strong> Paola</p>
                     </div>
 
                     <!-- Amenities -->
-                    <h3 style="margin-top: 20px;">Amenities</h3>
+                    <h3 style="margin-top: 20px;" data-i18n="guide.amenitiesTitle">Amenities</h3>
                     <div class="amenities-grid">
                         <div class="amenity-card">
                             <div class="amenity-icon">💆</div>
-                            <div class="amenity-name">Hairdryer</div>
+                            <div class="amenity-name" data-i18n="amenity.hairdryer">Hairdryer</div>
                         </div>
                         <div class="amenity-card">
                             <div class="amenity-icon">🧴</div>
-                            <div class="amenity-name">Soap & Shampoo</div>
+                            <div class="amenity-name" data-i18n="amenity.soap">Soap & Shampoo</div>
                         </div>
                         <div class="amenity-card">
                             <div class="amenity-icon">☕</div>
-                            <div class="amenity-name">Coffee Machine</div>
+                            <div class="amenity-name" data-i18n="amenity.coffee">Coffee Machine</div>
                         </div>
                         <div class="amenity-card">
                             <div class="amenity-icon">💧</div>
-                            <div class="amenity-name">Water Bottle</div>
+                            <div class="amenity-name" data-i18n="amenity.water">Water Bottle</div>
                         </div>
                         <div class="amenity-card">
                             <div class="amenity-icon">🔌</div>
-                            <div class="amenity-name">iPhone Charger</div>
+                            <div class="amenity-name" data-i18n="amenity.charger">iPhone Charger</div>
                         </div>
                         <div class="amenity-card">
                             <div class="amenity-icon">🛁</div>
-                            <div class="amenity-name">Towels</div>
+                            <div class="amenity-name" data-i18n="amenity.towels">Towels</div>
                         </div>
                         <div class="amenity-card">
                             <div class="amenity-icon">📖</div>
-                            <div class="amenity-name">City Guides</div>
+                            <div class="amenity-name" data-i18n="amenity.guides">City Guides</div>
                         </div>
                         <div class="amenity-card">
                             <div class="amenity-icon">🗺️</div>
-                            <div class="amenity-name">Maps</div>
+                            <div class="amenity-name" data-i18n="amenity.maps">Maps</div>
                         </div>
                     </div>
 
                     <!-- House Rules -->
-                    <h3 style="margin-top: 20px;">Important Information</h3>
+                    <h3 style="margin-top: 20px;" data-i18n="guide.infoTitle">Important Information</h3>
                     <div class="info-section">
                         <div class="info-item">
-                            <strong>🌡️ Heating</strong>
-                            <p>Set temperature on the wheel on the wall after main door (right side)</p>
+                            <strong>🌡️ <span data-i18n="info.heating.title">Heating</span></strong>
+                            <p data-i18n="info.heating.desc">Set temperature on the wheel on the wall after main door (right side)</p>
                         </div>
                         <div class="info-item">
-                            <strong>🗑️ Garbage</strong>
-                            <p>Trash can in service room (ground floor), no separation needed</p>
+                            <strong>🗑️ <span data-i18n="info.garbage.title">Garbage</span></strong>
+                            <p data-i18n="info.garbage.desc">Trash can in service room (ground floor), no separation needed</p>
                         </div>
                         <div class="info-item">
-                            <strong>🔐 Security</strong>
-                            <p>Lock apartment door with keys, close main door</p>
+                            <strong>🔐 <span data-i18n="info.security.title">Security</span></strong>
+                            <p data-i18n="info.security.desc">Lock apartment door with keys, close main door</p>
                         </div>
                         <div class="info-item">
-                            <strong>👕 Laundry</strong>
-                            <p>Last floor, free, bring your own soap</p>
+                            <strong>👕 <span data-i18n="info.laundry.title">Laundry</span></strong>
+                            <p data-i18n="info.laundry.desc">Last floor, free, bring your own soap</p>
                         </div>
                         <div class="info-item">
-                            <strong>🔥 BBQ</strong>
-                            <p>Terrace, free, must book (write in the book), no loud music, clean after use</p>
+                            <strong>🔥 <span data-i18n="info.bbq.title">BBQ</span></strong>
+                            <p data-i18n="info.bbq.desc">Terrace, free, must book (write in the book), no loud music, clean after use</p>
                         </div>
                         <div class="info-item">
-                            <strong>🏊 Pool</strong>
-                            <p>Terrace, free, no lifeguard, supervise minors, don't use elevator wet</p>
+                            <strong>🏊 <span data-i18n="info.pool.title">Pool</span></strong>
+                            <p data-i18n="info.pool.desc">Terrace, free, no lifeguard, supervise minors, don't use elevator wet</p>
                         </div>
                     </div>
 
+                    <!-- Payment Methods -->
+                    <h3 style="margin-top: 20px;" data-i18n="payment.title">Payment Methods</h3>
+                    <p class="payment-intro" data-i18n="payment.intro">For direct payments, extended stays, or extra services, you can pay by bank transfer using the details below.</p>
+
+                    <div class="payment-card">
+                        <div class="payment-card-header">
+                            <span class="payment-flag">🇺🇸</span>
+                            <span class="payment-card-title" data-i18n="payment.usa.title">United States (USD)</span>
+                        </div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value">Paradise Content LLC</span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.accountNumber">Account number</span><span class="payment-value payment-masked">•••• •••• ••• 9996</span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.accountType">Account type</span><span class="payment-value">Checking</span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.routing">Routing (ACH/Wire)</span><span class="payment-value">084009519</span></div>
+                        <div class="payment-row"><span class="payment-label">SWIFT/BIC</span><span class="payment-value">TRWIUS35XXX</span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank</span><span class="payment-value" style="text-align:right; font-size:12px; font-weight:500;">Column National Association, New York NY</span></div>
+                        <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20the%20full%20USD%20bank%20transfer%20details%20for%20Studio%20Borges." target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+                            <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
+                        </a>
+                    </div>
+
+                    <div class="payment-card">
+                        <div class="payment-card-header">
+                            <span class="payment-flag">🇪🇺</span>
+                            <span class="payment-card-title" data-i18n="payment.europe.title">Europe (EUR / IBAN)</span>
+                        </div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value" style="font-size:12px;">Fernando Julian Rubino</span></div>
+                        <div class="payment-row"><span class="payment-label">IBAN</span><span class="payment-value payment-masked">IE38 REVO 9903 6043 •••• ••</span></div>
+                        <div class="payment-row"><span class="payment-label">BIC / Sort code</span><span class="payment-value">REVOIE23</span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank</span><span class="payment-value">Revolut Bank UAB</span></div>
+                        <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20the%20full%20EUR%20bank%20transfer%20details%20for%20Studio%20Borges." target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+                            <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
+                        </a>
+                    </div>
+
+                    <div class="payment-card">
+                        <div class="payment-card-header">
+                            <span class="payment-flag">🇦🇷</span>
+                            <span class="payment-card-title" data-i18n="payment.argentina.title">Argentina (ARS)</span>
+                        </div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value" style="font-size:12px;">Paola Marina Robazza</span></div>
+                        <div class="payment-row"><span class="payment-label">Alias</span><span class="payment-value">studio.borges</span></div>
+                        <div class="payment-row"><span class="payment-label">CVU</span><span class="payment-value payment-masked">•••• •••• •••• •••• •• 5716</span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank / App</span><span class="payment-value">Mercado Pago</span></div>
+                        <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hola!%20Quisiera%20los%20datos%20completos%20para%20transferir%20en%20pesos%20a%20Studio%20Borges." target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+                            <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
+                        </a>
+                    </div>
+
+                    <div class="payment-note" data-i18n="payment.note">For your security, full account numbers aren't published here. We share them privately over WhatsApp and confirm details before you send any transfer — this also protects you from scams using altered bank details.</div>
+
                     <!-- Transport -->
-                    <h3 style="margin-top: 20px;">Getting Around</h3>
+                    <h3 style="margin-top: 20px;" data-i18n="guide.transportTitle">Getting Around</h3>
                     <div class="info-section">
                         <div class="info-item">
-                            <strong>🚇 Subte</strong>
-                            <p>Line D (Plaza Italia, Scalabrini Ortiz) - Clean, efficient metro system</p>
+                            <strong>🚇 <span data-i18n="info.subte.title">Subte</span></strong>
+                            <p data-i18n="info.subte.desc">Line D (Plaza Italia, Scalabrini Ortiz) - Clean, efficient metro system</p>
                         </div>
                         <div class="info-item">
-                            <strong>🚌 Buses</strong>
-                            <p>Multiple lines serve the neighborhood - Use SUBE card at kiosks</p>
+                            <strong>🚌 <span data-i18n="info.buses.title">Buses</span></strong>
+                            <p data-i18n="info.buses.desc">Multiple lines serve the neighborhood - Use SUBE card at kiosks</p>
                         </div>
                         <div class="info-item">
-                            <strong>🚕 Taxis</strong>
-                            <p>Uber and local taxis available - Always use official taxis or apps</p>
+                            <strong>🚕 <span data-i18n="info.taxis.title">Taxis</span></strong>
+                            <p data-i18n="info.taxis.desc">Uber and local taxis available - Always use official taxis or apps</p>
                         </div>
                     </div>
 
                     <!-- Emergency -->
-                    <h2 style="margin-top: 24px;">Emergency</h2>
+                    <h2 style="margin-top: 24px;" data-i18n="guide.emergencyTitle">Emergency</h2>
                     <div class="amenities-grid">
                         <div class="card" style="text-align: center; padding: 20px;">
                             <div style="font-size: 36px; margin-bottom: 8px;">🚨</div>
-                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 4px;">Police / Fire</p>
+                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 4px;" data-i18n="emergency.police">Police / Fire</p>
                             <strong style="font-size: 20px; color: #ffffff;">911</strong>
                         </div>
                         <div class="card" style="text-align: center; padding: 20px;">
                             <div style="font-size: 36px; margin-bottom: 8px;">🧯</div>
-                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 4px;">Extinguisher</p>
-                            <strong style="font-size: 20px; color: #ffffff;">In hallway</strong>
+                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 4px;" data-i18n="emergency.extinguisher">Extinguisher</p>
+                            <strong style="font-size: 20px; color: #ffffff;" data-i18n="emergency.hallway">In hallway</strong>
                         </div>
                         <div class="card" style="text-align: center; padding: 20px;">
                             <div style="font-size: 36px; margin-bottom: 8px;">📱</div>
@@ -1057,7 +1243,7 @@
                         </div>
                         <div class="card" style="text-align: center; padding: 20px;">
                             <div style="font-size: 36px; margin-bottom: 8px;">🏥</div>
-                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 4px;">Ambulance</p>
+                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 4px;" data-i18n="emergency.ambulance">Ambulance</p>
                             <strong style="font-size: 20px; color: #ffffff;">107</strong>
                         </div>
                     </div>
@@ -1073,7 +1259,7 @@
             <!-- DISCOVER PAGE -->
             <div class="page" id="discoverPage">
                 <div class="discover-content">
-                    <h2>Discover</h2>
+                    <h2 data-i18n="discover.title">Discover</h2>
                     <div class="filter-pills" id="filterPills"></div>
                     <div class="discover-list" id="discoverList"></div>
                 </div>
@@ -1082,7 +1268,7 @@
             <!-- EVENTS PAGE -->
             <div class="page" id="eventsPage">
                 <div class="events-content">
-                    <h2>Events & Experiences</h2>
+                    <h2 data-i18n="events.title">Events & Experiences</h2>
                     <div id="eventsList"></div>
                 </div>
             </div>
@@ -1092,23 +1278,23 @@
         <div class="bottom-nav">
             <a class="nav-item active" data-page="homePage" onclick="showPage('homePage')">
                 <div class="nav-icon">🏠</div>
-                <div class="nav-label">Home</div>
+                <div class="nav-label" data-i18n="nav.home">Home</div>
             </a>
             <a class="nav-item" data-page="guidePage" onclick="showPage('guidePage')">
                 <div class="nav-icon">📖</div>
-                <div class="nav-label">Guide</div>
+                <div class="nav-label" data-i18n="nav.guide">Guide</div>
             </a>
             <a class="nav-item" data-page="mapPage" onclick="showPage('mapPage')">
                 <div class="nav-icon">🗺️</div>
-                <div class="nav-label">Map</div>
+                <div class="nav-label" data-i18n="nav.map">Map</div>
             </a>
             <a class="nav-item" data-page="discoverPage" onclick="showPage('discoverPage')">
                 <div class="nav-icon">🧭</div>
-                <div class="nav-label">Discover</div>
+                <div class="nav-label" data-i18n="nav.discover">Discover</div>
             </a>
             <a class="nav-item" data-page="eventsPage" onclick="showPage('eventsPage')">
                 <div class="nav-icon">📅</div>
-                <div class="nav-label">Events</div>
+                <div class="nav-label" data-i18n="nav.events">Events</div>
             </a>
         </div>
 
@@ -1136,86 +1322,224 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>        // Data
+    <script>
+        // ===================== Translations =====================
+        const T = {
+            en: {
+                'home.greeting': 'Hello, Welcome!',
+                'home.forecastTitle': '7-Day Forecast',
+                'home.checkin': 'CHECK-IN',
+                'home.checkout': 'CHECK-OUT',
+                'home.exploreTitle': 'Explore',
+                'home.eventsTitle': 'Upcoming Events',
+                'home.loading': 'Loading...',
+                'home.tipsTitle': 'Tips & Recommendations',
+                'home.hostTitle': 'Your Host',
+                'home.footerMsg': 'We hope you enjoy your stay in Buenos Aires!',
+                'wifi.copy': 'Copy',
+                'wifi.copied': 'Copied!',
+                'nav.home': 'Home', 'nav.guide': 'Guide', 'nav.map': 'Map', 'nav.discover': 'Discover', 'nav.events': 'Events',
+                'tips.subte.title': 'Subte', 'tips.subte.desc': 'Fast & efficient public transport',
+                'tips.nightlife.title': 'Nightlife', 'tips.nightlife.desc': 'Vibrant bars & clubs until dawn',
+                'tips.asados.title': 'Asados', 'tips.asados.desc': 'Try traditional parrillas',
+                'tips.coffee.title': 'Coffee', 'tips.coffee.desc': 'Café culture is everywhere',
+                'guide.title': 'Your Guide',
+                'guide.aboutTitle': 'About Studio Borges',
+                'guide.addressLabel': 'Address:',
+                'guide.hostLabel': 'Host:',
+                'guide.amenitiesTitle': 'Amenities',
+                'guide.infoTitle': 'Important Information',
+                'guide.transportTitle': 'Getting Around',
+                'guide.emergencyTitle': 'Emergency',
+                'amenity.hairdryer': 'Hairdryer', 'amenity.soap': 'Soap & Shampoo', 'amenity.coffee': 'Coffee Machine',
+                'amenity.water': 'Water Bottle', 'amenity.charger': 'iPhone Charger', 'amenity.towels': 'Towels',
+                'amenity.guides': 'City Guides', 'amenity.maps': 'Maps',
+                'info.heating.title': 'Heating', 'info.heating.desc': 'Set temperature on the wheel on the wall after main door (right side)',
+                'info.garbage.title': 'Garbage', 'info.garbage.desc': 'Trash can in service room (ground floor), no separation needed',
+                'info.security.title': 'Security', 'info.security.desc': 'Lock apartment door with keys, close main door',
+                'info.laundry.title': 'Laundry', 'info.laundry.desc': 'Last floor, free, bring your own soap',
+                'info.bbq.title': 'BBQ', 'info.bbq.desc': 'Terrace, free, must book (write in the book), no loud music, clean after use',
+                'info.pool.title': 'Pool', 'info.pool.desc': "Terrace, free, no lifeguard, supervise minors, don't use elevator wet",
+                'info.subte.title': 'Subte', 'info.subte.desc': 'Line D (Plaza Italia, Scalabrini Ortiz) - Clean, efficient metro system',
+                'info.buses.title': 'Buses', 'info.buses.desc': 'Multiple lines serve the neighborhood - Use SUBE card at kiosks',
+                'info.taxis.title': 'Taxis', 'info.taxis.desc': 'Uber and local taxis available - Always use official taxis or apps',
+                'emergency.police': 'Police / Fire', 'emergency.extinguisher': 'Extinguisher', 'emergency.hallway': 'In hallway', 'emergency.ambulance': 'Ambulance',
+                'payment.title': 'Payment Methods',
+                'payment.intro': 'For direct payments, extended stays, or extra services, you can pay by bank transfer using the details below.',
+                'payment.usa.title': 'United States (USD)',
+                'payment.europe.title': 'Europe (EUR / IBAN)',
+                'payment.argentina.title': 'Argentina (ARS)',
+                'payment.holder': 'Account holder', 'payment.accountNumber': 'Account number', 'payment.accountType': 'Account type',
+                'payment.routing': 'Routing (ACH/Wire)', 'payment.bank': 'Bank',
+                'payment.whatsappBtn': 'Message on WhatsApp for full details',
+                'payment.note': "For your security, full account numbers aren't published here. We share them privately over WhatsApp and confirm details before you send any transfer — this also protects you from scams using altered bank details.",
+                'discover.title': 'Discover',
+                'events.title': 'Events & Experiences',
+                'category.Restaurants': 'Restaurants', 'category.Bars': 'Bars', 'category.Nightlife': 'Nightlife',
+                'category.Listening Bars': 'Listening Bars', 'category.Activities': 'Activities', 'category.All': 'All',
+                'eventcat.music': 'Music', 'eventcat.culture': 'Culture', 'eventcat.sports': 'Sports',
+            },
+            es: {
+                'home.greeting': '¡Hola, Bienvenido!',
+                'home.forecastTitle': 'Pronóstico 7 Días',
+                'home.checkin': 'CHECK-IN',
+                'home.checkout': 'CHECK-OUT',
+                'home.exploreTitle': 'Explorar',
+                'home.eventsTitle': 'Próximos Eventos',
+                'home.loading': 'Cargando...',
+                'home.tipsTitle': 'Tips y Recomendaciones',
+                'home.hostTitle': 'Tu Anfitriona',
+                'home.footerMsg': '¡Esperamos que disfrutes tu estadía en Buenos Aires!',
+                'wifi.copy': 'Copiar',
+                'wifi.copied': '¡Copiado!',
+                'nav.home': 'Inicio', 'nav.guide': 'Guía', 'nav.map': 'Mapa', 'nav.discover': 'Descubrí', 'nav.events': 'Eventos',
+                'tips.subte.title': 'Subte', 'tips.subte.desc': 'Transporte público rápido y eficiente',
+                'tips.nightlife.title': 'Vida Nocturna', 'tips.nightlife.desc': 'Bares y clubs vibrantes hasta el amanecer',
+                'tips.asados.title': 'Asados', 'tips.asados.desc': 'Probá las parrillas tradicionales',
+                'tips.coffee.title': 'Café', 'tips.coffee.desc': 'La cultura del café está en todos lados',
+                'guide.title': 'Tu Guía',
+                'guide.aboutTitle': 'Sobre Studio Borges',
+                'guide.addressLabel': 'Dirección:',
+                'guide.hostLabel': 'Anfitriona:',
+                'guide.amenitiesTitle': 'Amenidades',
+                'guide.infoTitle': 'Información Importante',
+                'guide.transportTitle': 'Cómo Moverte',
+                'guide.emergencyTitle': 'Emergencia',
+                'amenity.hairdryer': 'Secador', 'amenity.soap': 'Jabón y Shampoo', 'amenity.coffee': 'Cafetera',
+                'amenity.water': 'Botella de Agua', 'amenity.charger': 'Cargador iPhone', 'amenity.towels': 'Toallas',
+                'amenity.guides': 'Guías de la Ciudad', 'amenity.maps': 'Mapas',
+                'info.heating.title': 'Calefacción', 'info.heating.desc': 'Regulá la temperatura con la rueda en la pared después de la puerta principal (lado derecho)',
+                'info.garbage.title': 'Basura', 'info.garbage.desc': 'Tacho en el cuarto de servicio (planta baja), no hace falta separar',
+                'info.security.title': 'Seguridad', 'info.security.desc': 'Cerrá la puerta del depto con llave y la puerta principal del edificio',
+                'info.laundry.title': 'Lavadero', 'info.laundry.desc': 'Último piso, gratis, traé tu propio jabón',
+                'info.bbq.title': 'Parrilla', 'info.bbq.desc': 'En la terraza, gratis, hay que reservar (anotarse en el cuaderno), sin música fuerte, limpiar después de usar',
+                'info.pool.title': 'Pileta', 'info.pool.desc': 'En la terraza, gratis, sin guardavidas, supervisar a los menores, no usar el ascensor mojado',
+                'info.subte.title': 'Subte', 'info.subte.desc': 'Línea D (Plaza Italia, Scalabrini Ortiz) - Sistema de metro limpio y eficiente',
+                'info.buses.title': 'Colectivos', 'info.buses.desc': 'Varias líneas recorren el barrio - Usá tarjeta SUBE en los kioscos',
+                'info.taxis.title': 'Taxis', 'info.taxis.desc': 'Uber y taxis locales disponibles - Usá siempre taxis oficiales o apps',
+                'emergency.police': 'Policía / Bomberos', 'emergency.extinguisher': 'Matafuego', 'emergency.hallway': 'En el pasillo', 'emergency.ambulance': 'Ambulancia',
+                'payment.title': 'Formas de Pago',
+                'payment.intro': 'Para pagos directos, estadías extendidas o servicios extra, podés pagar por transferencia bancaria con los datos de abajo.',
+                'payment.usa.title': 'Estados Unidos (USD)',
+                'payment.europe.title': 'Europa (EUR / IBAN)',
+                'payment.argentina.title': 'Argentina (ARS)',
+                'payment.holder': 'Titular', 'payment.accountNumber': 'Número de cuenta', 'payment.accountType': 'Tipo de cuenta',
+                'payment.routing': 'Routing (ACH/Wire)', 'payment.bank': 'Banco',
+                'payment.whatsappBtn': 'Escribir por WhatsApp para los datos completos',
+                'payment.note': 'Por seguridad, los números de cuenta completos no están publicados acá. Los compartimos de forma privada por WhatsApp y confirmamos los datos antes de que hagas cualquier transferencia — esto también te protege de estafas con datos bancarios alterados.',
+                'discover.title': 'Descubrí',
+                'events.title': 'Eventos y Experiencias',
+                'category.Restaurants': 'Restaurantes', 'category.Bars': 'Bares', 'category.Nightlife': 'Vida Nocturna',
+                'category.Listening Bars': 'Bares de Vinilos', 'category.Activities': 'Actividades', 'category.All': 'Todos',
+                'eventcat.music': 'Música', 'eventcat.culture': 'Cultura', 'eventcat.sports': 'Deportes',
+            }
+        };
+
+        let currentLang = 'en';
+
+        function t(key) {
+            return (T[currentLang] && T[currentLang][key]) || key;
+        }
+
+        function applyStaticTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                el.textContent = t(el.dataset.i18n);
+            });
+            document.documentElement.lang = currentLang;
+            document.getElementById('langEnBtn').classList.toggle('active', currentLang === 'en');
+            document.getElementById('langEsBtn').classList.toggle('active', currentLang === 'es');
+        }
+
+        function setLang(lang) {
+            currentLang = lang;
+            applyStaticTranslations();
+            loadHomeEvents();
+            loadDiscover();
+            loadEvents();
+            renderForecast();
+        }
+
+        // Data
         const restaurants = [
-            { name: 'Don Julio', address: 'Guatemela 4699', category: 'Restaurants', phone: '+54 11 4832-6058', website: 'donjulio.com.ar', description: 'Premium steakhouse with exceptional beef cuts and wine selection.' },
-            { name: 'Proper', address: 'Aráoz 1676', category: 'Restaurants', phone: '+54 11 4831-0027', website: 'proper.com.ar', description: 'Modern Argentine cuisine in intimate setting.' },
-            { name: 'Crizia', address: 'Gorriti 5143', category: 'Restaurants', phone: '+54 11 4832-2930', description: 'Italian fine dining with traditional recipes.' },
-            { name: 'La Cabrera', address: 'José Antonio Cabrera 5099', category: 'Restaurants', phone: '+54 11 4831-7002', website: 'lacabrera.com.ar', description: 'Famous parrilla with excellent service and atmosphere.' },
-            { name: 'Chila', address: 'Av. Alicia Moreau de Justo 1160', category: 'Restaurants', phone: '+54 11 4343-6067', description: 'Fine dining with seasonal menus.' },
-            { name: 'Elena', address: 'Posadas 1086 (Four Seasons)', category: 'Restaurants', phone: '+54 11 4321-1728', description: 'Upscale dining experience at luxury hotel.' },
-            { name: 'Aramburu', address: 'Sarmiento 1207', category: 'Restaurants', phone: '+54 11 4305-0439', description: 'Tasting menu focused on local ingredients.' },
-            { name: 'Narda Comedor', address: 'Humboldt 1573', category: 'Restaurants', phone: '+54 11 3914-1576', description: 'Home-style gourmet cooking in relaxed setting.' },
-            { name: 'Anafe', address: 'Arévalo 1402', category: 'Restaurants', phone: '+54 11 3965-3888', description: 'Contemporary bistro with creative dishes.' },
-            { name: 'Tegui', address: 'Costa Rica 5852', category: 'Restaurants', phone: '+54 11 5291-3333', description: 'Chef\'s table experience with innovative cuisine.' }
+            { name: 'Don Julio', address: 'Guatemela 4699', category: 'Restaurants', phone: '+54 11 4832-6058', website: 'donjulio.com.ar', description: 'Premium steakhouse with exceptional beef cuts and wine selection.', description_es: 'Parrilla premium con cortes de carne excepcionales y gran selección de vinos.' },
+            { name: 'Proper', address: 'Aráoz 1676', category: 'Restaurants', phone: '+54 11 4831-0027', website: 'proper.com.ar', description: 'Modern Argentine cuisine in intimate setting.', description_es: 'Cocina argentina moderna en un ambiente íntimo.' },
+            { name: 'Crizia', address: 'Gorriti 5143', category: 'Restaurants', phone: '+54 11 4832-2930', description: 'Italian fine dining with traditional recipes.', description_es: 'Alta cocina italiana con recetas tradicionales.' },
+            { name: 'La Cabrera', address: 'José Antonio Cabrera 5099', category: 'Restaurants', phone: '+54 11 4831-7002', website: 'lacabrera.com.ar', description: 'Famous parrilla with excellent service and atmosphere.', description_es: 'Parrilla famosa con excelente servicio y ambiente.' },
+            { name: 'Chila', address: 'Av. Alicia Moreau de Justo 1160', category: 'Restaurants', phone: '+54 11 4343-6067', description: 'Fine dining with seasonal menus.', description_es: 'Alta cocina con menús de estación.' },
+            { name: 'Elena', address: 'Posadas 1086 (Four Seasons)', category: 'Restaurants', phone: '+54 11 4321-1728', description: 'Upscale dining experience at luxury hotel.', description_es: 'Experiencia gastronómica exclusiva en hotel de lujo.' },
+            { name: 'Aramburu', address: 'Sarmiento 1207', category: 'Restaurants', phone: '+54 11 4305-0439', description: 'Tasting menu focused on local ingredients.', description_es: 'Menú degustación con foco en productos locales.' },
+            { name: 'Narda Comedor', address: 'Humboldt 1573', category: 'Restaurants', phone: '+54 11 3914-1576', description: 'Home-style gourmet cooking in relaxed setting.', description_es: 'Cocina gourmet casera en ambiente relajado.' },
+            { name: 'Anafe', address: 'Arévalo 1402', category: 'Restaurants', phone: '+54 11 3965-3888', description: 'Contemporary bistro with creative dishes.', description_es: 'Bistró contemporáneo con platos creativos.' },
+            { name: 'Tegui', address: 'Costa Rica 5852', category: 'Restaurants', phone: '+54 11 5291-3333', description: 'Chef\'s table experience with innovative cuisine.', description_es: 'Mesa de chef con cocina innovadora.' }
         ];
 
         const bars = [
-            { name: 'Florería Atlántico', address: 'Arroyo 872', category: 'Bars', phone: '+54 11 4313-6093', description: 'Hidden speakeasy bar with craft cocktails.' },
-            { name: 'Gran Dabbang', address: 'Scalabrini Ortiz 1543', category: 'Bars', phone: '+54 11 4834-1314', description: 'Fusion cocktails blending Asian and Argentine influences.' },
-            { name: 'Presidente Bar', address: 'Hotel Alvear', category: 'Bars', phone: '+54 11 4808-2100', description: 'Classic cocktail bar in prestigious hotel.' },
-            { name: 'Café Tortoni', address: 'Av. de Mayo 825', category: 'Bars', phone: '+54 11 4342-4328', description: 'Historic café since 1858, iconic Buenos Aires destination.' },
-            { name: 'LAB Training Center', address: 'Honduras 5507', category: 'Bars', phone: '+54 11 6379-0048', description: 'Specialty coffee and training space.' },
-            { name: 'Cuervo', address: 'Thames 1750', category: 'Bars', phone: '+54 11 4833-8890', description: 'Craft cocktail bar with knowledgeable bartenders.' },
-            { name: 'Victoria Brown', address: 'Costa Rica 4827', category: 'Bars', phone: '+54 11 4831-0700', description: 'Sophisticated cocktail venue with vintage aesthetic.' },
-            { name: 'Lattente', address: 'Thames 1891', category: 'Bars', phone: '+54 11 4832-1020', description: 'Specialty coffee roasted on-site.' },
-            { name: 'Negro Cueva de Café', address: 'Guatemala 4532', category: 'Bars', description: 'Artisan coffee shop with cozy atmosphere.' },
-            { name: 'Verne Club', address: 'Av. Medrano 1475', category: 'Bars', phone: '+54 11 4832-9595', description: 'Speakeasy-themed bar with inventive drinks.' }
+            { name: 'Florería Atlántico', address: 'Arroyo 872', category: 'Bars', phone: '+54 11 4313-6093', description: 'Hidden speakeasy bar with craft cocktails.', description_es: 'Speakeasy escondido con cócteles de autor.' },
+            { name: 'Gran Dabbang', address: 'Scalabrini Ortiz 1543', category: 'Bars', phone: '+54 11 4834-1314', description: 'Fusion cocktails blending Asian and Argentine influences.', description_es: 'Cócteles fusión con influencias asiáticas y argentinas.' },
+            { name: 'Presidente Bar', address: 'Hotel Alvear', category: 'Bars', phone: '+54 11 4808-2100', description: 'Classic cocktail bar in prestigious hotel.', description_es: 'Bar de cócteles clásico en hotel prestigioso.' },
+            { name: 'Café Tortoni', address: 'Av. de Mayo 825', category: 'Bars', phone: '+54 11 4342-4328', description: 'Historic café since 1858, iconic Buenos Aires destination.', description_es: 'Café histórico desde 1858, ícono porteño.' },
+            { name: 'LAB Training Center', address: 'Honduras 5507', category: 'Bars', phone: '+54 11 6379-0048', description: 'Specialty coffee and training space.', description_es: 'Café de especialidad y espacio de formación.' },
+            { name: 'Cuervo', address: 'Thames 1750', category: 'Bars', phone: '+54 11 4833-8890', description: 'Craft cocktail bar with knowledgeable bartenders.', description_es: 'Bar de coctelería de autor con bartenders expertos.' },
+            { name: 'Victoria Brown', address: 'Costa Rica 4827', category: 'Bars', phone: '+54 11 4831-0700', description: 'Sophisticated cocktail venue with vintage aesthetic.', description_es: 'Bar de cócteles sofisticado con estética vintage.' },
+            { name: 'Lattente', address: 'Thames 1891', category: 'Bars', phone: '+54 11 4832-1020', description: 'Specialty coffee roasted on-site.', description_es: 'Café de especialidad tostado en el local.' },
+            { name: 'Negro Cueva de Café', address: 'Guatemala 4532', category: 'Bars', description: 'Artisan coffee shop with cozy atmosphere.', description_es: 'Cafetería artesanal con ambiente acogedor.' },
+            { name: 'Verne Club', address: 'Av. Medrano 1475', category: 'Bars', phone: '+54 11 4832-9595', description: 'Speakeasy-themed bar with inventive drinks.', description_es: 'Bar temático estilo speakeasy con tragos originales.' }
         ];
 
         const nightlife = [
-            { name: 'Crobar', address: 'Paseo de la Infanta', category: 'Nightlife', website: 'crobar.com.ar', description: 'Legendary mega club with world-class DJs and dancers.' },
-            { name: 'Jet Lounge', address: 'Av. Rafael Obligado', category: 'Nightlife', description: 'Upscale nightclub on Costanera Norte with river views.' },
-            { name: 'Tequila', address: 'Honduras 5318', category: 'Nightlife', description: 'Bar and club with live DJ sets and packed dance floor.' },
-            { name: 'Club Araoz', address: 'Araoz 2424', category: 'Nightlife', description: 'Underground electronic music venue for serious dancers.' },
-            { name: 'Niceto Club', address: 'Niceto Vega 5510', category: 'Nightlife', website: 'nicetoclub.com', description: 'Live music and parties with diverse programming.' },
-            { name: 'Kika', address: 'Honduras 5339', category: 'Nightlife', description: 'Multi-floor club with different music styles each level.' },
-            { name: 'The Roxy', address: 'Av. Rivadavia', category: 'Nightlife', description: 'Rock club with live bands and energetic crowds.' },
-            { name: 'Bahrein', address: 'Lavalle 345', category: 'Nightlife', description: 'Downtown mega club with impressive light shows.' },
-            { name: 'Terrazas del Este', address: 'Cecilia Grierson 225', category: 'Nightlife', description: 'Open-air club with spectacular city and river views.' },
-            { name: 'Congo', address: 'Honduras 5329', category: 'Nightlife', description: 'Electronic music focused club for house and techno.' }
+            { name: 'Crobar', address: 'Paseo de la Infanta', category: 'Nightlife', website: 'crobar.com.ar', description: 'Legendary mega club with world-class DJs and dancers.', description_es: 'Mega club legendario con DJs y bailarines de primer nivel.' },
+            { name: 'Jet Lounge', address: 'Av. Rafael Obligado', category: 'Nightlife', description: 'Upscale nightclub on Costanera Norte with river views.', description_es: 'Nightclub exclusivo en Costanera Norte con vista al río.' },
+            { name: 'Tequila', address: 'Honduras 5318', category: 'Nightlife', description: 'Bar and club with live DJ sets and packed dance floor.', description_es: 'Bar y club con DJ en vivo y pista siempre llena.' },
+            { name: 'Club Araoz', address: 'Araoz 2424', category: 'Nightlife', description: 'Underground electronic music venue for serious dancers.', description_es: 'Música electrónica underground para bailar en serio.' },
+            { name: 'Niceto Club', address: 'Niceto Vega 5510', category: 'Nightlife', website: 'nicetoclub.com', description: 'Live music and parties with diverse programming.', description_es: 'Música en vivo y fiestas con programación variada.' },
+            { name: 'Kika', address: 'Honduras 5339', category: 'Nightlife', description: 'Multi-floor club with different music styles each level.', description_es: 'Club de varios pisos, un estilo musical por nivel.' },
+            { name: 'The Roxy', address: 'Av. Rivadavia', category: 'Nightlife', description: 'Rock club with live bands and energetic crowds.', description_es: 'Club de rock con bandas en vivo y ambiente enérgico.' },
+            { name: 'Bahrein', address: 'Lavalle 345', category: 'Nightlife', description: 'Downtown mega club with impressive light shows.', description_es: 'Mega club céntrico con juegos de luces impresionantes.' },
+            { name: 'Terrazas del Este', address: 'Cecilia Grierson 225', category: 'Nightlife', description: 'Open-air club with spectacular city and river views.', description_es: 'Club al aire libre con vistas espectaculares a la ciudad y al río.' },
+            { name: 'Congo', address: 'Honduras 5329', category: 'Nightlife', description: 'Electronic music focused club for house and techno.', description_es: 'Club enfocado en música electrónica, house y techno.' }
         ];
 
         const listeningBars = [
-            { name: 'Pony Line', address: 'Posadas 1086 (Four Seasons)', category: 'Listening Bars', description: 'Vinyl bar with high-fidelity sound system at luxury hotel.' },
-            { name: 'Hifi Bar', address: 'Thames 1885', category: 'Listening Bars', description: 'Dedicated listening bar with vinyl-only collection.' },
-            { name: 'Apóstoles', address: 'Uriarte 1603', category: 'Listening Bars', description: 'Wine and vinyl bar with curated record selection.' },
-            { name: 'Le Piano du Lac', address: 'Humboldt 1882', category: 'Listening Bars', description: 'Jazz and vinyl in intimate setting.' },
-            { name: 'Bar El Federal', address: 'Carlos Calvo 599', category: 'Listening Bars', description: 'Historic bar with occasional live music performances.' },
-            { name: 'Boris Club', address: 'Gorriti 5568', category: 'Listening Bars', description: 'Cocktails with carefully curated playlists.' },
-            { name: 'Uptown BA', address: 'Arévalo 1462', category: 'Listening Bars', description: 'Jazz and soul listening room with quality sound.' },
-            { name: 'The Harrison Speakeasy', address: 'Malabia 1738', category: 'Listening Bars', description: 'Hidden bar hosting vinyl sessions and craft drinks.' },
-            { name: 'Magdalena\'s Party', address: 'Thames 1795', category: 'Listening Bars', description: 'Wine bar with curated music program.' },
-            { name: 'Doppelgänger', address: 'Av. Juan de Garay 500', category: 'Listening Bars', description: 'Vinyl bar with dark, intimate atmosphere.' }
+            { name: 'Pony Line', address: 'Posadas 1086 (Four Seasons)', category: 'Listening Bars', description: 'Vinyl bar with high-fidelity sound system at luxury hotel.', description_es: 'Bar de vinilos con sistema de sonido de alta fidelidad en hotel de lujo.' },
+            { name: 'Hifi Bar', address: 'Thames 1885', category: 'Listening Bars', description: 'Dedicated listening bar with vinyl-only collection.', description_es: 'Listening bar dedicado, colección exclusivamente en vinilo.' },
+            { name: 'Apóstoles', address: 'Uriarte 1603', category: 'Listening Bars', description: 'Wine and vinyl bar with curated record selection.', description_es: 'Bar de vinos y vinilos con selección curada.' },
+            { name: 'Le Piano du Lac', address: 'Humboldt 1882', category: 'Listening Bars', description: 'Jazz and vinyl in intimate setting.', description_es: 'Jazz y vinilos en ambiente íntimo.' },
+            { name: 'Bar El Federal', address: 'Carlos Calvo 599', category: 'Listening Bars', description: 'Historic bar with occasional live music performances.', description_es: 'Bar histórico con música en vivo ocasional.' },
+            { name: 'Boris Club', address: 'Gorriti 5568', category: 'Listening Bars', description: 'Cocktails with carefully curated playlists.', description_es: 'Cócteles con playlists cuidadosamente seleccionadas.' },
+            { name: 'Uptown BA', address: 'Arévalo 1462', category: 'Listening Bars', description: 'Jazz and soul listening room with quality sound.', description_es: 'Sala de escucha de jazz y soul con gran calidad de sonido.' },
+            { name: 'The Harrison Speakeasy', address: 'Malabia 1738', category: 'Listening Bars', description: 'Hidden bar hosting vinyl sessions and craft drinks.', description_es: 'Bar escondido con sesiones de vinilo y tragos de autor.' },
+            { name: 'Magdalena\'s Party', address: 'Thames 1795', category: 'Listening Bars', description: 'Wine bar with curated music program.', description_es: 'Wine bar con programación musical curada.' },
+            { name: 'Doppelgänger', address: 'Av. Juan de Garay 500', category: 'Listening Bars', description: 'Vinyl bar with dark, intimate atmosphere.', description_es: 'Bar de vinilos con atmósfera oscura e íntima.' }
         ];
 
         const activities = [
-            { name: 'MALBA', address: 'Av. Figueroa Alcorta 3415', category: 'Activities', description: 'Museum of Latin American Art with world-class collections.' },
-            { name: 'Teatro Colón', address: 'Cerrito 628', category: 'Activities', description: 'World-class opera house and cultural landmark.' },
-            { name: 'Jardín Botánico', address: 'Av. Santa Fe 3951', category: 'Activities', description: 'Beautiful botanical garden with diverse plant collections.' },
-            { name: 'Mercado de San Telmo', address: 'Defensa Street', category: 'Activities', description: 'Historic antiques market with vintage treasures.' },
-            { name: 'Cementerio de Recoleta', address: 'Junín 1760', category: 'Activities', description: 'Historic cemetery with impressive mausoleums and architecture.' },
-            { name: 'Planetario Galileo Galilei', address: 'Av. Sarmiento 4200', category: 'Activities', description: 'Planetarium with immersive astronomy shows.' },
-            { name: 'Museo Nacional de Bellas Artes', address: 'Av. del Libertador 1473', category: 'Activities', description: 'National art museum with extensive Argentine and European collections.' },
-            { name: 'Feria de San Pedro Telmo', address: 'Plaza Dorrego', category: 'Activities', description: 'Sunday market with antiques, art, and street performers.' }
+            { name: 'MALBA', address: 'Av. Figueroa Alcorta 3415', category: 'Activities', description: 'Museum of Latin American Art with world-class collections.', description_es: 'Museo de Arte Latinoamericano con colecciones de primer nivel.' },
+            { name: 'Teatro Colón', address: 'Cerrito 628', category: 'Activities', description: 'World-class opera house and cultural landmark.', description_es: 'Teatro de ópera de clase mundial e ícono cultural.' },
+            { name: 'Jardín Botánico', address: 'Av. Santa Fe 3951', category: 'Activities', description: 'Beautiful botanical garden with diverse plant collections.', description_es: 'Hermoso jardín botánico con gran diversidad de plantas.' },
+            { name: 'Mercado de San Telmo', address: 'Defensa Street', category: 'Activities', description: 'Historic antiques market with vintage treasures.', description_es: 'Mercado histórico de antigüedades con tesoros vintage.' },
+            { name: 'Cementerio de Recoleta', address: 'Junín 1760', category: 'Activities', description: 'Historic cemetery with impressive mausoleums and architecture.', description_es: 'Cementerio histórico con mausoleos y arquitectura impresionante.' },
+            { name: 'Planetario Galileo Galilei', address: 'Av. Sarmiento 4200', category: 'Activities', description: 'Planetarium with immersive astronomy shows.', description_es: 'Planetario con shows de astronomía inmersivos.' },
+            { name: 'Museo Nacional de Bellas Artes', address: 'Av. del Libertador 1473', category: 'Activities', description: 'National art museum with extensive Argentine and European collections.', description_es: 'Museo con extensas colecciones de arte argentino y europeo.' },
+            { name: 'Feria de San Pedro Telmo', address: 'Plaza Dorrego', category: 'Activities', description: 'Sunday market with antiques, art, and street performers.', description_es: 'Feria dominical con antigüedades, arte y artistas callejeros.' }
         ];
 
         const events = [
-            { name: 'La Bomba de Tiempo', date: '2026-03-09', location: 'Ciudad Cultural Konex, Sarmiento 3131', time: 'Mon Mar 9 · 7PM', icon: '🥁', description: 'Legendary percussion show with improvised rhythms. An unmissable Buenos Aires experience every Monday night. Tickets at the door.', category: 'music' },
-            { name: 'San Telmo Market', date: '2026-03-09', location: 'Defensa Street, San Telmo', time: 'Every Sunday · 10AM-5PM', icon: '🛍️', description: 'Antiques, crafts, tango, and street performers in the historic San Telmo neighborhood. One of the best open-air markets in South America.', category: 'culture' },
-            { name: 'Tango Night at La Viruta', date: '2026-03-11', location: 'La Viruta, Armenia 1366, Palermo', time: 'Every Tue, Wed, Fri · 11PM', icon: '💃', description: 'Authentic milonga experience with live tango orchestra. Classes for beginners earlier in the evening. Walking distance from Studio Borges.', category: 'music' },
-            { name: 'Free Walking Tour', date: '2026-03-11', location: 'Plaza de Mayo (start point)', time: 'Daily · 10AM & 3PM', icon: '🚶', description: 'Free guided walking tours covering Buenos Aires history, architecture and culture. Tips-based. Available in English and Spanish.', category: 'culture' },
-            { name: 'Lollapalooza Argentina 2026', date: '2026-03-13', location: 'Hipódromo de San Isidro', time: 'Fri Mar 13 - Sun Mar 15 · 11AM', icon: '🎸', description: 'One of the biggest music festivals in South America. Three days of international and local artists across multiple stages. Get tickets at lollapaloozaar.com', category: 'music' },
-            { name: 'TC2000 Street Circuit', date: '2026-03-14', location: 'Villa Soldati, Av. Roca y Escalada', time: 'Sat Mar 14 - Sun Mar 15', icon: '🏎️', description: 'Historic TC2000 season opener on a special street circuit in Buenos Aires. Free viewing areas available.', category: 'sports' },
-            { name: 'Live Jazz at Thelonious', date: '2026-03-14', location: 'Thelonious Club, Salguero 1884', time: 'Thu-Sat · 9PM', icon: '🎷', description: 'Intimate live jazz performances in one of Buenos Aires best jazz clubs. Reservations recommended.', category: 'music' },
-            { name: 'San Patricio Celebrations', date: '2026-03-15', location: 'Various venues across BA', time: 'Sun Mar 15 - Tue Mar 17', icon: '🍀', description: 'St. Patrick celebrations across Buenos Aires with Irish pubs, live music, parades and cultural events. Main party in Retiro area on March 17.', category: 'culture' },
-            { name: 'Museo MALBA', date: '2026-03-11', location: 'Av. Figueroa Alcorta 3415, Palermo', time: 'Wed free · Thu-Mon 12-8PM', icon: '🎨', description: 'Latin American art museum with world-class exhibitions. Free admission on Wednesdays. 15 min walk from Studio Borges.', category: 'culture' },
-            { name: 'Feria de Mataderos', date: '2026-03-15', location: 'Av. Lisandro de la Torre 2200', time: 'Sundays · 11AM-7PM', icon: '🇦🇷', description: 'Traditional gaucho fair with folk music, dancing, artisan crafts and authentic Argentine street food. A true cultural immersion.', category: 'culture' }
+            { name: 'Free Walking Tour', date: '2026-07-24', location: 'Plaza de Mayo (start point)', time: 'Daily · 10AM & 3PM', time_es: 'Diario · 10 y 15 h', icon: '🚶', category: 'culture', description: 'Free guided walking tours covering Buenos Aires history, architecture and culture. Tips-based. Available in English and Spanish.', description_es: 'Recorridos guiados gratuitos por la historia, arquitectura y cultura de Buenos Aires. A voluntad (propina). Disponible en inglés y español.' },
+            { name: 'San Telmo Market', date: '2026-07-26', location: 'Defensa Street, San Telmo', time: 'Every Sunday · 10AM-5PM', time_es: 'Todos los domingos · 10 a 17 h', icon: '🛍️', category: 'culture', description: 'Antiques, crafts, tango, and street performers in the historic San Telmo neighborhood. One of the best open-air markets in South America.', description_es: 'Antigüedades, artesanías, tango y artistas callejeros en el histórico barrio de San Telmo. Una de las mejores ferias al aire libre de Sudamérica.' },
+            { name: 'La Bomba de Tiempo', date: '2026-07-27', location: 'Ciudad Cultural Konex, Sarmiento 3131', time: 'Every Monday · 7PM', time_es: 'Todos los lunes · 19 h', icon: '🥁', category: 'music', description: 'Legendary percussion show with improvised rhythms. An unmissable Buenos Aires experience every Monday night. Tickets at the door.', description_es: 'Show legendario de percusión con ritmos improvisados. Una experiencia porteña imperdible cada lunes. Entradas en la puerta.' },
+            { name: 'Tango Night at La Viruta', date: '2026-07-28', location: 'La Viruta, Armenia 1366, Palermo', time: 'Tue, Wed, Fri · 11PM', time_es: 'Mar, Mié, Vie · 23 h', icon: '💃', category: 'music', description: 'Authentic milonga experience with live tango orchestra. Classes for beginners earlier in the evening. Walking distance from Studio Borges.', description_es: 'Milonga auténtica con orquesta de tango en vivo. Clases para principiantes más temprano. A pocas cuadras de Studio Borges.' },
+            { name: 'Dan Flavin at MALBA', date: '2026-07-29', location: 'Av. Figueroa Alcorta 3415, Palermo', time: 'Through Aug 26 · Thu-Mon 12-8PM', time_es: 'Hasta el 26 de agosto · Jue-Lun 12 a 20 h', icon: '🎨', category: 'culture', description: "Landmark light installation exhibition at MALBA, part of the museum's 25th anniversary program. 15 min walk from Studio Borges.", description_es: 'Exposición de instalaciones lumínicas en el MALBA, parte del programa por el 25° aniversario del museo. A 15 min caminando de Studio Borges.' },
+            { name: 'Rosalía', date: '2026-08-01', location: 'Movistar Arena, Humboldt 450', time: 'Aug 1, 2, 4 & 6 · 9PM', time_es: '1, 2, 4 y 6 de agosto · 21 h', icon: '🎤', category: 'music', description: 'International pop sensation Rosalía brings her world tour to Buenos Aires for four highly anticipated nights.', description_es: 'La sensación del pop internacional Rosalía llega a Buenos Aires con su gira mundial en cuatro noches muy esperadas.' },
+            { name: 'Feria de Mataderos', date: '2026-08-02', location: 'Av. Lisandro de la Torre 2200', time: 'Sundays · 11AM-7PM', time_es: 'Domingos · 11 a 19 h', icon: '🇦🇷', category: 'culture', description: 'Traditional gaucho fair with folk music, dancing, artisan crafts and authentic Argentine street food. A true cultural immersion.', description_es: 'Feria tradicional gauchesca con música folclórica, baile, artesanías y comida callejera argentina auténtica. Una inmersión cultural total.' },
+            { name: 'Carin León', date: '2026-08-07', location: 'Movistar Arena, Humboldt 450', time: 'Aug 7 · 9PM', time_es: '7 de agosto · 21 h', icon: '🎸', category: 'music', description: 'Regional Mexican star Carin León performs live in Buenos Aires.', description_es: 'El astro del regional mexicano Carin León se presenta en vivo en Buenos Aires.' },
+            { name: 'Soda Stereo', date: '2026-08-10', location: 'Movistar Arena, Humboldt 450', time: 'Aug 10, 11, 12 & 14 · 9PM', time_es: '10, 11, 12 y 14 de agosto · 21 h', icon: '🎸', category: 'music', description: 'Argentine rock icons Soda Stereo return to the stage for a run of highly anticipated shows.', description_es: 'Los íconos del rock argentino Soda Stereo vuelven a los escenarios en una serie de shows muy esperados.' },
+            { name: 'Medio Maratón Internacional de Buenos Aires', date: '2026-08-23', location: 'Costanera / Palermo route', time: 'Sun Aug 23 · Morning', time_es: 'Dom 23 de agosto · Por la mañana', icon: '🏃', category: 'sports', description: "One of Argentina's biggest running events, with thousands of runners through the city's avenues. Expect street closures along the route.", description_es: 'Una de las carreras más grandes de Argentina, con miles de corredores por las avenidas porteñas. Puede haber cortes de calles en el recorrido.' }
         ];
 
         const allDiscover = [...restaurants, ...bars, ...nightlife, ...listeningBars, ...activities];
         let currentFilter = 'All';
         let mapInstance;
+        let lastWeatherData = null;
 
         // Utility Functions
         function showPage(pageId) {
@@ -1258,9 +1582,8 @@
         document.getElementById('wifiCopyBtn').addEventListener('click', () => {
             navigator.clipboard.writeText('internet2019');
             const btn = document.getElementById('wifiCopyBtn');
-            const original = btn.textContent;
-            btn.textContent = 'Copied!';
-            setTimeout(() => btn.textContent = original, 2000);
+            btn.textContent = t('wifi.copied');
+            setTimeout(() => { btn.textContent = t('wifi.copy'); }, 2000);
         });
 
         // Weather & Exchange
@@ -1268,6 +1591,7 @@
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-34.5875&longitude=-58.4274&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Argentina/Buenos_Aires');
                 const data = await res.json();
+                lastWeatherData = data;
                 const temp = Math.round(data.current.temperature_2m);
                 document.getElementById('temperature').textContent = temp + '°C';
 
@@ -1281,20 +1605,27 @@
                 else if (code >= 71 && code <= 86) icon = '❄️';
                 document.getElementById('weatherIcon').textContent = icon;
 
-                // Forecast
-                const container = document.getElementById('forecastContainer');
-                container.innerHTML = '';
-                const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                for (let i = 0; i < 7; i++) {
-                    const max = Math.round(data.daily.temperature_2m_max[i]);
-                    const min = Math.round(data.daily.temperature_2m_min[i]);
-                    const card = document.createElement('div');
-                    card.className = 'scroll-card';
-                    card.innerHTML = `<h4>${days[i]}</h4><div style="font-size: 18px;">${max}°</div><p>${min}°</p>`;
-                    container.appendChild(card);
-                }
+                renderForecast();
             } catch (e) {
                 console.error('Weather error:', e);
+            }
+        }
+
+        function renderForecast() {
+            if (!lastWeatherData) return;
+            const data = lastWeatherData;
+            const container = document.getElementById('forecastContainer');
+            container.innerHTML = '';
+            const daysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const daysEs = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+            const dayNames = currentLang === 'es' ? daysEs : daysEn;
+            for (let i = 0; i < 7 && i < data.daily.temperature_2m_max.length; i++) {
+                const max = Math.round(data.daily.temperature_2m_max[i]);
+                const min = Math.round(data.daily.temperature_2m_min[i]);
+                const card = document.createElement('div');
+                card.className = 'scroll-card';
+                card.innerHTML = `<h4>${dayNames[i]}</h4><div style="font-size: 18px;">${max}°</div><p>${min}°</p>`;
+                container.appendChild(card);
             }
         }
 
@@ -1316,16 +1647,24 @@
         function loadHomeEvents() {
             const container = document.getElementById('homeEventsContainer');
             container.innerHTML = '';
-            events.forEach(event => {
+            const upcoming = events.filter(e => e.date >= todayISO()).slice(0, 8);
+            const list = upcoming.length ? upcoming : events;
+            list.forEach(event => {
                 const card = document.createElement('div');
                 card.className = 'scroll-card';
                 card.style.cursor = 'pointer';
-                card.innerHTML = `<div style="font-size: 24px; margin-bottom: 8px;">${event.icon}</div><h4>${event.name}</h4><p>${event.time}</p>`;
+                const time = currentLang === 'es' ? (event.time_es || event.time) : event.time;
+                card.innerHTML = `<div style="font-size: 24px; margin-bottom: 8px;">${event.icon}</div><h4>${event.name}</h4><p>${time}</p>`;
                 card.onclick = () => showEventModal(event);
                 container.appendChild(card);
             });
         }
         loadHomeEvents();
+
+        function todayISO() {
+            const now = new Date();
+            return now.toISOString().slice(0, 10);
+        }
 
         // Discover Page
         function loadDiscover() {
@@ -1334,18 +1673,18 @@
             const categories = ['All', 'Restaurants', 'Bars', 'Nightlife', 'Listening Bars', 'Activities'];
             categories.forEach(cat => {
                 const btn = document.createElement('button');
-                btn.className = 'btn-filter' + (cat === 'All' ? ' active' : '');
-                btn.textContent = cat;
+                btn.className = 'btn-filter' + (cat === currentFilter ? ' active' : '');
+                btn.textContent = t('category.' + cat);
                 btn.onclick = (e) => filterDiscover(cat, e.target);
                 container.appendChild(btn);
             });
 
-            filterDiscover('All', container.firstChild);
+            filterDiscover(currentFilter, container.querySelector('.active'));
         }
 
         function filterDiscover(category, btnEl) {
             currentFilter = category;
-            document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('#filterPills .btn-filter').forEach(btn => btn.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
 
             const filtered = category === 'All' ? allDiscover : allDiscover.filter(item => item.category === category);
@@ -1358,7 +1697,7 @@
                 card.innerHTML = `
                     <div class="discover-card-header">
                         <h4>${item.name}</h4>
-                        <span class="category-tag">${item.category}</span>
+                        <span class="category-tag">${t('category.' + item.category)}</span>
                     </div>
                     <p>${item.address}</p>
                 `;
@@ -1368,6 +1707,7 @@
         }
 
         function showDiscoverModal(item) {
+            const desc = currentLang === 'es' ? (item.description_es || item.description) : item.description;
             let body = `<div class="sheet-info">
                 <strong>${item.name}</strong><br>
                 ${item.address}<br><br>`;
@@ -1375,7 +1715,7 @@
             if (item.phone) body += `<a href="tel:${item.phone.replace(/\s/g, '')}">📞 ${item.phone}</a><br>`;
             if (item.website) body += `<a href="https://${item.website}" target="_blank">🌐 ${item.website}</a><br>`;
 
-            body += `<br>${item.description}`;
+            body += `<br>${desc}`;
             body += '</div>';
 
             openModal(item.name, body);
@@ -1400,16 +1740,19 @@
             Object.entries(grouped).forEach(([date, dateEvents]) => {
                 // Date header
                 const dateObj = new Date(date + 'T12:00:00');
-                const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
-                const monthDay = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+                const locale = currentLang === 'es' ? 'es-AR' : 'en-US';
+                const dayName = dateObj.toLocaleDateString(locale, { weekday: 'long' });
+                const monthDay = dateObj.toLocaleDateString(locale, { month: 'long', day: 'numeric' });
 
                 const dateHeader = document.createElement('div');
                 dateHeader.style.cssText = 'margin: 20px 0 10px 0; padding: 8px 0; border-bottom: 1px solid rgba(201,169,110,0.3);';
-                dateHeader.innerHTML = `<div style="font-family: 'Playfair Display', serif; font-size: 18px; color: #c9a96e; font-weight: 700;">${dayName}</div><div style="font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 2px;">${monthDay}, 2026</div>`;
+                dateHeader.innerHTML = `<div style="font-family: 'Playfair Display', serif; font-size: 18px; color: #c9a96e; font-weight: 700; text-transform: capitalize;">${dayName}</div><div style="font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 2px; text-transform: capitalize;">${monthDay}, ${dateObj.getFullYear()}</div>`;
                 list.appendChild(dateHeader);
 
                 // Events for this date
                 dateEvents.forEach(event => {
+                    const time = currentLang === 'es' ? (event.time_es || event.time) : event.time;
+                    const catLabel = event.category ? t('eventcat.' + event.category).toUpperCase() : '';
                     const card = document.createElement('div');
                     card.className = 'event-card';
                     card.innerHTML = `
@@ -1417,11 +1760,11 @@
                             <div class="event-icon">${event.icon}</div>
                             <div style="flex: 1;">
                                 <h3 class="event-title">${event.name}</h3>
-                                <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;">${event.category ? event.category.toUpperCase() : ''}</div>
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;">${catLabel}</div>
                             </div>
                         </div>
                         <div class="event-meta">
-                            <div>⏰ ${event.time}</div>
+                            <div>⏰ ${time}</div>
                             <div>📍 ${event.location}</div>
                         </div>
                     `;
@@ -1432,11 +1775,13 @@
         }
 
         function showEventModal(event) {
+            const time = currentLang === 'es' ? (event.time_es || event.time) : event.time;
+            const desc = currentLang === 'es' ? (event.description_es || event.description) : event.description;
             const body = `<div class="sheet-info">
                 <strong>${event.name}</strong><br>
                 📍 ${event.location}<br>
-                ⏰ ${event.time}<br><br>
-                ${event.description}
+                ⏰ ${time}<br><br>
+                ${desc}
             </div>`;
             openModal(event.name, body);
         }
@@ -1574,7 +1919,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'btn-filter active';
                 btn.style.cssText = `border: 1px solid ${data.color}; color: #fff; font-size: 11px; padding: 6px 10px;`;
-                btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${data.color};margin-right:4px;"></span>${cat}`;
+                btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${data.color};margin-right:4px;"></span>${t('category.' + cat)}`;
                 btn.onclick = () => {
                     mapFilterState[cat] = !mapFilterState[cat];
                     btn.classList.toggle('active');
@@ -1607,6 +1952,9 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
+
+        // Init translations on load
+        applyStaticTranslations();
     </script>
 </body>
 </html>
