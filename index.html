@@ -488,7 +488,7 @@
         .payment-row {
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
+            align-items: center;
             gap: 12px;
             padding: 7px 0;
             border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -516,6 +516,38 @@
         .payment-masked {
             color: rgba(255,255,255,0.55);
             font-weight: 500;
+        }
+
+        .payment-value-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn {
+            background: rgba(201,169,110,0.15);
+            border: 1px solid rgba(201,169,110,0.3);
+            color: #c9a96e;
+            font-size: 10px;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .copy-btn:hover {
+            background: rgba(201,169,110,0.28);
+        }
+
+        .payment-cash-desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.5;
         }
 
         .payment-note {
@@ -1162,12 +1194,12 @@
                             <span class="payment-flag">🇺🇸</span>
                             <span class="payment-card-title" data-i18n="payment.usa.title">United States (USD)</span>
                         </div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value">Paradise Content LLC</span></div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.accountNumber">Account number</span><span class="payment-value payment-masked">•••• •••• ••• 9996</span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value-wrap"><span class="payment-value">Paradise Content LLC</span><button class="copy-btn" onclick="copyText('Paradise Content LLC', this)">⧉</button></span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.accountNumber">Account number</span><span class="payment-value-wrap"><span class="payment-value payment-masked">•••• •••• ••• 9996</span><button class="copy-btn" onclick="copyText('•••• •••• ••• 9996', this)">⧉</button></span></div>
                         <div class="payment-row"><span class="payment-label" data-i18n="payment.accountType">Account type</span><span class="payment-value">Checking</span></div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.routing">Routing (ACH/Wire)</span><span class="payment-value">084009519</span></div>
-                        <div class="payment-row"><span class="payment-label">SWIFT/BIC</span><span class="payment-value">TRWIUS35XXX</span></div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank</span><span class="payment-value" style="text-align:right; font-size:12px; font-weight:500;">Column National Association, New York NY</span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.routing">Routing (ACH/Wire)</span><span class="payment-value-wrap"><span class="payment-value">084009519</span><button class="copy-btn" onclick="copyText('084009519', this)">⧉</button></span></div>
+                        <div class="payment-row"><span class="payment-label">SWIFT/BIC</span><span class="payment-value-wrap"><span class="payment-value">TRWIUS35XXX</span><button class="copy-btn" onclick="copyText('TRWIUS35XXX', this)">⧉</button></span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank</span><span class="payment-value-wrap"><span class="payment-value" style="text-align:right; font-size:12px; font-weight:500;">Column National Association, New York NY</span><button class="copy-btn" onclick="copyText('Column National Association, 30 W. 26th Street, Sixth Floor, New York, NY 10010, United States', this)">⧉</button></span></div>
                         <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20the%20full%20USD%20bank%20transfer%20details%20for%20Studio%20Borges." target="_blank">
                             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
                             <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
@@ -1179,10 +1211,10 @@
                             <span class="payment-flag">🇪🇺</span>
                             <span class="payment-card-title" data-i18n="payment.europe.title">Europe (EUR / IBAN)</span>
                         </div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value" style="font-size:12px;">Fernando Julian Rubino</span></div>
-                        <div class="payment-row"><span class="payment-label">IBAN</span><span class="payment-value payment-masked">IE38 REVO 9903 6043 •••• ••</span></div>
-                        <div class="payment-row"><span class="payment-label">BIC / Sort code</span><span class="payment-value">REVOIE23</span></div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank</span><span class="payment-value">Revolut Bank UAB</span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value-wrap"><span class="payment-value" style="font-size:12px;">Fernando Julian Rubino</span><button class="copy-btn" onclick="copyText('Fernando Julian Rubino', this)">⧉</button></span></div>
+                        <div class="payment-row"><span class="payment-label">IBAN</span><span class="payment-value-wrap"><span class="payment-value payment-masked">IE38 REVO 9903 6043 •••• ••</span><button class="copy-btn" onclick="copyText('IE38 REVO 9903 6043 •••• ••', this)">⧉</button></span></div>
+                        <div class="payment-row"><span class="payment-label">BIC / Sort code</span><span class="payment-value-wrap"><span class="payment-value">REVOIE23</span><button class="copy-btn" onclick="copyText('REVOIE23', this)">⧉</button></span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank</span><span class="payment-value-wrap"><span class="payment-value">Revolut Bank UAB</span><button class="copy-btn" onclick="copyText('Revolut Bank UAB', this)">⧉</button></span></div>
                         <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20the%20full%20EUR%20bank%20transfer%20details%20for%20Studio%20Borges." target="_blank">
                             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
                             <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
@@ -1194,11 +1226,23 @@
                             <span class="payment-flag">🇦🇷</span>
                             <span class="payment-card-title" data-i18n="payment.argentina.title">Argentina (ARS)</span>
                         </div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value" style="font-size:12px;">Paola Marina Robazza</span></div>
-                        <div class="payment-row"><span class="payment-label">Alias</span><span class="payment-value">studio.borges</span></div>
-                        <div class="payment-row"><span class="payment-label">CVU</span><span class="payment-value payment-masked">•••• •••• •••• •••• •• 5716</span></div>
+                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value-wrap"><span class="payment-value" style="font-size:12px;">Paola Marina Robazza</span><button class="copy-btn" onclick="copyText('Paola Marina Robazza', this)">⧉</button></span></div>
+                        <div class="payment-row"><span class="payment-label">Alias</span><span class="payment-value-wrap"><span class="payment-value">studio.borges</span><button class="copy-btn" onclick="copyText('studio.borges', this)">⧉</button></span></div>
+                        <div class="payment-row"><span class="payment-label">CVU</span><span class="payment-value-wrap"><span class="payment-value payment-masked">•••• •••• •••• •••• •• 5716</span><button class="copy-btn" onclick="copyText('•••• •••• •••• •••• •• 5716', this)">⧉</button></span></div>
                         <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank / App</span><span class="payment-value">Mercado Pago</span></div>
                         <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hola!%20Quisiera%20los%20datos%20completos%20para%20transferir%20en%20pesos%20a%20Studio%20Borges." target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+                            <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
+                        </a>
+                    </div>
+
+                    <div class="payment-card">
+                        <div class="payment-card-header">
+                            <span class="payment-flag">💵</span>
+                            <span class="payment-card-title" data-i18n="payment.cash.title">Cash (USD, EUR & ARS)</span>
+                        </div>
+                        <p class="payment-cash-desc" data-i18n="payment.cash.desc">Cash is also accepted in US Dollars, Euros, or Argentine Pesos — hand it directly to your host, no bank details needed. Message us on WhatsApp to arrange it.</p>
+                        <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20to%20pay%20in%20cash%20for%20Studio%20Borges." target="_blank">
                             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
                             <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
                         </a>
@@ -1369,6 +1413,8 @@
                 'payment.usa.title': 'United States (USD)',
                 'payment.europe.title': 'Europe (EUR / IBAN)',
                 'payment.argentina.title': 'Argentina (ARS)',
+                'payment.cash.title': 'Cash (USD, EUR & ARS)',
+                'payment.cash.desc': 'Cash is also accepted in US Dollars, Euros, or Argentine Pesos — hand it directly to your host, no bank details needed. Message us on WhatsApp to arrange it.',
                 'payment.holder': 'Account holder', 'payment.accountNumber': 'Account number', 'payment.accountType': 'Account type',
                 'payment.routing': 'Routing (ACH/Wire)', 'payment.bank': 'Bank',
                 'payment.whatsappBtn': 'Message on WhatsApp for full details',
@@ -1423,6 +1469,8 @@
                 'payment.usa.title': 'Estados Unidos (USD)',
                 'payment.europe.title': 'Europa (EUR / IBAN)',
                 'payment.argentina.title': 'Argentina (ARS)',
+                'payment.cash.title': 'Efectivo (USD, EUR y ARS)',
+                'payment.cash.desc': 'También aceptamos efectivo en dólares, euros o pesos argentinos — se lo entregás directamente a tu anfitriona, sin necesidad de datos bancarios. Escribinos por WhatsApp para coordinarlo.',
                 'payment.holder': 'Titular', 'payment.accountNumber': 'Número de cuenta', 'payment.accountType': 'Tipo de cuenta',
                 'payment.routing': 'Routing (ACH/Wire)', 'payment.bank': 'Banco',
                 'payment.whatsappBtn': 'Escribir por WhatsApp para los datos completos',
@@ -1523,7 +1571,7 @@
             { name: 'Feria de San Pedro Telmo', address: 'Plaza Dorrego', category: 'Activities', description: 'Sunday market with antiques, art, and street performers.', description_es: 'Feria dominical con antigüedades, arte y artistas callejeros.' }
         ];
 
-        const events = [
+        let events = [
             { name: 'Free Walking Tour', date: '2026-07-24', location: 'Plaza de Mayo (start point)', time: 'Daily · 10AM & 3PM', time_es: 'Diario · 10 y 15 h', icon: '🚶', category: 'culture', description: 'Free guided walking tours covering Buenos Aires history, architecture and culture. Tips-based. Available in English and Spanish.', description_es: 'Recorridos guiados gratuitos por la historia, arquitectura y cultura de Buenos Aires. A voluntad (propina). Disponible en inglés y español.' },
             { name: 'San Telmo Market', date: '2026-07-26', location: 'Defensa Street, San Telmo', time: 'Every Sunday · 10AM-5PM', time_es: 'Todos los domingos · 10 a 17 h', icon: '🛍️', category: 'culture', description: 'Antiques, crafts, tango, and street performers in the historic San Telmo neighborhood. One of the best open-air markets in South America.', description_es: 'Antigüedades, artesanías, tango y artistas callejeros en el histórico barrio de San Telmo. Una de las mejores ferias al aire libre de Sudamérica.' },
             { name: 'La Bomba de Tiempo', date: '2026-07-27', location: 'Ciudad Cultural Konex, Sarmiento 3131', time: 'Every Monday · 7PM', time_es: 'Todos los lunes · 19 h', icon: '🥁', category: 'music', description: 'Legendary percussion show with improvised rhythms. An unmissable Buenos Aires experience every Monday night. Tickets at the door.', description_es: 'Show legendario de percusión con ritmos improvisados. Una experiencia porteña imperdible cada lunes. Entradas en la puerta.' },
@@ -1535,6 +1583,30 @@
             { name: 'Soda Stereo', date: '2026-08-10', location: 'Movistar Arena, Humboldt 450', time: 'Aug 10, 11, 12 & 14 · 9PM', time_es: '10, 11, 12 y 14 de agosto · 21 h', icon: '🎸', category: 'music', description: 'Argentine rock icons Soda Stereo return to the stage for a run of highly anticipated shows.', description_es: 'Los íconos del rock argentino Soda Stereo vuelven a los escenarios en una serie de shows muy esperados.' },
             { name: 'Medio Maratón Internacional de Buenos Aires', date: '2026-08-23', location: 'Costanera / Palermo route', time: 'Sun Aug 23 · Morning', time_es: 'Dom 23 de agosto · Por la mañana', icon: '🏃', category: 'sports', description: "One of Argentina's biggest running events, with thousands of runners through the city's avenues. Expect street closures along the route.", description_es: 'Una de las carreras más grandes de Argentina, con miles de corredores por las avenidas porteñas. Puede haber cortes de calles en el recorrido.' }
         ];
+
+        // Events are fetched from events.json at runtime so the list can be refreshed
+        // without touching this file. If the fetch fails (offline, etc.) the
+        // hardcoded list above is used as a fallback.
+        async function loadEventsData() {
+            try {
+                const res = await fetch('events.json?t=' + Date.now());
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length) events = data;
+                }
+            } catch (e) {
+                console.error('events.json fetch failed, using built-in fallback list', e);
+            }
+            loadHomeEvents();
+            loadEvents();
+        }
+
+        function copyText(value, btn) {
+            navigator.clipboard.writeText(value);
+            const original = btn.textContent;
+            btn.textContent = '✓';
+            setTimeout(() => { btn.textContent = original; }, 1500);
+        }
 
         const allDiscover = [...restaurants, ...bars, ...nightlife, ...listeningBars, ...activities];
         let currentFilter = 'All';
@@ -1659,7 +1731,6 @@
                 container.appendChild(card);
             });
         }
-        loadHomeEvents();
 
         function todayISO() {
             const now = new Date();
@@ -1785,8 +1856,6 @@
             </div>`;
             openModal(event.name, body);
         }
-
-        loadEvents();
 
         // Map
         let mapMarkers = {};
@@ -1955,6 +2024,7 @@
 
         // Init translations on load
         applyStaticTranslations();
+        loadEventsData();
     </script>
 </body>
 </html>
