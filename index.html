@@ -1510,15 +1510,14 @@
         // Data
         const restaurants = [
             { name: 'Don Julio', address: 'Guatemela 4699', category: 'Restaurants', phone: '+54 11 4832-6058', website: 'donjulio.com.ar', description: 'Premium steakhouse with exceptional beef cuts and wine selection.', description_es: 'Parrilla premium con cortes de carne excepcionales y gran selección de vinos.' },
-            { name: 'Proper', address: 'Aráoz 1676', category: 'Restaurants', phone: '+54 11 4831-0027', website: 'proper.com.ar', description: 'Modern Argentine cuisine in intimate setting.', description_es: 'Cocina argentina moderna en un ambiente íntimo.' },
-            { name: 'Crizia', address: 'Gorriti 5143', category: 'Restaurants', phone: '+54 11 4832-2930', description: 'Italian fine dining with traditional recipes.', description_es: 'Alta cocina italiana con recetas tradicionales.' },
             { name: 'La Cabrera', address: 'José Antonio Cabrera 5099', category: 'Restaurants', phone: '+54 11 4831-7002', website: 'lacabrera.com.ar', description: 'Famous parrilla with excellent service and atmosphere.', description_es: 'Parrilla famosa con excelente servicio y ambiente.' },
-            { name: 'Chila', address: 'Av. Alicia Moreau de Justo 1160', category: 'Restaurants', phone: '+54 11 4343-6067', description: 'Fine dining with seasonal menus.', description_es: 'Alta cocina con menús de estación.' },
-            { name: 'Elena', address: 'Posadas 1086 (Four Seasons)', category: 'Restaurants', phone: '+54 11 4321-1728', description: 'Upscale dining experience at luxury hotel.', description_es: 'Experiencia gastronómica exclusiva en hotel de lujo.' },
-            { name: 'Aramburu', address: 'Sarmiento 1207', category: 'Restaurants', phone: '+54 11 4305-0439', description: 'Tasting menu focused on local ingredients.', description_es: 'Menú degustación con foco en productos locales.' },
             { name: 'Narda Comedor', address: 'Humboldt 1573', category: 'Restaurants', phone: '+54 11 3914-1576', description: 'Home-style gourmet cooking in relaxed setting.', description_es: 'Cocina gourmet casera en ambiente relajado.' },
             { name: 'Anafe', address: 'Arévalo 1402', category: 'Restaurants', phone: '+54 11 3965-3888', description: 'Contemporary bistro with creative dishes.', description_es: 'Bistró contemporáneo con platos creativos.' },
-            { name: 'Tegui', address: 'Costa Rica 5852', category: 'Restaurants', phone: '+54 11 5291-3333', description: 'Chef\'s table experience with innovative cuisine.', description_es: 'Mesa de chef con cocina innovadora.' }
+            { name: 'Anchoíta', address: 'Juan Ramírez de Velasco 1520', category: 'Restaurants', phone: '+54 11 4854-9334', website: 'anchoita.com.ar', description: 'Contemporary Argentine sharing plates in a former siphon factory in Chacarita. Michelin Guide 2025.', description_es: 'Cocina argentina contemporánea para compartir, en una ex fábrica de sifones en Chacarita. Guía Michelin 2025.' },
+            { name: 'Bochinche', address: 'Santos Dumont 4056', category: 'Restaurants', description: 'Handmade pastas with Italian-Argentine heritage and a modern edge, from chef Gaspar Natiello, in Chacarita.', description_es: 'Pastas artesanales de herencia ítalo-argentina con mirada contemporánea, del chef Gaspar Natiello, en Chacarita.' },
+            { name: 'Madre Rojas', address: 'Rojas 1600 (esq. Tres Arroyos)', category: 'Restaurants', description: 'Wagyu-focused parrilla in Villa Crespo, ranked among the world\'s 101 best steakhouses.', description_es: 'Parrilla especializada en wagyu en Villa Crespo, entre las 101 mejores del mundo.' },
+            { name: 'Hierro', address: 'Fitz Roy 1722', category: 'Restaurants', description: 'Neo-bodegón in Palermo Hollywood reinventing Argentine home cooking with refined technique.', description_es: 'Neo-bodegón en Palermo Hollywood que reinventa la cocina casera argentina con técnica refinada.' },
+            { name: 'Mambo Restorán', address: 'Malabia 820', category: 'Restaurants', description: 'Contemporary Argentine cuisine in a converted industrial building in Villa Crespo, where design meets the plate.', description_es: 'Cocina argentina contemporánea en una ex fábrica reconvertida en Villa Crespo, donde el diseño se encuentra con el plato.' }
         ];
 
         const bars = [
@@ -1531,18 +1530,17 @@
             { name: 'Victoria Brown', address: 'Costa Rica 4827', category: 'Bars', phone: '+54 11 4831-0700', description: 'Sophisticated cocktail venue with vintage aesthetic.', description_es: 'Bar de cócteles sofisticado con estética vintage.' },
             { name: 'Lattente', address: 'Thames 1891', category: 'Bars', phone: '+54 11 4832-1020', description: 'Specialty coffee roasted on-site.', description_es: 'Café de especialidad tostado en el local.' },
             { name: 'Negro Cueva de Café', address: 'Guatemala 4532', category: 'Bars', description: 'Artisan coffee shop with cozy atmosphere.', description_es: 'Cafetería artesanal con ambiente acogedor.' },
-            { name: 'Verne Club', address: 'Av. Medrano 1475', category: 'Bars', phone: '+54 11 4832-9595', description: 'Speakeasy-themed bar with inventive drinks.', description_es: 'Bar temático estilo speakeasy con tragos originales.' }
+            { name: 'Verne Club', address: 'Av. Medrano 1475', category: 'Bars', phone: '+54 11 4832-9595', description: 'Speakeasy-themed bar with inventive drinks.', description_es: 'Bar temático estilo speakeasy con tragos originales.' },
+            { name: 'Bioma', address: 'Bonpland 1920', category: 'Bars', description: 'Argentina\'s first 100% plant-based specialty coffee shop, in Palermo.', description_es: 'La primera cafetería de especialidad 100% vegana del país, en Palermo.' }
         ];
 
         const nightlife = [
             { name: 'Crobar', address: 'Paseo de la Infanta', category: 'Nightlife', website: 'crobar.com.ar', description: 'Legendary mega club with world-class DJs and dancers.', description_es: 'Mega club legendario con DJs y bailarines de primer nivel.' },
             { name: 'Jet Lounge', address: 'Av. Rafael Obligado', category: 'Nightlife', description: 'Upscale nightclub on Costanera Norte with river views.', description_es: 'Nightclub exclusivo en Costanera Norte con vista al río.' },
             { name: 'Tequila', address: 'Honduras 5318', category: 'Nightlife', description: 'Bar and club with live DJ sets and packed dance floor.', description_es: 'Bar y club con DJ en vivo y pista siempre llena.' },
-            { name: 'Club Araoz', address: 'Araoz 2424', category: 'Nightlife', description: 'Underground electronic music venue for serious dancers.', description_es: 'Música electrónica underground para bailar en serio.' },
             { name: 'Niceto Club', address: 'Niceto Vega 5510', category: 'Nightlife', website: 'nicetoclub.com', description: 'Live music and parties with diverse programming.', description_es: 'Música en vivo y fiestas con programación variada.' },
             { name: 'Kika', address: 'Honduras 5339', category: 'Nightlife', description: 'Multi-floor club with different music styles each level.', description_es: 'Club de varios pisos, un estilo musical por nivel.' },
             { name: 'The Roxy', address: 'Av. Rivadavia', category: 'Nightlife', description: 'Rock club with live bands and energetic crowds.', description_es: 'Club de rock con bandas en vivo y ambiente enérgico.' },
-            { name: 'Bahrein', address: 'Lavalle 345', category: 'Nightlife', description: 'Downtown mega club with impressive light shows.', description_es: 'Mega club céntrico con juegos de luces impresionantes.' },
             { name: 'Terrazas del Este', address: 'Cecilia Grierson 225', category: 'Nightlife', description: 'Open-air club with spectacular city and river views.', description_es: 'Club al aire libre con vistas espectaculares a la ciudad y al río.' },
             { name: 'Congo', address: 'Honduras 5329', category: 'Nightlife', description: 'Electronic music focused club for house and techno.', description_es: 'Club enfocado en música electrónica, house y techno.' }
         ];
@@ -1884,15 +1882,14 @@
                     color: '#EF5350', emoji: '🍽️',
                     places: [
                         { name: 'Don Julio', addr: 'Guatemala 4699', lat: -34.5863, lng: -58.4243, desc: 'Premium steakhouse with exceptional beef cuts' },
-                        { name: 'Proper', addr: 'Aráoz 1676', lat: -34.5910, lng: -58.4235, desc: 'Modern Argentine cuisine' },
-                        { name: 'Crizia', addr: 'Gorriti 5143', lat: -34.5955, lng: -58.4190, desc: 'Italian fine dining' },
                         { name: 'La Cabrera', addr: 'José A. Cabrera 5099', lat: -34.5894, lng: -58.4329, desc: 'Famous parrilla' },
-                        { name: 'Chila', addr: 'Av. A. Moreau de Justo 1160', lat: -34.6240, lng: -58.3640, desc: 'Fine dining with seasonal menus' },
-                        { name: 'Elena', addr: 'Posadas 1086', lat: -34.5906, lng: -58.3826, desc: 'Upscale dining at Four Seasons' },
-                        { name: 'Aramburu', addr: 'Sarmiento 1207', lat: -34.6051, lng: -58.3838, desc: 'Tasting menu, local ingredients' },
                         { name: 'Narda Comedor', addr: 'Humboldt 1573', lat: -34.5859, lng: -58.4365, desc: 'Home-style gourmet cooking' },
                         { name: 'Anafe', addr: 'Arévalo 1402', lat: -34.5836, lng: -58.4436, desc: 'Contemporary bistro' },
-                        { name: 'Tegui', addr: 'Costa Rica 5852', lat: -34.5807, lng: -58.4372, desc: 'Innovative cuisine' }
+                        { name: 'Anchoíta', addr: 'Juan Ramírez de Velasco 1520', lat: -34.5871, lng: -58.4534, desc: 'Contemporary Argentine sharing plates, Chacarita' },
+                        { name: 'Bochinche', addr: 'Santos Dumont 4056', lat: -34.5852, lng: -58.4562, desc: 'Handmade pastas, Chacarita' },
+                        { name: 'Madre Rojas', addr: 'Rojas 1600', lat: -34.5989, lng: -58.4366, desc: 'Wagyu-focused parrilla, Villa Crespo' },
+                        { name: 'Hierro', addr: 'Fitz Roy 1722', lat: -34.5798, lng: -58.4384, desc: 'Neo-bodegón, Palermo Hollywood' },
+                        { name: 'Mambo Restorán', addr: 'Malabia 820', lat: -34.5958, lng: -58.4325, desc: 'Contemporary Argentine cuisine, Villa Crespo' }
                     ]
                 },
                 'Bars': {
@@ -1907,7 +1904,8 @@
                         { name: 'Victoria Brown', addr: 'Costa Rica 4827', lat: -34.5871, lng: -58.4284, desc: 'Sophisticated cocktails' },
                         { name: 'Lattente', addr: 'Thames 1891', lat: -34.5862, lng: -58.4280, desc: 'Specialty coffee roasted on-site' },
                         { name: 'Negro Cueva de Café', addr: 'Guatemala 4532', lat: -34.5876, lng: -58.4230, desc: 'Artisan coffee shop' },
-                        { name: 'Verne Club', addr: 'Av. Medrano 1475', lat: -34.6032, lng: -58.4208, desc: 'Speakeasy-themed bar' }
+                        { name: 'Verne Club', addr: 'Av. Medrano 1475', lat: -34.6032, lng: -58.4208, desc: 'Speakeasy-themed bar' },
+                        { name: 'Bioma', addr: 'Bonpland 1920', lat: -34.5837, lng: -58.4318, desc: 'Plant-based specialty coffee, Palermo' }
                     ]
                 },
                 'Nightlife': {
@@ -1916,11 +1914,9 @@
                         { name: 'Crobar', addr: 'Paseo de la Infanta', lat: -34.5706, lng: -58.4215, desc: 'Mega club with world-class DJs' },
                         { name: 'Jet Lounge', addr: 'Av. Rafael Obligado', lat: -34.5522, lng: -58.4264, desc: 'Upscale club, Costanera Norte' },
                         { name: 'Tequila', addr: 'Honduras 5318', lat: -34.5867, lng: -58.4333, desc: 'Bar and club with live DJ sets' },
-                        { name: 'Club Araoz', addr: 'Araoz 2424', lat: -34.5863, lng: -58.4164, desc: 'Underground electronic venue' },
                         { name: 'Niceto Club', addr: 'Niceto Vega 5510', lat: -34.5874, lng: -58.4389, desc: 'Live music and parties' },
                         { name: 'Kika', addr: 'Honduras 5339', lat: -34.5862, lng: -58.4331, desc: 'Multi-floor club' },
                         { name: 'The Roxy', addr: 'Niceto Vega 5542', lat: -34.5871, lng: -58.4390, desc: 'Rock club with live bands' },
-                        { name: 'Bahrein', addr: 'Lavalle 345', lat: -34.6020, lng: -58.3750, desc: 'Downtown mega club' },
                         { name: 'Terrazas del Este', addr: 'Cecilia Grierson 225', lat: -34.5983, lng: -58.3648, desc: 'Open-air club, river views' },
                         { name: 'Congo', addr: 'Honduras 5329', lat: -34.5865, lng: -58.4332, desc: 'Electronic & techno' }
                     ]
