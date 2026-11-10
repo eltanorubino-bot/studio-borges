@@ -311,11 +311,6 @@ h3{font-size:16px;font-weight:600}
     </div>
 
     <div class="section">
-      <div class="sec-head"><h2 data-i18n="home.eventsTitle">Happening in Buenos Aires</h2><button class="link-btn" onclick="showPage('eventsPage')" data-i18n="home.showAll">Show all</button></div>
-      <div class="carousel" id="homeEventsContainer"></div>
-    </div>
-
-    <div class="section">
       <div class="sec-head"><div><h2 data-i18n="home.nearbyTitle">Eat & drink nearby</h2><p class="sub" data-i18n="home.nearbySub">Closest to the studio</p></div><button class="link-btn" onclick="showPage('discoverPage')" data-i18n="home.exploreAll">Explore all</button></div>
       <div class="carousel" id="nearbyContainer"></div>
     </div>
@@ -448,12 +443,6 @@ h3{font-size:16px;font-weight:600}
   <div class="list-grid" id="discoverList"></div>
 </section>
 
-<!-- ============ EVENTS ============ -->
-<section class="page" id="eventsPage">
-  <div class="page-title"><h1 data-i18n="events.title">Events & experiences</h1><p class="sub" data-i18n="events.subtitle">What's on during your stay</p></div>
-  <div class="cat-bar" id="eventCats" style="margin-top:12px"></div>
-  <div id="eventsList"></div>
-</section>
 </main>
 
 <nav class="bottom-nav"><div class="bottom-in">
@@ -461,7 +450,6 @@ h3{font-size:16px;font-weight:600}
   <button class="nav-item" data-page="guidePage" onclick="showPage('guidePage')"><i class="ic" data-icon="book"></i><span data-i18n="nav.guide">Guide</span></button>
   <button class="nav-item" data-page="mapPage" onclick="showPage('mapPage')"><i class="ic" data-icon="map"></i><span data-i18n="nav.map">Map</span></button>
   <button class="nav-item" data-page="discoverPage" onclick="showPage('discoverPage')"><i class="ic" data-icon="compass"></i><span data-i18n="nav.discover">Discover</span></button>
-  <button class="nav-item" data-page="eventsPage" onclick="showPage('eventsPage')"><i class="ic" data-icon="calendar"></i><span data-i18n="nav.events">Events</span></button>
 </div></nav>
 
 <a class="fab" href="https://wa.me/5491161909090" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="ic" data-icon="whatsapp"></i></a>
@@ -480,6 +468,7 @@ h3{font-size:16px;font-weight:600}
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+
 // ===================== Config =====================
 const HOME = [-34.5875, -58.4274];
 const TZ = 'America/Argentina/Buenos_Aires';
@@ -1278,7 +1267,7 @@ function renderMapFilters() {
 
 // ===================== Init =====================
 function renderAll() {
-    renderHomeEvents(); renderEvents(); renderDiscover(); renderNearby(); renderForecast();
+    renderDiscover(); renderNearby(); renderForecast();
     if (mapInstance) renderMapFilters();
 }
 
@@ -1289,7 +1278,6 @@ applyStaticTranslations();
 renderAll();
 updateTime(); setInterval(updateTime, 30000);
 loadWeather(); loadExchange(); setInterval(loadExchange, 300000);
-loadEventsData();
 
 </script>
 </body>
