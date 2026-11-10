@@ -1,0 +1,42 @@
+name: Update events
+
+# Runs by itself every Monday (09:00 Buenos Aires) and can also be run by hand
+# from the Actions tab or from deployer.html.
+on:
+  schedule:
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refresh events.json
+        run: python .github/scripts/update_events.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Commit and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- events.json; then
+            echo "events.json unchanged"
+            exit 0
+          fi
+          git config user.name "studio-borges-events-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add events.json
+          git commit -m "Update events $(date -u +%F)"
+          git push
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
