@@ -894,7 +894,7 @@ function nextOccurrence(e, from) {
 }
 function upcomingEvents() {
     const from = baToday();
-    return events.map(e => ({ ...e, when: nextOccurrence(e, from) }))
+    return events.filter(e => !isRecurring(e)).map(e => ({ ...e, when: nextOccurrence(e, from) }))
         .filter(e => e.when)
         .sort((a, b) => a.when.localeCompare(b.when) || a.name.localeCompare(b.name));
 }
