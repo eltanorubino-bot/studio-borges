@@ -16,10 +16,12 @@ import zoneinfo
 API_URL = "https://api.anthropic.com/v1/messages"
 MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5-5")
 API_KEY = os.environ.get("ANTHROPIC_API_KEY")
+GEMINI_KEY = os.environ.get("GEMINI_API_KEY")  # free key from Google AI Studio (no card needed)
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 EVENTS_PATH = os.environ.get("EVENTS_PATH", "events.json")
 
-if not API_KEY:
-    sys.exit("ANTHROPIC_API_KEY is not set (add it as a repository secret).")
+if not API_KEY and not GEMINI_KEY:
+    sys.exit("Set GEMINI_API_KEY (free) or ANTHROPIC_API_KEY as a repository secret.")
 
 TODAY = datetime.datetime.now(zoneinfo.ZoneInfo("America/Argentina/Buenos_Aires")).date()
 END = TODAY + datetime.timedelta(weeks=6)
@@ -59,7 +61,27 @@ def call(messages):
         return json.load(r)
 
 
+def run_gemini():
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
+    body = json.dumps({
+        "contents": [{"role": "user", "parts": [{"text": PROMPT}]}],
+        "tools": [{"google_search": {}}],
+    }).encode()
+    req = urllib.request.Request(url, data=body, method="POST", headers={
+        "content-type": "application/json", "x-goog-api-key": GEMINI_KEY})
+    with urllib.request.urlopen(req, timeout=600) as r:
+        resp = json.load(r)
+    parts = resp["candidates"][0]["content"]["parts"]
+    text = "".join(p.get("text", "") for p in parts)
+    start, end = text.find("["), text.rfind("]")
+    if start < 0 or end < 0:
+        sys.exit("No JSON array found in Gemini output:\n" + text[:500])
+    return json.loads(text[start:end + 1])
+
+
 def run():
+    if GEMINI_KEY:
+        return run_gemini()
     messages = [{"role": "user", "content": PROMPT}]
     for _ in range(6):  # handle pause_turn continuations
         resp = call(messages)
