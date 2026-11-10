@@ -1,1515 +1,685 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Studio Borges - Buenos Aires</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: #111111;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        html, body {
-            height: 100%;
-            width: 100%;
-        }
-
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            height: 100vh;
-            height: 100dvh;
-            background: #111111;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* Header */
-        .header {
-            background: #1a1a1a;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .header-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #c9a96e;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .header-time {
-            font-size: 12px;
-            color: rgba(255,255,255,0.6);
-        }
-
-        .lang-toggle {
-            display: flex;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .lang-toggle button {
-            background: transparent;
-            border: none;
-            color: rgba(255,255,255,0.5);
-            font-size: 11px;
-            font-weight: 700;
-            padding: 5px 9px;
-            cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-        }
-
-        .lang-toggle button.active {
-            background: #c9a96e;
-            color: #111111;
-        }
-
-        /* Main Content */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 16px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        #mapPage.active {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        /* Typography */
-        h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-
-        h3 {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        p {
-            font-size: 14px;
-            line-height: 1.5;
-            color: rgba(255,255,255,0.8);
-        }
-
-        /* Cards */
-        .card {
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .card-small {
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 12px;
-        }
-
-        /* Buttons */
-        .btn {
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #ffffff;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn:hover {
-            background: #242424;
-            border-color: rgba(255,255,255,0.15);
-        }
-
-        .btn-primary {
-            background: #c9a96e;
-            color: #111111;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background: #d4b776;
-        }
-
-        .btn-filter {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.7);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-        }
-
-        .btn-filter.active {
-            background: #c9a96e;
-            color: #111111;
-            border-color: #c9a96e;
-        }
-
-        /* Home Page */
-        .home-content {
-            padding: 16px;
-        }
-
-        .greeting {
-            font-family: 'Playfair Display', serif;
-            font-size: 36px;
-            margin-bottom: 4px;
-        }
-
-        .underline {
-            width: 60px;
-            height: 2px;
-            background: #c9a96e;
-            margin-bottom: 24px;
-        }
-
-        .hero {
-            width: 100%;
-            height: 200px;
-            background-size: cover;
-            background-position: center;
-            background-color: #2a2a2a;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .wifi-card {
-            background: #1a1a1a;
-            border: 1px solid rgba(201,169,110,0.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .wifi-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .wifi-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 12px;
-            fill: #c9a96e;
-        }
-
-        .wifi-info {
-            flex: 1;
-        }
-
-        .wifi-network {
-            font-size: 14px;
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        .wifi-password {
-            font-size: 12px;
-            color: rgba(255,255,255,0.6);
-            margin-top: 4px;
-        }
-
-        .wifi-copy {
-            background: #c9a96e;
-            color: #111111;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .wifi-copy:hover {
-            background: #d4b776;
-        }
-
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .metric-card {
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-        }
-
-        .metric-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .metric-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #c9a96e;
-        }
-
-        .metric-label {
-            font-size: 12px;
-            color: rgba(255,255,255,0.6);
-            margin-top: 4px;
-        }
-
-        .scroll-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-        }
-
-        .scroll-content {
-            display: flex;
-            gap: 12px;
-            padding: 0 16px;
-        }
-
-        .scroll-card {
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 12px;
-            min-width: 140px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .scroll-card h4 {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .scroll-card p {
-            font-size: 11px;
-            color: rgba(255,255,255,0.5);
-        }
-
-        .grid-4 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .grid-4 button {
-            padding: 16px 12px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .grid-4 button span {
-            display: block;
-            font-size: 24px;
-            margin-bottom: 6px;
-        }
-
-        /* Guide Page */
-        .guide-content {
-            padding: 16px;
-        }
-
-        .amenities-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .amenity-card {
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .amenity-icon {
-            font-size: 28px;
-            margin-bottom: 6px;
-        }
-
-        .amenity-name {
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .info-section {
-            margin-bottom: 24px;
-        }
-
-        .info-item {
-            background: rgba(201,169,110,0.05);
-            border-left: 3px solid #c9a96e;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-        }
-
-        .info-item strong {
-            color: #c9a96e;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .info-item p {
-            font-size: 13px;
-            margin: 0;
-        }
-
-        .contact-info {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .contact-card {
-            flex: 1;
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .contact-card a {
-            color: #c9a96e;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        /* Payment Section */
-        .payment-intro {
-            font-size: 13px;
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 14px;
-        }
-
-        .payment-card {
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 14px;
-        }
-
-        .payment-card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .payment-flag {
-            font-size: 22px;
-        }
-
-        .payment-card-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #c9a96e;
-        }
-
-        .payment-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            padding: 7px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .payment-row:last-of-type {
-            border-bottom: none;
-        }
-
-        .payment-label {
-            font-size: 12px;
-            color: rgba(255,255,255,0.5);
-            flex-shrink: 0;
-        }
-
-        .payment-value {
-            font-size: 13px;
-            font-weight: 600;
-            text-align: right;
-            color: #ffffff;
-            font-family: 'DM Sans', sans-serif;
-            letter-spacing: 0.2px;
-        }
-
-        .payment-masked {
-            color: rgba(255,255,255,0.55);
-            font-weight: 500;
-        }
-
-        .payment-value-wrap {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .copy-btn {
-            background: rgba(201,169,110,0.15);
-            border: 1px solid rgba(201,169,110,0.3);
-            color: #c9a96e;
-            font-size: 10px;
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            cursor: pointer;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-        }
-
-        .copy-btn:hover {
-            background: rgba(201,169,110,0.28);
-        }
-
-        .payment-cash-desc {
-            font-size: 13px;
-            color: rgba(255,255,255,0.75);
-            line-height: 1.5;
-        }
-
-        .payment-note {
-            background: rgba(201,169,110,0.05);
-            border-left: 3px solid #c9a96e;
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: rgba(255,255,255,0.7);
-            margin-top: 12px;
-            line-height: 1.5;
-        }
-
-        .payment-whatsapp {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: #25D366;
-            color: #111111;
-            font-weight: 700;
-            font-size: 12px;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-
-        .payment-whatsapp svg {
-            width: 14px;
-            height: 14px;
-            fill: #111111;
-        }
-
-        /* Map Page */
-        #mapPage {
-            position: relative;
-            height: 100%;
-        }
-
-        #map {
-            width: 100%;
-            flex: 1;
-            min-height: 300px;
-        }
-
-        .map-filters {
-            position: absolute;
-            bottom: 12px;
-            left: 0;
-            right: 0;
-            z-index: 999;
-            padding: 0 10px;
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .map-filters::-webkit-scrollbar { display: none; }
-        .map-filters .btn-filter {
-            white-space: nowrap;
-            flex-shrink: 0;
-            background: rgba(26,26,26,0.9);
-            backdrop-filter: blur(8px);
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 11px;
-            padding: 6px 10px;
-            transition: all 0.2s;
-        }
-        .map-filters .btn-filter.active {
-            background: rgba(201,169,110,0.25);
-            border-color: #c9a96e;
-        }
-
-        /* Discover Page */
-        .discover-content {
-            padding: 16px;
-        }
-
-        .filter-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .discover-list {
-            display: grid;
-            gap: 10px;
-        }
-
-        .discover-card {
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .discover-card:hover {
-            border-color: rgba(201,169,110,0.3);
-            background: #202020;
-        }
-
-        .discover-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 6px;
-        }
-
-        .discover-card h4 {
-            font-size: 14px;
-            font-weight: 600;
-            margin: 0;
-            flex: 1;
-        }
-
-        .category-tag {
-            background: rgba(201,169,110,0.15);
-            color: #c9a96e;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            flex-shrink: 0;
-            margin-left: 8px;
-        }
-
-        .discover-card p {
-            font-size: 12px;
-            color: rgba(255,255,255,0.6);
-            margin: 4px 0;
-        }
-
-        /* Events Page */
-        .events-content {
-            padding: 16px;
-        }
-
-        .event-card {
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .event-card:hover {
-            border-color: rgba(201,169,110,0.3);
-            background: #202020;
-        }
-
-        .event-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .event-icon {
-            font-size: 24px;
-            margin-right: 12px;
-        }
-
-        .event-title {
-            font-size: 15px;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .event-meta {
-            display: flex;
-            gap: 16px;
-            font-size: 12px;
-            color: rgba(255,255,255,0.6);
-            margin-top: 8px;
-        }
-
-        /* Bottom Sheet Modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-        }
-
-        .modal-overlay.active {
-            display: block;
-        }
-
-        .bottom-sheet {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #1a1a1a;
-            border-radius: 20px 20px 0 0;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-bottom: none;
-            max-height: 80vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            z-index: 1001;
-            transform: translateY(100%);
-            transition: transform 0.3s ease-out;
-            display: none;
-            flex-direction: column;
-        }
-
-        .bottom-sheet.active {
-            display: flex;
-            transform: translateY(0);
-        }
-
-        .sheet-handle {
-            width: 40px;
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            margin: 12px auto;
-        }
-
-        .sheet-content {
-            flex: 1;
-            padding: 0 16px 24px 16px;
-        }
-
-        .sheet-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 16px;
-        }
-
-        .sheet-header h2 {
-            margin: 0;
-            flex: 1;
-        }
-
-        .sheet-close {
-            background: none;
-            border: none;
-            color: #ffffff;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sheet-info {
-            background: rgba(201,169,110,0.05);
-            border-left: 3px solid #c9a96e;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .sheet-info a {
-            color: #c9a96e;
-            text-decoration: none;
-        }
-
-        .sheet-info a:hover {
-            text-decoration: underline;
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            flex-shrink: 0;
-            width: 100%;
-            background: #1a1a1a;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 60px;
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-            z-index: 1000;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            height: 100%;
-            cursor: pointer;
-            color: rgba(255,255,255,0.4);
-            text-decoration: none;
-            font-size: 10px;
-            transition: all 0.2s;
-        }
-
-        .nav-item.active {
-            color: #c9a96e;
-        }
-
-        .nav-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-
-        .nav-label {
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        /* WhatsApp FAB */
-        .fab-whatsapp {
-            position: fixed;
-            bottom: 90px;
-            right: 16px;
-            width: 56px;
-            height: 56px;
-            background: #25D366;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            text-decoration: none;
-            z-index: 99;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: all 0.2s;
-        }
-
-        .fab-whatsapp:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-        }
-
-        .fab-icon {
-            width: 28px;
-            height: 28px;
-            fill: #ffffff;
-        }
-
-        /* Footer */
-        .footer {
-            background: #1a1a1a;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding: 24px 16px;
-            text-align: center;
-            margin-bottom: 70px;
-        }
-
-        .hosts-section h3 {
-            margin-bottom: 12px;
-        }
-
-        .host-item {
-            margin-bottom: 8px;
-        }
-
-        .host-item a {
-            color: #c9a96e;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .host-item a:hover {
-            text-decoration: underline;
-        }
-
-        .footer-message {
-            font-size: 13px;
-            color: rgba(255,255,255,0.6);
-            margin-top: 16px;
-            font-style: italic;
-        }
-
-        /* Utility */
-        .hidden {
-            display: none !important;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .text-muted {
-            color: rgba(255,255,255,0.5);
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.15);
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                border-radius: 0;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Studio Borges · Buenos Aires</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+  --bg:#ffffff; --surface:#ffffff; --surface2:#f7f7f7; --text:#222222; --muted:#6a6a6a; --line:#ebebeb; --line2:#dddddd;
+  --brand:#ff385c; --brand-d:#e31c5f; --ink:#222222; --on-ink:#ffffff;
+  --shadow:0 6px 20px rgba(0,0,0,.12); --shadow-sm:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.06);
+  --overlay:rgba(0,0,0,.5); --hdr:60px; --nav:64px;
+}
+[data-theme="dark"]{
+  --bg:#121212; --surface:#1c1c1c; --surface2:#242424; --text:#f4f4f4; --muted:#a9a9a9; --line:#2e2e2e; --line2:#3d3d3d;
+  --ink:#f4f4f4; --on-ink:#121212; --shadow:0 6px 20px rgba(0,0,0,.5); --shadow-sm:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.45;-webkit-font-smoothing:antialiased;padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom,0px))}
+button{font-family:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+.ic{display:inline-flex;align-items:center;justify-content:center;line-height:0}
+.ic svg{width:1em;height:1em;display:block}
+.hidden{display:none!important}
+
+/* Header */
+.header{position:sticky;top:0;z-index:900;height:var(--hdr);background:var(--bg);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px;padding-top:env(safe-area-inset-top,0px)}
+.header-in{width:100%;max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px;letter-spacing:-.2px;color:var(--brand);cursor:pointer;background:none;border:none}
+.logo-mark{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px}
+.header-right{display:flex;align-items:center;gap:8px}
+.pill{display:flex;border:1px solid var(--line2);border-radius:999px;overflow:hidden;background:var(--surface)}
+.pill button{background:none;border:none;font-size:12px;font-weight:600;padding:7px 11px;color:var(--muted)}
+.pill button.active{background:var(--ink);color:var(--on-ink)}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line2);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:18px}
+.icon-btn:hover{background:var(--surface2)}
+
+/* Layout */
+.page{display:none;max-width:1080px;margin:0 auto}
+.page.active{display:block}
+.wrap{padding:0 20px}
+.section{padding:28px 0;border-bottom:1px solid var(--line)}
+.section:last-child{border-bottom:none}
+h1{font-size:26px;font-weight:600;letter-spacing:-.4px;line-height:1.2}
+h2{font-size:22px;font-weight:600;letter-spacing:-.3px;margin-bottom:6px}
+h3{font-size:16px;font-weight:600}
+.sub{color:var(--muted);font-size:14px}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px}
+.link-btn{background:none;border:none;font-size:14px;font-weight:600;text-decoration:underline;color:var(--text);padding:4px 0}
+.page-title{padding:24px 20px 4px}
+
+/* Gallery */
+.gallery{position:relative;margin:0;background:var(--surface2)}
+.gal-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.gal-track::-webkit-scrollbar{display:none}
+.gal-track img{flex:0 0 100%;width:100%;height:min(62vw,420px);object-fit:cover;scroll-snap-align:center;display:block;cursor:pointer}
+.gal-count{position:absolute;right:14px;bottom:14px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px}
+.gal-btn{position:absolute;left:14px;bottom:14px;background:#fff;color:#222;border:1px solid #222;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+@media(min-width:768px){.gallery{margin:20px 20px 0;border-radius:16px;overflow:hidden}.gal-track img{height:420px}}
+.lightbox{position:fixed;inset:0;background:var(--bg);z-index:1200;overflow-y:auto;display:none}
+.lightbox.active{display:block}
+.lightbox-bar{position:sticky;top:0;background:var(--bg);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+.lightbox img{display:block;width:100%;max-width:820px;margin:10px auto;border-radius:12px}
+
+/* Host */
+.title-block{padding-top:22px}
+.host-row{display:flex;align-items:center;gap:14px}
+.avatar{width:52px;height:52px;border-radius:50%;background:var(--brand);color:#fff;font-weight:600;font-size:21px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.host-row .grow{flex:1;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:12px 18px;font-size:14px;font-weight:600;border:1px solid var(--ink);background:var(--surface);color:var(--text);text-decoration:none;transition:background .15s}
+.btn:hover{background:var(--surface2)}
+.btn-brand{background:linear-gradient(90deg,#e61e4d,#e31c5f 50%,#d70466);border:none;color:#fff}
+.btn-brand:hover{filter:brightness(1.06);background:linear-gradient(90deg,#e61e4d,#e31c5f 50%,#d70466)}
+.btn-dark{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.btn-dark:hover{background:var(--ink);opacity:.9}
+.btn-block{width:100%}
+.btn-sm{padding:8px 14px;font-size:13px}
+
+/* Cards / rows */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.box{border:1px solid var(--line2);border-radius:14px;padding:16px;background:var(--surface)}
+.box .lbl{font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.box .val{font-size:20px;font-weight:600;margin-top:4px}
+.row-item{display:flex;gap:16px;padding:14px 0;align-items:flex-start}
+.row-item + .row-item{border-top:1px solid var(--line)}
+.row-ico{font-size:24px;width:32px;text-align:center;flex-shrink:0;line-height:1.2}
+.row-item h3{font-size:15px;margin-bottom:2px}
+.row-item p{font-size:14px;color:var(--muted)}
+.copy-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+.copy-row + .copy-row{border-top:1px solid var(--line)}
+.copy-row .k{font-size:12px;color:var(--muted)}
+.copy-row .v{font-size:15px;font-weight:600;word-break:break-all}
+.copy-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line2);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.copy-btn:hover{background:var(--surface2)}
+.copy-btn.done{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+
+/* Carousel */
+.carousel{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 20px 14px;margin:0 -20px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.carousel::-webkit-scrollbar{display:none}
+.card{flex:0 0 190px;scroll-snap-align:start;cursor:pointer;text-align:left;background:none;border:none}
+.card .tile{height:150px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;overflow:hidden}
+.card h4{font-size:14px;font-weight:600;margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card p{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .badge{position:absolute;left:10px;top:10px;background:var(--surface);color:var(--text);font-size:12px;font-weight:600;padding:4px 9px;border-radius:999px;box-shadow:var(--shadow-sm)}
+.g-music{background:linear-gradient(135deg,#ff8aa0,#e61e4d)}
+.g-culture{background:linear-gradient(135deg,#ffc371,#ff8a3d)}
+.g-sports{background:linear-gradient(135deg,#7fe0d0,#1fa08c)}
+.g-Restaurants{background:linear-gradient(135deg,#ffb199,#ff5a5f)}
+.g-Cafes{background:linear-gradient(135deg,#e6c9a0,#a8743f)}
+.g-Bars{background:linear-gradient(135deg,#9cc5ff,#3a6de0)}
+.g-Nightlife{background:linear-gradient(135deg,#d3a5ff,#7b3fe4)}
+.g-ListeningBars{background:linear-gradient(135deg,#ffd08a,#ff8a00)}
+.g-Activities{background:linear-gradient(135deg,#a6e8b5,#2fa66a)}
+
+/* Weather */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{border:1px solid var(--line2);border-radius:14px;padding:16px}
+.metric .big{font-size:28px;font-weight:600;letter-spacing:-.5px}
+.forecast{display:flex;gap:10px;overflow-x:auto;margin-top:14px;padding-bottom:4px;scrollbar-width:none}
+.forecast::-webkit-scrollbar{display:none}
+.fc{flex:0 0 64px;text-align:center;border:1px solid var(--line);border-radius:12px;padding:10px 4px}
+.fc b{display:block;font-size:12px;color:var(--muted);font-weight:500}
+.fc span{display:block;font-size:16px;font-weight:600;margin-top:4px}
+.fc small{color:var(--muted);font-size:13px}
+
+/* Amenities */
+.amen{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px}
+.amen .a{display:flex;align-items:center;gap:14px;padding:12px 0;font-size:15px;border-bottom:1px solid var(--line)}
+.amen .a span.e{font-size:24px;width:30px;text-align:center}
+.amen.collapsed .a:nth-child(n+7){display:none}
+@media(max-width:520px){.amen{grid-template-columns:1fr}}
+
+/* Payment */
+.pay-card{border:1px solid var(--line2);border-radius:14px;padding:16px;margin-bottom:14px;background:var(--surface)}
+.pay-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-weight:600;font-size:16px}
+.pay-head .f{font-size:24px}
+.pay-desc{font-size:14px;color:var(--muted);margin:6px 0 12px}
+.masked{color:var(--muted)}
+.note{background:var(--surface2);border-radius:12px;padding:14px;font-size:13px;color:var(--muted);margin-top:4px}
+
+/* Emergency */
+.emg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.emg .box{text-align:center;padding:18px 10px}
+.emg .e{font-size:30px}
+.emg .n{font-size:20px;font-weight:700;margin-top:4px;text-decoration:none;display:block}
+
+/* Chips / search */
+.cat-bar{position:sticky;top:var(--hdr);z-index:50;background:var(--bg);display:flex;gap:26px;overflow-x:auto;padding:12px 20px 0;border-bottom:1px solid var(--line);scrollbar-width:none}
+.cat-bar::-webkit-scrollbar{display:none}
+.cat{background:none;border:none;border-bottom:2px solid transparent;padding:0 0 10px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0}
+.cat .e{font-size:22px;filter:grayscale(.6);opacity:.8}
+.cat.active{color:var(--text);border-bottom-color:var(--text)}
+.cat.active .e{filter:none;opacity:1}
+.search{display:flex;align-items:center;gap:10px;border:1px solid var(--line2);border-radius:999px;padding:11px 18px;box-shadow:var(--shadow-sm);background:var(--surface);margin:16px 20px 0}
+.search input{border:none;outline:none;background:none;font:inherit;font-size:15px;color:var(--text);flex:1;min-width:0}
+.toolbar{display:flex;gap:8px;margin:12px 20px 0;flex-wrap:wrap}
+.chip{border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px}
+.chip.on{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.list-grid{display:grid;grid-template-columns:1fr;gap:24px 20px;padding:20px}
+@media(min-width:640px){.list-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:960px){.list-grid{grid-template-columns:1fr 1fr 1fr}}
+.pcard{cursor:pointer;position:relative}
+.pcard .tile{aspect-ratio:4/3;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:64px}
+.pcard .fav{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.28);border:none;color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.fav.on{color:var(--brand);background:#fff}
+.fav.on svg{fill:var(--brand)}
+.pcard .t{display:flex;justify-content:space-between;gap:8px;margin-top:10px}
+.pcard h4{font-size:15px;font-weight:600}
+.pcard p{font-size:14px;color:var(--muted)}
+.pcard .dist{font-size:14px;margin-top:2px}
+.empty{padding:50px 20px;text-align:center;color:var(--muted)}
+
+/* Events list */
+.ev-day{font-size:18px;font-weight:600;margin:26px 20px 6px;text-transform:capitalize}
+.ev-day small{color:var(--muted);font-weight:400;font-size:14px;margin-left:6px;text-transform:none}
+.ev{display:flex;gap:14px;padding:12px 20px;cursor:pointer;align-items:center}
+.ev:hover{background:var(--surface2)}
+.ev .tile{width:92px;height:92px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:38px;flex-shrink:0}
+.ev h4{font-size:15px;font-weight:600}
+.ev p{font-size:13px;color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:600;border:1px solid var(--line2);border-radius:999px;padding:2px 9px;margin-top:6px;color:var(--muted)}
+
+/* Map */
+#mapPage.active{display:block;max-width:none}
+#map{height:calc(100dvh - var(--hdr) - var(--nav) - env(safe-area-inset-bottom,0px));width:100%;background:var(--surface2)}
+.map-chips{position:fixed;left:0;right:0;top:calc(var(--hdr) + 10px);z-index:800;display:flex;gap:8px;overflow-x:auto;padding:0 12px;scrollbar-width:none}
+.map-chips::-webkit-scrollbar{display:none}
+.map-chips .chip{box-shadow:var(--shadow-sm);flex-shrink:0}
+.map-chips .chip:not(.on){opacity:.75}
+.pin{width:34px;height:34px;border-radius:50%;background:#fff;border:2.5px solid var(--c,#222);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.pin.home{background:var(--brand);border-color:#fff;color:#fff;width:40px;height:40px;font-size:19px}
+.leaflet-popup-content-wrapper{border-radius:14px}
+.leaflet-popup-content{font-family:'Inter',sans-serif;color:#222;font-size:13px;margin:12px 14px}
+
+/* Bottom nav */
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:1000;background:var(--bg);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.bottom-in{max-width:1080px;margin:0 auto;height:var(--nav);display:flex}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--muted);font-size:11px;font-weight:500}
+.nav-item .ic{font-size:24px}
+.nav-item.active{color:var(--brand)}
+
+/* FAB */
+.fab{position:fixed;right:16px;bottom:calc(var(--nav) + 16px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:50%;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);z-index:950;text-decoration:none;font-size:26px}
+
+/* Sheet */
+.overlay{position:fixed;inset:0;background:var(--overlay);z-index:1100;display:none}
+.overlay.active{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:1101;background:var(--bg);border-radius:24px 24px 0 0;max-height:86vh;overflow-y:auto;transform:translateY(105%);transition:transform .28s ease-out;box-shadow:var(--shadow);padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet.active{transform:translateY(0)}
+@media(min-width:720px){.sheet{left:50%;right:auto;bottom:50%;width:560px;border-radius:20px;transform:translate(-50%,60%);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}.sheet.active{transform:translate(-50%,50%);opacity:1;pointer-events:auto}}
+.sheet-top{position:sticky;top:0;background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);z-index:2}
+.sheet-top .x{width:34px;height:34px;border-radius:50%;border:none;background:none;font-size:18px;display:flex;align-items:center;justify-content:center}
+.sheet-top .x:hover{background:var(--surface2)}
+.sheet-body{padding:20px}
+.sheet-body h2{font-size:24px;margin-bottom:4px}
+.sheet-tile{height:140px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:64px;margin-bottom:16px}
+.sheet-meta{display:flex;flex-direction:column;gap:10px;margin:16px 0}
+.sheet-meta div{display:flex;gap:12px;align-items:flex-start;font-size:15px}
+.sheet-meta .ic{font-size:20px;margin-top:2px;color:var(--muted)}
+.sheet-meta a{text-decoration:underline}
+.sheet-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.footer{padding:34px 20px 20px;text-align:center;color:var(--muted);font-size:13px}
+.toast{position:fixed;left:50%;bottom:calc(var(--nav) + 80px);transform:translateX(-50%);background:var(--ink);color:var(--on-ink);padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500;z-index:1300;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-title">Studio Borges</div>
-            <div class="header-right">
-                <div class="lang-toggle">
-                    <button id="langEnBtn" onclick="setLang('en')">EN</button>
-                    <button id="langEsBtn" onclick="setLang('es')">ES</button>
-                </div>
-                <div class="header-time" id="currentTime">--:--</div>
-            </div>
-        </div>
 
-        <!-- Main Content -->
-        <div class="content">
-            <!-- HOME PAGE -->
-            <div class="page active" id="homePage">
-                <div class="home-content">
-                    <h1 class="greeting" data-i18n="home.greeting">Hello, Welcome!</h1>
-                    <div class="underline"></div>
+<header class="header">
+  <div class="header-in">
+    <button class="logo" onclick="showPage('homePage')" aria-label="Studio Borges">
+      <span class="logo-mark"><i class="ic" data-icon="home"></i></span><span>Studio Borges</span>
+    </button>
+    <div class="header-right">
+      <div class="pill" aria-label="Language">
+        <button id="langEnBtn" onclick="setLang('en')">EN</button>
+        <button id="langEsBtn" onclick="setLang('es')">ES</button>
+      </div>
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i class="ic" data-icon="moon"></i></button>
+    </div>
+  </div>
+</header>
 
-                    <div class="hero">
-                        <img src="hero.jpg" alt="Studio Borges apartment">
-                        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; background: linear-gradient(transparent, rgba(17,17,17,0.8));">
-                            <span style="color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 500;">Studio Borges</span>
-                        </div>
-                    </div>
+<main>
+<!-- ============ HOME ============ -->
+<section class="page active" id="homePage">
+  <div class="gallery" id="gallery">
+    <div class="gal-track" id="galTrack"></div>
+    <button class="gal-btn" onclick="openLightbox()"><i class="ic" data-icon="grid"></i><span data-i18n="gallery.showAll">Show all photos</span></button>
+    <div class="gal-count" id="galCount">1 / 1</div>
+  </div>
 
-                    <!-- WiFi Card -->
-                    <div class="wifi-card">
-                        <div class="wifi-header">
-                            <svg class="wifi-icon" viewBox="0 0 24 24">
-                                <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
-                            </svg>
-                            <div class="wifi-info">
-                                <div class="wifi-network">STUDIO BORGES</div>
-                                <div class="wifi-password" id="passwordDisplay">internet2019</div>
-                            </div>
-                        </div>
-                        <button class="wifi-copy" id="wifiCopyBtn" data-i18n="wifi.copy">Copy</button>
-                    </div>
-
-                    <!-- Weather & Exchange -->
-                    <div class="row">
-                        <div class="metric-card">
-                            <div class="metric-icon" id="weatherIcon">🌡️</div>
-                            <div class="metric-value" id="temperature">--°C</div>
-                            <div class="metric-label">Buenos Aires</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-icon">💵</div>
-                            <div class="metric-value" id="exchangeRate">--</div>
-                            <div class="metric-label">USD/ARS Blue</div>
-                        </div>
-                    </div>
-
-                    <!-- 7-Day Forecast -->
-                    <h3 data-i18n="home.forecastTitle">7-Day Forecast</h3>
-                    <div class="scroll-container">
-                        <div class="scroll-content" id="forecastContainer">
-                            <div class="scroll-card">
-                                <h4>Mon</h4>
-                                <div style="font-size: 20px;">--</div>
-                                <p>°C</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Check-in/out -->
-                    <div class="row">
-                        <div class="card-small">
-                            <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px;" data-i18n="home.checkin">CHECK-IN</div>
-                            <div style="font-size: 20px; font-weight: 700; color: #c9a96e;">3:00 PM</div>
-                        </div>
-                        <div class="card-small">
-                            <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px;" data-i18n="home.checkout">CHECK-OUT</div>
-                            <div style="font-size: 20px; font-weight: 700; color: #c9a96e;">11:00 AM</div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Navigation -->
-                    <h3 style="margin-top: 20px;" data-i18n="home.exploreTitle">Explore</h3>
-                    <div class="grid-4">
-                        <button class="btn" onclick="showPage('guidePage')"><span>📖</span> <span data-i18n="nav.guide">Guide</span></button>
-                        <button class="btn" onclick="showPage('mapPage')"><span>🗺️</span> <span data-i18n="nav.map">Map</span></button>
-                        <button class="btn" onclick="showPage('discoverPage')"><span>🧭</span> <span data-i18n="nav.discover">Discover</span></button>
-                        <button class="btn" onclick="showPage('eventsPage')"><span>📅</span> <span data-i18n="nav.events">Events</span></button>
-                    </div>
-
-                    <!-- Events Section -->
-                    <h3 style="margin-top: 20px;" data-i18n="home.eventsTitle">Upcoming Events</h3>
-                    <div class="scroll-container">
-                        <div class="scroll-content" id="homeEventsContainer">
-                            <div class="scroll-card">
-                                <h4 data-i18n="home.loading">Loading...</h4>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tips Section -->
-                    <h3 style="margin-top: 20px;" data-i18n="home.tipsTitle">Tips & Recommendations</h3>
-                    <div class="scroll-container">
-                        <div class="scroll-content">
-                            <div class="scroll-card">
-                                <h4>🚇 <span data-i18n="tips.subte.title">Subte</span></h4>
-                                <p data-i18n="tips.subte.desc">Fast & efficient public transport</p>
-                            </div>
-                            <div class="scroll-card">
-                                <h4>🌙 <span data-i18n="tips.nightlife.title">Nightlife</span></h4>
-                                <p data-i18n="tips.nightlife.desc">Vibrant bars & clubs until dawn</p>
-                            </div>
-                            <div class="scroll-card">
-                                <h4>🥩 <span data-i18n="tips.asados.title">Asados</span></h4>
-                                <p data-i18n="tips.asados.desc">Try traditional parrillas</p>
-                            </div>
-                            <div class="scroll-card">
-                                <h4>☕ <span data-i18n="tips.coffee.title">Coffee</span></h4>
-                                <p data-i18n="tips.coffee.desc">Café culture is everywhere</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <div class="footer">
-                    <div class="hosts-section">
-                        <h3 data-i18n="home.hostTitle">Your Host</h3>
-                        <div class="host-item">Paola: <a href="tel:+5491161909090">+54 911 6190 9090</a></div>
-                    </div>
-                    <div class="footer-message" data-i18n="home.footerMsg">We hope you enjoy your stay in Buenos Aires!</div>
-                </div>
-            </div>
-
-            <!-- GUIDE PAGE -->
-            <div class="page" id="guidePage">
-                <div class="guide-content">
-                    <h2 data-i18n="guide.title">Your Guide</h2>
-
-                    <!-- Apartment Info -->
-                    <h3 data-i18n="guide.aboutTitle">About Studio Borges</h3>
-                    <div class="card">
-                        <p><strong data-i18n="guide.addressLabel">Address:</strong> Jorge Luis Borges 2018, Apartment 6</p>
-                        <p style="margin-top: 12px;"><strong data-i18n="guide.hostLabel">Host:</strong> Paola</p>
-                    </div>
-
-                    <!-- Amenities -->
-                    <h3 style="margin-top: 20px;" data-i18n="guide.amenitiesTitle">Amenities</h3>
-                    <div class="amenities-grid">
-                        <div class="amenity-card">
-                            <div class="amenity-icon">💆</div>
-                            <div class="amenity-name" data-i18n="amenity.hairdryer">Hairdryer</div>
-                        </div>
-                        <div class="amenity-card">
-                            <div class="amenity-icon">🧴</div>
-                            <div class="amenity-name" data-i18n="amenity.soap">Soap & Shampoo</div>
-                        </div>
-                        <div class="amenity-card">
-                            <div class="amenity-icon">☕</div>
-                            <div class="amenity-name" data-i18n="amenity.coffee">Coffee Machine</div>
-                        </div>
-                        <div class="amenity-card">
-                            <div class="amenity-icon">💧</div>
-                            <div class="amenity-name" data-i18n="amenity.water">Water Bottle</div>
-                        </div>
-                        <div class="amenity-card">
-                            <div class="amenity-icon">🔌</div>
-                            <div class="amenity-name" data-i18n="amenity.charger">iPhone Charger</div>
-                        </div>
-                        <div class="amenity-card">
-                            <div class="amenity-icon">🛁</div>
-                            <div class="amenity-name" data-i18n="amenity.towels">Towels</div>
-                        </div>
-                        <div class="amenity-card">
-                            <div class="amenity-icon">📖</div>
-                            <div class="amenity-name" data-i18n="amenity.guides">City Guides</div>
-                        </div>
-                        <div class="amenity-card">
-                            <div class="amenity-icon">🗺️</div>
-                            <div class="amenity-name" data-i18n="amenity.maps">Maps</div>
-                        </div>
-                    </div>
-
-                    <!-- House Rules -->
-                    <h3 style="margin-top: 20px;" data-i18n="guide.infoTitle">Important Information</h3>
-                    <div class="info-section">
-                        <div class="info-item">
-                            <strong>🌡️ <span data-i18n="info.heating.title">Heating</span></strong>
-                            <p data-i18n="info.heating.desc">Set temperature on the wheel on the wall after main door (right side)</p>
-                        </div>
-                        <div class="info-item">
-                            <strong>🗑️ <span data-i18n="info.garbage.title">Garbage</span></strong>
-                            <p data-i18n="info.garbage.desc">Trash can in service room (ground floor), no separation needed</p>
-                        </div>
-                        <div class="info-item">
-                            <strong>🔐 <span data-i18n="info.security.title">Security</span></strong>
-                            <p data-i18n="info.security.desc">Lock apartment door with keys, close main door</p>
-                        </div>
-                        <div class="info-item">
-                            <strong>👕 <span data-i18n="info.laundry.title">Laundry</span></strong>
-                            <p data-i18n="info.laundry.desc">Last floor, free, bring your own soap</p>
-                        </div>
-                        <div class="info-item">
-                            <strong>🔥 <span data-i18n="info.bbq.title">BBQ</span></strong>
-                            <p data-i18n="info.bbq.desc">Terrace, free, must book (write in the book), no loud music, clean after use</p>
-                        </div>
-                        <div class="info-item">
-                            <strong>🏊 <span data-i18n="info.pool.title">Pool</span></strong>
-                            <p data-i18n="info.pool.desc">Terrace, free, no lifeguard, supervise minors, don't use elevator wet</p>
-                        </div>
-                    </div>
-
-                    <!-- Payment Methods -->
-                    <h3 style="margin-top: 20px;" data-i18n="payment.title">Payment Methods</h3>
-                    <p class="payment-intro" data-i18n="payment.intro">For direct payments, extended stays, or extra services, you can pay by bank transfer using the details below.</p>
-
-                    <div class="payment-card">
-                        <div class="payment-card-header">
-                            <span class="payment-flag">💵</span>
-                            <span class="payment-card-title" data-i18n="payment.cash.title">Cash (USD, EUR & ARS)</span>
-                        </div>
-                        <p class="payment-cash-desc" data-i18n="payment.cash.desc">Cash is also accepted in US Dollars, Euros, or Argentine Pesos — hand it directly to your host, no bank details needed. Message us on WhatsApp to arrange it.</p>
-                        <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20to%20pay%20in%20cash%20for%20Studio%20Borges." target="_blank">
-                            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
-                            <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
-                        </a>
-                    </div>
-
-                    <div class="payment-card">
-                        <div class="payment-card-header">
-                            <span class="payment-flag">🇺🇸</span>
-                            <span class="payment-card-title" data-i18n="payment.usa.title">United States (USD)</span>
-                        </div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value-wrap"><span class="payment-value">Paradise Content LLC</span><button class="copy-btn" onclick="copyText('Paradise Content LLC', this)">⧉</button></span></div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.accountNumber">Account number</span><span class="payment-value-wrap"><span class="payment-value payment-masked">•••• •••• ••• 9996</span><button class="copy-btn" onclick="copyText('•••• •••• ••• 9996', this)">⧉</button></span></div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.accountType">Account type</span><span class="payment-value">Checking</span></div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.routing">Routing (ACH/Wire)</span><span class="payment-value-wrap"><span class="payment-value">084009519</span><button class="copy-btn" onclick="copyText('084009519', this)">⧉</button></span></div>
-                        <div class="payment-row"><span class="payment-label">SWIFT/BIC</span><span class="payment-value-wrap"><span class="payment-value">TRWIUS35XXX</span><button class="copy-btn" onclick="copyText('TRWIUS35XXX', this)">⧉</button></span></div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank</span><span class="payment-value-wrap"><span class="payment-value" style="text-align:right; font-size:12px; font-weight:500;">Column National Association, New York NY</span><button class="copy-btn" onclick="copyText('Column National Association, 30 W. 26th Street, Sixth Floor, New York, NY 10010, United States', this)">⧉</button></span></div>
-                        <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20the%20full%20USD%20bank%20transfer%20details%20for%20Studio%20Borges." target="_blank">
-                            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
-                            <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
-                        </a>
-                    </div>
-
-                    <div class="payment-card">
-                        <div class="payment-card-header">
-                            <span class="payment-flag">🇪🇺</span>
-                            <span class="payment-card-title" data-i18n="payment.europe.title">Europe (EUR / IBAN)</span>
-                        </div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value-wrap"><span class="payment-value" style="font-size:12px;">Fernando Julian Rubino</span><button class="copy-btn" onclick="copyText('Fernando Julian Rubino', this)">⧉</button></span></div>
-                        <div class="payment-row"><span class="payment-label">IBAN</span><span class="payment-value-wrap"><span class="payment-value payment-masked">IE38 REVO 9903 6043 •••• ••</span><button class="copy-btn" onclick="copyText('IE38 REVO 9903 6043 •••• ••', this)">⧉</button></span></div>
-                        <div class="payment-row"><span class="payment-label">BIC / Sort code</span><span class="payment-value-wrap"><span class="payment-value">REVOIE23</span><button class="copy-btn" onclick="copyText('REVOIE23', this)">⧉</button></span></div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank</span><span class="payment-value-wrap"><span class="payment-value">Revolut Bank UAB</span><button class="copy-btn" onclick="copyText('Revolut Bank UAB', this)">⧉</button></span></div>
-                        <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20the%20full%20EUR%20bank%20transfer%20details%20for%20Studio%20Borges." target="_blank">
-                            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
-                            <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
-                        </a>
-                    </div>
-
-                    <div class="payment-card">
-                        <div class="payment-card-header">
-                            <span class="payment-flag">🇦🇷</span>
-                            <span class="payment-card-title" data-i18n="payment.argentina.title">Argentina (ARS)</span>
-                        </div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.holder">Account holder</span><span class="payment-value-wrap"><span class="payment-value" style="font-size:12px;">Paola Marina Robazza</span><button class="copy-btn" onclick="copyText('Paola Marina Robazza', this)">⧉</button></span></div>
-                        <div class="payment-row"><span class="payment-label">Alias</span><span class="payment-value-wrap"><span class="payment-value">studio.borges</span><button class="copy-btn" onclick="copyText('studio.borges', this)">⧉</button></span></div>
-                        <div class="payment-row"><span class="payment-label">CVU</span><span class="payment-value-wrap"><span class="payment-value payment-masked">•••• •••• •••• •••• •• 5716</span><button class="copy-btn" onclick="copyText('•••• •••• •••• •••• •• 5716', this)">⧉</button></span></div>
-                        <div class="payment-row"><span class="payment-label" data-i18n="payment.bank">Bank / App</span><span class="payment-value">Mercado Pago</span></div>
-                        <a class="payment-whatsapp" href="https://wa.me/5491161909090?text=Hola!%20Quisiera%20los%20datos%20completos%20para%20transferir%20en%20pesos%20a%20Studio%20Borges." target="_blank">
-                            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
-                            <span data-i18n="payment.whatsappBtn">Message on WhatsApp for full details</span>
-                        </a>
-                    </div>
-
-                    <div class="payment-note" data-i18n="payment.note">For your security, full account numbers aren't published here. We share them privately over WhatsApp and confirm details before you send any transfer — this also protects you from scams using altered bank details.</div>
-
-                    <!-- Transport -->
-                    <h3 style="margin-top: 20px;" data-i18n="guide.transportTitle">Getting Around</h3>
-                    <div class="info-section">
-                        <div class="info-item">
-                            <strong>🚇 <span data-i18n="info.subte.title">Subte</span></strong>
-                            <p data-i18n="info.subte.desc">Line D (Plaza Italia, Scalabrini Ortiz) - Clean, efficient metro system</p>
-                        </div>
-                        <div class="info-item">
-                            <strong>🚌 <span data-i18n="info.buses.title">Buses</span></strong>
-                            <p data-i18n="info.buses.desc">Multiple lines serve the neighborhood - Use SUBE card at kiosks</p>
-                        </div>
-                        <div class="info-item">
-                            <strong>🚕 <span data-i18n="info.taxis.title">Taxis</span></strong>
-                            <p data-i18n="info.taxis.desc">Uber and local taxis available - Always use official taxis or apps</p>
-                        </div>
-                    </div>
-
-                    <!-- Emergency -->
-                    <h2 style="margin-top: 24px;" data-i18n="guide.emergencyTitle">Emergency</h2>
-                    <div class="amenities-grid">
-                        <div class="card" style="text-align: center; padding: 20px;">
-                            <div style="font-size: 36px; margin-bottom: 8px;">🚨</div>
-                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 4px;" data-i18n="emergency.police">Police / Fire</p>
-                            <strong style="font-size: 20px; color: #ffffff;">911</strong>
-                        </div>
-                        <div class="card" style="text-align: center; padding: 20px;">
-                            <div style="font-size: 36px; margin-bottom: 8px;">🧯</div>
-                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 4px;" data-i18n="emergency.extinguisher">Extinguisher</p>
-                            <strong style="font-size: 20px; color: #ffffff;" data-i18n="emergency.hallway">In hallway</strong>
-                        </div>
-                        <div class="card" style="text-align: center; padding: 20px;">
-                            <div style="font-size: 36px; margin-bottom: 8px;">📱</div>
-                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 4px;">Paola</p>
-                            <a href="tel:+5491161909090" style="font-size: 16px; font-weight: 700; color: #ffffff; text-decoration: none;">+54 911 6190 9090</a>
-                        </div>
-                        <div class="card" style="text-align: center; padding: 20px;">
-                            <div style="font-size: 36px; margin-bottom: 8px;">🏥</div>
-                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 4px;" data-i18n="emergency.ambulance">Ambulance</p>
-                            <strong style="font-size: 20px; color: #ffffff;">107</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MAP PAGE -->
-            <div class="page" id="mapPage">
-                <div id="map"></div>
-                <div class="map-filters" id="mapFilters"></div>
-            </div>
-
-            <!-- DISCOVER PAGE -->
-            <div class="page" id="discoverPage">
-                <div class="discover-content">
-                    <h2 data-i18n="discover.title">Discover</h2>
-                    <div class="filter-pills" id="filterPills"></div>
-                    <div class="discover-list" id="discoverList"></div>
-                </div>
-            </div>
-
-            <!-- EVENTS PAGE -->
-            <div class="page" id="eventsPage">
-                <div class="events-content">
-                    <h2 data-i18n="events.title">Events & Experiences</h2>
-                    <div id="eventsList"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <a class="nav-item active" data-page="homePage" onclick="showPage('homePage')">
-                <div class="nav-icon">🏠</div>
-                <div class="nav-label" data-i18n="nav.home">Home</div>
-            </a>
-            <a class="nav-item" data-page="guidePage" onclick="showPage('guidePage')">
-                <div class="nav-icon">📖</div>
-                <div class="nav-label" data-i18n="nav.guide">Guide</div>
-            </a>
-            <a class="nav-item" data-page="mapPage" onclick="showPage('mapPage')">
-                <div class="nav-icon">🗺️</div>
-                <div class="nav-label" data-i18n="nav.map">Map</div>
-            </a>
-            <a class="nav-item" data-page="discoverPage" onclick="showPage('discoverPage')">
-                <div class="nav-icon">🧭</div>
-                <div class="nav-label" data-i18n="nav.discover">Discover</div>
-            </a>
-            <a class="nav-item" data-page="eventsPage" onclick="showPage('eventsPage')">
-                <div class="nav-icon">📅</div>
-                <div class="nav-label" data-i18n="nav.events">Events</div>
-            </a>
-        </div>
-
-        <!-- WhatsApp FAB -->
-        <a href="https://wa.me/5491161909090" target="_blank" class="fab-whatsapp">
-            <svg class="fab-icon" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004c-1.525 0-2.955.474-4.155 1.371l-.298-.149C3.734 6.822 2.846 3.645 2.846 3.645c-.342-1.156.023-1.653 1.15-1.653h.548c1.045 0 1.576.382 1.887.973l.542 1.26c.26.606.77 1.519 1.996 2.164 1.226.644 3.665 2.008 4.82 2.008h.004c1.524 0 2.954-.474 4.155-1.371l.298.149c.447-.265 1.335-2.442 1.335-2.442.342-1.156-.023-1.653-1.15-1.653h-.548c-1.045 0-1.576-.382-1.887-.973l-.542-1.26c-.26-.606-.77-1.519-1.996-2.164-1.23-.644-3.665-2.008-4.82-2.008"/>
-            </svg>
-        </a>
-
-        <!-- Modal Overlay -->
-        <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
-
-        <!-- Bottom Sheet Modal -->
-        <div class="bottom-sheet" id="bottomSheet">
-            <div class="sheet-handle"></div>
-            <div class="sheet-content">
-                <div class="sheet-header">
-                    <h2 id="sheetTitle"></h2>
-                    <button class="sheet-close" onclick="closeModal()">✕</button>
-                </div>
-                <div id="sheetBody"></div>
-            </div>
-        </div>
+  <div class="wrap">
+    <div class="section title-block">
+      <h1 data-i18n="home.title">Studio Borges</h1>
+      <p class="sub" style="margin-top:4px">Jorge Luis Borges 2018, Apt 6 · Palermo Soho, Buenos Aires</p>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        // ===================== Translations =====================
-        const T = {
-            en: {
-                'home.greeting': 'Hello, Welcome!',
-                'home.forecastTitle': '7-Day Forecast',
-                'home.checkin': 'CHECK-IN',
-                'home.checkout': 'CHECK-OUT',
-                'home.exploreTitle': 'Explore',
-                'home.eventsTitle': 'Upcoming Events',
-                'home.loading': 'Loading...',
-                'home.tipsTitle': 'Tips & Recommendations',
-                'home.hostTitle': 'Your Host',
-                'home.footerMsg': 'We hope you enjoy your stay in Buenos Aires!',
-                'wifi.copy': 'Copy',
-                'wifi.copied': 'Copied!',
-                'nav.home': 'Home', 'nav.guide': 'Guide', 'nav.map': 'Map', 'nav.discover': 'Discover', 'nav.events': 'Events',
-                'tips.subte.title': 'Subte', 'tips.subte.desc': 'Fast & efficient public transport',
-                'tips.nightlife.title': 'Nightlife', 'tips.nightlife.desc': 'Vibrant bars & clubs until dawn',
-                'tips.asados.title': 'Asados', 'tips.asados.desc': 'Try traditional parrillas',
-                'tips.coffee.title': 'Coffee', 'tips.coffee.desc': 'Café culture is everywhere',
-                'guide.title': 'Your Guide',
-                'guide.aboutTitle': 'About Studio Borges',
-                'guide.addressLabel': 'Address:',
-                'guide.hostLabel': 'Host:',
-                'guide.amenitiesTitle': 'Amenities',
-                'guide.infoTitle': 'Important Information',
-                'guide.transportTitle': 'Getting Around',
-                'guide.emergencyTitle': 'Emergency',
-                'amenity.hairdryer': 'Hairdryer', 'amenity.soap': 'Soap & Shampoo', 'amenity.coffee': 'Coffee Machine',
-                'amenity.water': 'Water Bottle', 'amenity.charger': 'iPhone Charger', 'amenity.towels': 'Towels',
-                'amenity.guides': 'City Guides', 'amenity.maps': 'Maps',
-                'info.heating.title': 'Heating', 'info.heating.desc': 'Set temperature on the wheel on the wall after main door (right side)',
-                'info.garbage.title': 'Garbage', 'info.garbage.desc': 'Trash can in service room (ground floor), no separation needed',
-                'info.security.title': 'Security', 'info.security.desc': 'Lock apartment door with keys, close main door',
-                'info.laundry.title': 'Laundry', 'info.laundry.desc': 'Last floor, free, bring your own soap',
-                'info.bbq.title': 'BBQ', 'info.bbq.desc': 'Terrace, free, must book (write in the book), no loud music, clean after use',
-                'info.pool.title': 'Pool', 'info.pool.desc': "Terrace, free, no lifeguard, supervise minors, don't use elevator wet",
-                'info.subte.title': 'Subte', 'info.subte.desc': 'Line D (Plaza Italia, Scalabrini Ortiz) - Clean, efficient metro system',
-                'info.buses.title': 'Buses', 'info.buses.desc': 'Multiple lines serve the neighborhood - Use SUBE card at kiosks',
-                'info.taxis.title': 'Taxis', 'info.taxis.desc': 'Uber and local taxis available - Always use official taxis or apps',
-                'emergency.police': 'Police / Fire', 'emergency.extinguisher': 'Extinguisher', 'emergency.hallway': 'In hallway', 'emergency.ambulance': 'Ambulance',
-                'payment.title': 'Payment Methods',
-                'payment.intro': 'For direct payments, extended stays, or extra services, you can pay by bank transfer using the details below.',
-                'payment.usa.title': 'United States (USD)',
-                'payment.europe.title': 'Europe (EUR / IBAN)',
-                'payment.argentina.title': 'Argentina (ARS)',
-                'payment.cash.title': 'Cash (USD, EUR & ARS)',
-                'payment.cash.desc': 'Cash is also accepted in US Dollars, Euros, or Argentine Pesos — hand it directly to your host, no bank details needed. Message us on WhatsApp to arrange it.',
-                'payment.holder': 'Account holder', 'payment.accountNumber': 'Account number', 'payment.accountType': 'Account type',
-                'payment.routing': 'Routing (ACH/Wire)', 'payment.bank': 'Bank',
-                'payment.whatsappBtn': 'Message on WhatsApp for full details',
-                'payment.note': "For your security, full account numbers aren't published here. We share them privately over WhatsApp and confirm details before you send any transfer — this also protects you from scams using altered bank details.",
-                'discover.title': 'Discover',
-                'events.title': 'Events & Experiences',
-                'category.Restaurants': 'Restaurants', 'category.Bars': 'Bars', 'category.Nightlife': 'Nightlife',
-                'category.Listening Bars': 'Listening Bars', 'category.Activities': 'Activities', 'category.All': 'All',
-                'eventcat.music': 'Music', 'eventcat.culture': 'Culture', 'eventcat.sports': 'Sports',
-            },
-            es: {
-                'home.greeting': '¡Hola, Bienvenido!',
-                'home.forecastTitle': 'Pronóstico 7 Días',
-                'home.checkin': 'CHECK-IN',
-                'home.checkout': 'CHECK-OUT',
-                'home.exploreTitle': 'Explorar',
-                'home.eventsTitle': 'Próximos Eventos',
-                'home.loading': 'Cargando...',
-                'home.tipsTitle': 'Tips y Recomendaciones',
-                'home.hostTitle': 'Tu Anfitriona',
-                'home.footerMsg': '¡Esperamos que disfrutes tu estadía en Buenos Aires!',
-                'wifi.copy': 'Copiar',
-                'wifi.copied': '¡Copiado!',
-                'nav.home': 'Inicio', 'nav.guide': 'Guía', 'nav.map': 'Mapa', 'nav.discover': 'Descubrí', 'nav.events': 'Eventos',
-                'tips.subte.title': 'Subte', 'tips.subte.desc': 'Transporte público rápido y eficiente',
-                'tips.nightlife.title': 'Vida Nocturna', 'tips.nightlife.desc': 'Bares y clubs vibrantes hasta el amanecer',
-                'tips.asados.title': 'Asados', 'tips.asados.desc': 'Probá las parrillas tradicionales',
-                'tips.coffee.title': 'Café', 'tips.coffee.desc': 'La cultura del café está en todos lados',
-                'guide.title': 'Tu Guía',
-                'guide.aboutTitle': 'Sobre Studio Borges',
-                'guide.addressLabel': 'Dirección:',
-                'guide.hostLabel': 'Anfitriona:',
-                'guide.amenitiesTitle': 'Amenidades',
-                'guide.infoTitle': 'Información Importante',
-                'guide.transportTitle': 'Cómo Moverte',
-                'guide.emergencyTitle': 'Emergencia',
-                'amenity.hairdryer': 'Secador', 'amenity.soap': 'Jabón y Shampoo', 'amenity.coffee': 'Cafetera',
-                'amenity.water': 'Botella de Agua', 'amenity.charger': 'Cargador iPhone', 'amenity.towels': 'Toallas',
-                'amenity.guides': 'Guías de la Ciudad', 'amenity.maps': 'Mapas',
-                'info.heating.title': 'Calefacción', 'info.heating.desc': 'Regulá la temperatura con la rueda en la pared después de la puerta principal (lado derecho)',
-                'info.garbage.title': 'Basura', 'info.garbage.desc': 'Tacho en el cuarto de servicio (planta baja), no hace falta separar',
-                'info.security.title': 'Seguridad', 'info.security.desc': 'Cerrá la puerta del depto con llave y la puerta principal del edificio',
-                'info.laundry.title': 'Lavadero', 'info.laundry.desc': 'Último piso, gratis, traé tu propio jabón',
-                'info.bbq.title': 'Parrilla', 'info.bbq.desc': 'En la terraza, gratis, hay que reservar (anotarse en el cuaderno), sin música fuerte, limpiar después de usar',
-                'info.pool.title': 'Pileta', 'info.pool.desc': 'En la terraza, gratis, sin guardavidas, supervisar a los menores, no usar el ascensor mojado',
-                'info.subte.title': 'Subte', 'info.subte.desc': 'Línea D (Plaza Italia, Scalabrini Ortiz) - Sistema de metro limpio y eficiente',
-                'info.buses.title': 'Colectivos', 'info.buses.desc': 'Varias líneas recorren el barrio - Usá tarjeta SUBE en los kioscos',
-                'info.taxis.title': 'Taxis', 'info.taxis.desc': 'Uber y taxis locales disponibles - Usá siempre taxis oficiales o apps',
-                'emergency.police': 'Policía / Bomberos', 'emergency.extinguisher': 'Matafuego', 'emergency.hallway': 'En el pasillo', 'emergency.ambulance': 'Ambulancia',
-                'payment.title': 'Formas de Pago',
-                'payment.intro': 'Para pagos directos, estadías extendidas o servicios extra, podés pagar por transferencia bancaria con los datos de abajo.',
-                'payment.usa.title': 'Estados Unidos (USD)',
-                'payment.europe.title': 'Europa (EUR / IBAN)',
-                'payment.argentina.title': 'Argentina (ARS)',
-                'payment.cash.title': 'Efectivo (USD, EUR y ARS)',
-                'payment.cash.desc': 'También aceptamos efectivo en dólares, euros o pesos argentinos — se lo entregás directamente a tu anfitriona, sin necesidad de datos bancarios. Escribinos por WhatsApp para coordinarlo.',
-                'payment.holder': 'Titular', 'payment.accountNumber': 'Número de cuenta', 'payment.accountType': 'Tipo de cuenta',
-                'payment.routing': 'Routing (ACH/Wire)', 'payment.bank': 'Banco',
-                'payment.whatsappBtn': 'Escribir por WhatsApp para los datos completos',
-                'payment.note': 'Por seguridad, los números de cuenta completos no están publicados acá. Los compartimos de forma privada por WhatsApp y confirmamos los datos antes de que hagas cualquier transferencia — esto también te protege de estafas con datos bancarios alterados.',
-                'discover.title': 'Descubrí',
-                'events.title': 'Eventos y Experiencias',
-                'category.Restaurants': 'Restaurantes', 'category.Bars': 'Bares', 'category.Nightlife': 'Vida Nocturna',
-                'category.Listening Bars': 'Bares de Vinilos', 'category.Activities': 'Actividades', 'category.All': 'Todos',
-                'eventcat.music': 'Música', 'eventcat.culture': 'Cultura', 'eventcat.sports': 'Deportes',
-            }
-        };
+    <div class="section">
+      <div class="host-row">
+        <div class="avatar">P</div>
+        <div class="grow">
+          <h3 data-i18n="home.hostedBy">Hosted by Paola</h3>
+          <p class="sub" data-i18n="home.hostSub">Your host · message her on WhatsApp</p>
+        </div>
+        <a class="btn btn-sm" href="https://wa.me/5491161909090" target="_blank" rel="noopener"><span data-i18n="home.message">Message</span></a>
+      </div>
+    </div>
 
-        let currentLang = 'en';
+    <div class="section">
+      <h2 data-i18n="home.arrival">Arrival</h2>
+      <div class="grid2" style="margin-top:14px">
+        <div class="box"><div class="lbl" data-i18n="home.checkin">Check-in</div><div class="val">3:00 PM</div></div>
+        <div class="box"><div class="lbl" data-i18n="home.checkout">Check-out</div><div class="val">11:00 AM</div></div>
+      </div>
+      <p class="sub" style="margin-top:14px" data-i18n="home.arrivalNote">Paola will share arrival details with you over WhatsApp.</p>
+      <div class="row-item" style="margin-top:6px">
+        <div class="row-ico"><i class="ic" data-icon="pin"></i></div>
+        <div style="flex:1"><h3 data-i18n="home.address">Address</h3><p>Jorge Luis Borges 2018, Apt 6, C1425 Buenos Aires</p></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-sm" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Jorge+Luis+Borges+2018%2C+Buenos+Aires"><i class="ic" data-icon="map"></i><span data-i18n="home.openMaps">Open in Maps</span></a>
+        <button class="btn btn-sm" onclick="copyText('Jorge Luis Borges 2018, Apt 6, Buenos Aires', this, true)"><i class="ic" data-icon="copy"></i><span data-i18n="home.copyAddress">Copy address</span></button>
+      </div>
+    </div>
 
-        function t(key) {
-            return (T[currentLang] && T[currentLang][key]) || key;
-        }
+    <div class="section">
+      <h2 data-i18n="home.wifi">Wi-Fi</h2>
+      <div style="margin-top:6px">
+        <div class="copy-row"><div><div class="k" data-i18n="wifi.network">Network</div><div class="v">STUDIO BORGES</div></div><button class="copy-btn" onclick="copyText('STUDIO BORGES', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k" data-i18n="wifi.password">Password</div><div class="v">internet2019</div></div><button class="copy-btn" onclick="copyText('internet2019', this)"><i class="ic" data-icon="copy"></i></button></div>
+      </div>
+    </div>
 
-        function applyStaticTranslations() {
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                el.textContent = t(el.dataset.i18n);
-            });
-            document.documentElement.lang = currentLang;
-            document.getElementById('langEnBtn').classList.toggle('active', currentLang === 'en');
-            document.getElementById('langEsBtn').classList.toggle('active', currentLang === 'es');
-        }
+    <div class="section">
+      <div class="sec-head"><div><h2 data-i18n="home.today">Right now in Buenos Aires</h2><p class="sub" id="currentTime">--:--</p></div></div>
+      <div class="metrics">
+        <div class="metric"><div class="sub" id="weatherIcon">🌤️</div><div class="big" id="temperature">--°C</div><div class="sub" data-i18n="home.temp">Temperature</div></div>
+        <div class="metric"><div class="sub">💵 USD/ARS</div><div class="big" id="exchangeRate">--</div><div class="sub" data-i18n="home.blue">Blue rate (sell)</div></div>
+      </div>
+      <h3 style="margin-top:22px" data-i18n="home.forecastTitle">7-day forecast</h3>
+      <div class="forecast" id="forecastContainer"></div>
+    </div>
 
-        function setLang(lang) {
-            currentLang = lang;
-            applyStaticTranslations();
-            loadHomeEvents();
-            loadDiscover();
-            loadEvents();
-            renderForecast();
-        }
+    <div class="section">
+      <div class="sec-head"><h2 data-i18n="home.eventsTitle">Happening in Buenos Aires</h2><button class="link-btn" onclick="showPage('eventsPage')" data-i18n="home.showAll">Show all</button></div>
+      <div class="carousel" id="homeEventsContainer"></div>
+    </div>
 
-        // Data
+    <div class="section">
+      <div class="sec-head"><div><h2 data-i18n="home.nearbyTitle">Eat & drink nearby</h2><p class="sub" data-i18n="home.nearbySub">Closest to the studio</p></div><button class="link-btn" onclick="showPage('discoverPage')" data-i18n="home.exploreAll">Explore all</button></div>
+      <div class="carousel" id="nearbyContainer"></div>
+    </div>
+
+    <div class="section">
+      <h2 data-i18n="home.tipsTitle">Local tips</h2>
+      <div style="margin-top:8px">
+        <div class="row-item"><div class="row-ico">🚇</div><div><h3 data-i18n="tips.subte.title">Subte</h3><p data-i18n="tips.subte.desc">Fast & efficient public transport</p></div></div>
+        <div class="row-item"><div class="row-ico">🌙</div><div><h3 data-i18n="tips.nightlife.title">Nightlife</h3><p data-i18n="tips.nightlife.desc">Vibrant bars & clubs until dawn</p></div></div>
+        <div class="row-item"><div class="row-ico">🥩</div><div><h3 data-i18n="tips.asados.title">Asados</h3><p data-i18n="tips.asados.desc">Try traditional parrillas</p></div></div>
+        <div class="row-item"><div class="row-ico">☕</div><div><h3 data-i18n="tips.coffee.title">Coffee</h3><p data-i18n="tips.coffee.desc">Café culture is everywhere</p></div></div>
+      </div>
+    </div>
+
+    <div class="footer"><span data-i18n="home.footerMsg">We hope you enjoy your stay in Buenos Aires!</span></div>
+  </div>
+</section>
+
+<!-- ============ GUIDE ============ -->
+<section class="page" id="guidePage">
+  <div class="wrap">
+    <div class="section" style="padding-top:24px">
+      <h1 data-i18n="guide.title">Your Guide</h1>
+      <p class="sub" style="margin-top:4px" data-i18n="guide.subtitle">Everything you need to know about your stay</p>
+    </div>
+
+    <div class="section">
+      <h2 data-i18n="guide.amenitiesTitle">What this place offers</h2>
+      <div class="amen collapsed" id="amenGrid" style="margin-top:10px">
+        <div class="a"><span class="e">💆</span><span data-i18n="amenity.hairdryer">Hairdryer</span></div>
+        <div class="a"><span class="e">🧴</span><span data-i18n="amenity.soap">Soap & Shampoo</span></div>
+        <div class="a"><span class="e">☕</span><span data-i18n="amenity.coffee">Coffee Machine</span></div>
+        <div class="a"><span class="e">💧</span><span data-i18n="amenity.water">Water Bottle</span></div>
+        <div class="a"><span class="e">🔌</span><span data-i18n="amenity.charger">iPhone Charger</span></div>
+        <div class="a"><span class="e">🛁</span><span data-i18n="amenity.towels">Towels</span></div>
+        <div class="a"><span class="e">📖</span><span data-i18n="amenity.guides">City Guides</span></div>
+        <div class="a"><span class="e">🗺️</span><span data-i18n="amenity.maps">Maps</span></div>
+      </div>
+      <button class="btn" style="margin-top:16px" id="amenBtn" onclick="toggleAmenities()"></button>
+    </div>
+
+    <div class="section">
+      <h2 data-i18n="guide.infoTitle">House info & rules</h2>
+      <div style="margin-top:8px">
+        <div class="row-item"><div class="row-ico">🌡️</div><div><h3 data-i18n="info.heating.title">Heating</h3><p data-i18n="info.heating.desc"></p></div></div>
+        <div class="row-item"><div class="row-ico">🗑️</div><div><h3 data-i18n="info.garbage.title">Garbage</h3><p data-i18n="info.garbage.desc"></p></div></div>
+        <div class="row-item"><div class="row-ico">🔐</div><div><h3 data-i18n="info.security.title">Security</h3><p data-i18n="info.security.desc"></p></div></div>
+        <div class="row-item"><div class="row-ico">👕</div><div><h3 data-i18n="info.laundry.title">Laundry</h3><p data-i18n="info.laundry.desc"></p></div></div>
+        <div class="row-item"><div class="row-ico">🔥</div><div><h3 data-i18n="info.bbq.title">BBQ</h3><p data-i18n="info.bbq.desc"></p></div></div>
+        <div class="row-item"><div class="row-ico">🏊</div><div><h3 data-i18n="info.pool.title">Pool</h3><p data-i18n="info.pool.desc"></p></div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 data-i18n="guide.transportTitle">Getting around</h2>
+      <div style="margin-top:8px">
+        <div class="row-item"><div class="row-ico">🚇</div><div><h3 data-i18n="info.subte.title">Subte</h3><p data-i18n="info.subte.desc"></p></div></div>
+        <div class="row-item"><div class="row-ico">🚌</div><div><h3 data-i18n="info.buses.title">Buses</h3><p data-i18n="info.buses.desc"></p></div></div>
+        <div class="row-item"><div class="row-ico">🚕</div><div><h3 data-i18n="info.taxis.title">Taxis</h3><p data-i18n="info.taxis.desc"></p></div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 data-i18n="payment.title">Payment methods</h2>
+      <p class="sub" style="margin-bottom:16px" data-i18n="payment.intro"></p>
+
+      <div class="pay-card">
+        <div class="pay-head"><span class="f">💵</span><span data-i18n="payment.cash.title">Cash (USD, EUR & ARS)</span></div>
+        <p class="pay-desc" data-i18n="payment.cash.desc"></p>
+        <a class="btn btn-dark btn-block" target="_blank" rel="noopener" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20to%20pay%20in%20cash%20for%20Studio%20Borges."><i class="ic" data-icon="whatsapp"></i><span data-i18n="payment.whatsappBtn">Message on WhatsApp</span></a>
+      </div>
+
+      <div class="pay-card">
+        <div class="pay-head"><span class="f">🇺🇸</span><span data-i18n="payment.usa.title">United States (USD)</span></div>
+        <div class="copy-row"><div><div class="k" data-i18n="payment.holder">Account holder</div><div class="v">Paradise Content LLC</div></div><button class="copy-btn" onclick="copyText('Paradise Content LLC', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k" data-i18n="payment.accountNumber">Account number</div><div class="v masked">•••• •••• ••• 9996</div></div><button class="copy-btn" onclick="copyText('•••• •••• ••• 9996', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k" data-i18n="payment.accountType">Account type</div><div class="v">Checking</div></div></div>
+        <div class="copy-row"><div><div class="k" data-i18n="payment.routing">Routing (ACH/Wire)</div><div class="v">084009519</div></div><button class="copy-btn" onclick="copyText('084009519', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k">SWIFT/BIC</div><div class="v">TRWIUS35XXX</div></div><button class="copy-btn" onclick="copyText('TRWIUS35XXX', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k" data-i18n="payment.bank">Bank</div><div class="v" style="font-size:13px;font-weight:500">Column National Association, New York NY</div></div><button class="copy-btn" onclick="copyText('Column National Association, 30 W. 26th Street, Sixth Floor, New York, NY 10010, United States', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <a class="btn btn-dark btn-block" style="margin-top:10px" target="_blank" rel="noopener" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20the%20full%20USD%20bank%20transfer%20details%20for%20Studio%20Borges."><i class="ic" data-icon="whatsapp"></i><span data-i18n="payment.whatsappBtn">Message on WhatsApp</span></a>
+      </div>
+
+      <div class="pay-card">
+        <div class="pay-head"><span class="f">🇪🇺</span><span data-i18n="payment.europe.title">Europe (EUR / IBAN)</span></div>
+        <div class="copy-row"><div><div class="k" data-i18n="payment.holder">Account holder</div><div class="v">Fernando Julian Rubino</div></div><button class="copy-btn" onclick="copyText('Fernando Julian Rubino', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k">IBAN</div><div class="v masked">IE38 REVO 9903 6043 •••• ••</div></div><button class="copy-btn" onclick="copyText('IE38 REVO 9903 6043 •••• ••', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k">BIC / Sort code</div><div class="v">REVOIE23</div></div><button class="copy-btn" onclick="copyText('REVOIE23', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k" data-i18n="payment.bank">Bank</div><div class="v">Revolut Bank UAB</div></div><button class="copy-btn" onclick="copyText('Revolut Bank UAB', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <a class="btn btn-dark btn-block" style="margin-top:10px" target="_blank" rel="noopener" href="https://wa.me/5491161909090?text=Hi!%20I%27d%20like%20the%20full%20EUR%20bank%20transfer%20details%20for%20Studio%20Borges."><i class="ic" data-icon="whatsapp"></i><span data-i18n="payment.whatsappBtn">Message on WhatsApp</span></a>
+      </div>
+
+      <div class="pay-card">
+        <div class="pay-head"><span class="f">🇦🇷</span><span data-i18n="payment.argentina.title">Argentina (ARS)</span></div>
+        <div class="copy-row"><div><div class="k" data-i18n="payment.holder">Account holder</div><div class="v">Paola Marina Robazza</div></div><button class="copy-btn" onclick="copyText('Paola Marina Robazza', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k">Alias</div><div class="v">studio.borges</div></div><button class="copy-btn" onclick="copyText('studio.borges', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k">CVU</div><div class="v masked">•••• •••• •••• •••• •• 5716</div></div><button class="copy-btn" onclick="copyText('•••• •••• •••• •••• •• 5716', this)"><i class="ic" data-icon="copy"></i></button></div>
+        <div class="copy-row"><div><div class="k" data-i18n="payment.bankApp">Bank / App</div><div class="v">Mercado Pago</div></div></div>
+        <a class="btn btn-dark btn-block" style="margin-top:10px" target="_blank" rel="noopener" href="https://wa.me/5491161909090?text=Hola!%20Quisiera%20los%20datos%20completos%20para%20transferir%20en%20pesos%20a%20Studio%20Borges."><i class="ic" data-icon="whatsapp"></i><span data-i18n="payment.whatsappBtn">Message on WhatsApp</span></a>
+      </div>
+
+      <div class="note" data-i18n="payment.note"></div>
+    </div>
+
+    <div class="section">
+      <h2 data-i18n="guide.emergencyTitle">Emergency</h2>
+      <div class="emg" style="margin-top:14px">
+        <div class="box"><div class="e">🚨</div><div class="sub" data-i18n="emergency.police">Police / Fire</div><a class="n" href="tel:911">911</a></div>
+        <div class="box"><div class="e">🏥</div><div class="sub" data-i18n="emergency.ambulance">Ambulance</div><a class="n" href="tel:107">107</a></div>
+        <div class="box"><div class="e">🧯</div><div class="sub" data-i18n="emergency.extinguisher">Extinguisher</div><div class="n" style="font-size:16px" data-i18n="emergency.hallway">In hallway</div></div>
+        <div class="box"><div class="e">📱</div><div class="sub">Paola</div><a class="n" style="font-size:15px" href="tel:+5491161909090">+54 911 6190 9090</a></div>
+      </div>
+    </div>
+    <div style="height:20px"></div>
+  </div>
+</section>
+
+<!-- ============ MAP ============ -->
+<section class="page" id="mapPage">
+  <div class="map-chips" id="mapFilters"></div>
+  <div id="map"></div>
+</section>
+
+<!-- ============ DISCOVER ============ -->
+<section class="page" id="discoverPage">
+  <div class="page-title"><h1 data-i18n="discover.title">Discover</h1><p class="sub" data-i18n="discover.subtitle">Our favorite places around Palermo and beyond</p></div>
+  <div class="search"><i class="ic" data-icon="search"></i><input id="searchInput" type="search" autocomplete="off" oninput="renderDiscover()"></div>
+  <div class="toolbar"><button class="chip on" id="sortBtn" onclick="toggleSort()"><i class="ic" data-icon="walk"></i><span data-i18n="discover.sortNearest">Nearest first</span></button></div>
+  <div class="cat-bar" id="filterPills" style="margin-top:12px"></div>
+  <div class="list-grid" id="discoverList"></div>
+</section>
+
+<!-- ============ EVENTS ============ -->
+<section class="page" id="eventsPage">
+  <div class="page-title"><h1 data-i18n="events.title">Events & experiences</h1><p class="sub" data-i18n="events.subtitle">What's on during your stay</p></div>
+  <div class="cat-bar" id="eventCats" style="margin-top:12px"></div>
+  <div id="eventsList"></div>
+</section>
+</main>
+
+<nav class="bottom-nav"><div class="bottom-in">
+  <button class="nav-item active" data-page="homePage" onclick="showPage('homePage')"><i class="ic" data-icon="home"></i><span data-i18n="nav.home">Home</span></button>
+  <button class="nav-item" data-page="guidePage" onclick="showPage('guidePage')"><i class="ic" data-icon="book"></i><span data-i18n="nav.guide">Guide</span></button>
+  <button class="nav-item" data-page="mapPage" onclick="showPage('mapPage')"><i class="ic" data-icon="map"></i><span data-i18n="nav.map">Map</span></button>
+  <button class="nav-item" data-page="discoverPage" onclick="showPage('discoverPage')"><i class="ic" data-icon="compass"></i><span data-i18n="nav.discover">Discover</span></button>
+  <button class="nav-item" data-page="eventsPage" onclick="showPage('eventsPage')"><i class="ic" data-icon="calendar"></i><span data-i18n="nav.events">Events</span></button>
+</div></nav>
+
+<a class="fab" href="https://wa.me/5491161909090" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="ic" data-icon="whatsapp"></i></a>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-bar"><button class="icon-btn" onclick="closeLightbox()" aria-label="Close"><i class="ic" data-icon="close"></i></button><span class="sub" id="lbCount"></span></div>
+  <div id="lbImgs"></div>
+</div>
+
+<div class="overlay" id="modalOverlay" onclick="closeModal()"></div>
+<div class="sheet" id="bottomSheet" role="dialog" aria-modal="true">
+  <div class="sheet-top"><button class="x" onclick="closeModal()" aria-label="Close"><i class="ic" data-icon="close"></i></button><span class="sub" id="sheetTitleTop"></span><span style="width:34px"></span></div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ===================== Config =====================
+const HOME = [-34.5875, -58.4274];
+const TZ = 'America/Argentina/Buenos_Aires';
+// Add more apartment photos here (files uploaded next to index.html). 1 photo = simple hero, 2+ = swipeable gallery.
+const PHOTOS = ['hero.jpg'];
+
+// ===================== Helpers =====================
+const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = id => document.getElementById(id);
+
+const ICONS = {
+    home: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+    book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M9 7h6"/>',
+    map: '<path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/>',
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+    calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+    copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
+    check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+    heart: '<path d="M12 20.5S3.5 15.5 3 9.8C2.8 6.9 5 5 7.3 5c1.8 0 3.3 1 4.7 2.7C13.4 6 14.9 5 16.7 5 19 5 21.2 6.9 21 9.8c-.5 5.7-9 10.7-9 10.7z"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+    pin: '<path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    share: '<path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/>',
+    close: '<path d="M6 6l12 12M18 6 6 18"/>',
+    walk: '<circle cx="13" cy="4.5" r="1.8"/><path d="m9 21 2.5-6-2-2.5 1-4.5 3-1 2.5 3.5 3 .5M12.5 15l2.5 2v4"/>',
+    grid: '<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>',
+    phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+    whatsapp: 'WA'
+};
+const WA_PATH = 'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z';
+function ic(n) {
+    if (n === 'whatsapp') return '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="' + WA_PATH + '"/></svg>';
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[n] || '') + '</svg>';
+}
+function paintIcons(root) {
+    (root || document).querySelectorAll('[data-icon]').forEach(el => {
+        if (el.dataset.painted) return;
+        el.innerHTML = ic(el.dataset.icon);
+        el.dataset.painted = '1';
+    });
+}
+
+// ===================== Translations =====================
+const T = {
+    en: {
+        'home.title': 'Studio Borges',
+        'home.hostedBy': 'Hosted by Paola', 'home.hostSub': 'Your host · message her on WhatsApp', 'home.message': 'Message',
+        'home.arrival': 'Arrival', 'home.checkin': 'Check-in', 'home.checkout': 'Check-out',
+        'home.arrivalNote': 'Paola will share arrival details with you over WhatsApp.',
+        'home.address': 'Address', 'home.openMaps': 'Open in Maps', 'home.copyAddress': 'Copy address',
+        'home.wifi': 'Wi-Fi', 'wifi.network': 'Network', 'wifi.password': 'Password',
+        'home.today': 'Right now in Buenos Aires', 'home.temp': 'Temperature', 'home.blue': 'Blue rate (sell)',
+        'home.forecastTitle': '7-day forecast',
+        'home.eventsTitle': 'Happening in Buenos Aires', 'home.showAll': 'Show all',
+        'home.nearbyTitle': 'Eat & drink nearby', 'home.nearbySub': 'Closest to the studio', 'home.exploreAll': 'Explore all',
+        'home.tipsTitle': 'Local tips',
+        'home.footerMsg': 'We hope you enjoy your stay in Buenos Aires!',
+        'gallery.showAll': 'Show all photos',
+        'nav.home': 'Home', 'nav.guide': 'Guide', 'nav.map': 'Map', 'nav.discover': 'Discover', 'nav.events': 'Events',
+        'tips.subte.title': 'Subte', 'tips.subte.desc': 'Fast & efficient public transport',
+        'tips.nightlife.title': 'Nightlife', 'tips.nightlife.desc': 'Vibrant bars & clubs until dawn',
+        'tips.asados.title': 'Asados', 'tips.asados.desc': 'Try traditional parrillas',
+        'tips.coffee.title': 'Coffee', 'tips.coffee.desc': 'Café culture is everywhere',
+        'guide.title': 'Your Guide', 'guide.subtitle': 'Everything you need to know about your stay',
+        'guide.amenitiesTitle': 'What this place offers', 'guide.infoTitle': 'House info & rules', 'guide.transportTitle': 'Getting around', 'guide.emergencyTitle': 'Emergency',
+        'amen.showAll': 'Show all {n} amenities', 'amen.showLess': 'Show less',
+        'amenity.hairdryer': 'Hairdryer', 'amenity.soap': 'Soap & Shampoo', 'amenity.coffee': 'Coffee Machine',
+        'amenity.water': 'Water Bottle', 'amenity.charger': 'iPhone Charger', 'amenity.towels': 'Towels',
+        'amenity.guides': 'City Guides', 'amenity.maps': 'Maps',
+        'info.heating.title': 'Heating', 'info.heating.desc': 'Set temperature on the wheel on the wall after main door (right side)',
+        'info.garbage.title': 'Garbage', 'info.garbage.desc': 'Trash can in service room (ground floor), no separation needed',
+        'info.security.title': 'Security', 'info.security.desc': 'Lock apartment door with keys, close main door',
+        'info.laundry.title': 'Laundry', 'info.laundry.desc': 'Last floor, free, bring your own soap',
+        'info.bbq.title': 'BBQ', 'info.bbq.desc': 'Terrace, free, must book (write in the book), no loud music, clean after use',
+        'info.pool.title': 'Pool', 'info.pool.desc': "Terrace, free, no lifeguard, supervise minors, don't use elevator wet",
+        'info.subte.title': 'Subte', 'info.subte.desc': 'Line D (Plaza Italia, Scalabrini Ortiz) - Clean, efficient metro system',
+        'info.buses.title': 'Buses', 'info.buses.desc': 'Multiple lines serve the neighborhood - Use SUBE card at kiosks',
+        'info.taxis.title': 'Taxis', 'info.taxis.desc': 'Uber and local taxis available - Always use official taxis or apps',
+        'emergency.police': 'Police / Fire', 'emergency.extinguisher': 'Extinguisher', 'emergency.hallway': 'In hallway', 'emergency.ambulance': 'Ambulance',
+        'payment.title': 'Payment methods',
+        'payment.intro': 'For direct payments, extended stays, or extra services, you can pay by bank transfer using the details below.',
+        'payment.usa.title': 'United States (USD)', 'payment.europe.title': 'Europe (EUR / IBAN)', 'payment.argentina.title': 'Argentina (ARS)',
+        'payment.cash.title': 'Cash (USD, EUR & ARS)',
+        'payment.cash.desc': 'Cash is also accepted in US Dollars, Euros, or Argentine Pesos — hand it directly to your host, no bank details needed. Message us on WhatsApp to arrange it.',
+        'payment.holder': 'Account holder', 'payment.accountNumber': 'Account number', 'payment.accountType': 'Account type',
+        'payment.routing': 'Routing (ACH/Wire)', 'payment.bank': 'Bank', 'payment.bankApp': 'Bank / App',
+        'payment.whatsappBtn': 'Message on WhatsApp for full details',
+        'payment.note': "For your security, full account numbers aren't published here. We share them privately over WhatsApp and confirm details before you send any transfer — this also protects you from scams using altered bank details.",
+        'discover.title': 'Discover', 'discover.subtitle': 'Our favorite places around Palermo and beyond',
+        'discover.search': 'Search restaurants, bars, activities…', 'discover.sortNearest': 'Nearest first',
+        'discover.empty': 'No places found', 'discover.emptySaved': 'Tap the heart on a place to save it here',
+        'discover.walk': '{n} min walk', 'discover.km': '{n} km away', 'discover.directions': 'Directions', 'discover.save': 'Save', 'discover.saved': 'Saved',
+        'events.title': 'Events & experiences', 'events.subtitle': "What's on during your stay", 'events.empty': 'No upcoming events right now',
+        'events.weekly': 'Weekly', 'events.today': 'Today', 'events.tomorrow': 'Tomorrow', 'events.share': 'Share',
+        'copied': 'Copied!',
+        'category.All': 'All', 'category.Restaurants': 'Restaurants', 'category.Cafes': 'Cafés', 'category.Bars': 'Bars', 'category.Nightlife': 'Nightlife',
+        'category.Listening Bars': 'Listening Bars', 'category.Activities': 'Activities', 'category.Saved': 'Saved',
+        'eventcat.all': 'All', 'eventcat.music': 'Music', 'eventcat.culture': 'Culture', 'eventcat.sports': 'Sports',
+    },
+    es: {
+        'home.title': 'Studio Borges',
+        'home.hostedBy': 'Anfitriona: Paola', 'home.hostSub': 'Tu anfitriona · escribile por WhatsApp', 'home.message': 'Escribir',
+        'home.arrival': 'Llegada', 'home.checkin': 'Check-in', 'home.checkout': 'Check-out',
+        'home.arrivalNote': 'Paola te va a pasar los detalles de llegada por WhatsApp.',
+        'home.address': 'Dirección', 'home.openMaps': 'Abrir en Mapas', 'home.copyAddress': 'Copiar dirección',
+        'home.wifi': 'Wi-Fi', 'wifi.network': 'Red', 'wifi.password': 'Contraseña',
+        'home.today': 'Ahora en Buenos Aires', 'home.temp': 'Temperatura', 'home.blue': 'Dólar blue (venta)',
+        'home.forecastTitle': 'Pronóstico 7 días',
+        'home.eventsTitle': 'Qué pasa en Buenos Aires', 'home.showAll': 'Ver todo',
+        'home.nearbyTitle': 'Para comer y tomar cerca', 'home.nearbySub': 'Lo más cercano al estudio', 'home.exploreAll': 'Ver todo',
+        'home.tipsTitle': 'Tips locales',
+        'home.footerMsg': '¡Esperamos que disfrutes tu estadía en Buenos Aires!',
+        'gallery.showAll': 'Ver todas las fotos',
+        'nav.home': 'Inicio', 'nav.guide': 'Guía', 'nav.map': 'Mapa', 'nav.discover': 'Descubrí', 'nav.events': 'Eventos',
+        'tips.subte.title': 'Subte', 'tips.subte.desc': 'Transporte público rápido y eficiente',
+        'tips.nightlife.title': 'Vida Nocturna', 'tips.nightlife.desc': 'Bares y clubs vibrantes hasta el amanecer',
+        'tips.asados.title': 'Asados', 'tips.asados.desc': 'Probá las parrillas tradicionales',
+        'tips.coffee.title': 'Café', 'tips.coffee.desc': 'La cultura del café está en todos lados',
+        'guide.title': 'Tu Guía', 'guide.subtitle': 'Todo lo que necesitás saber sobre tu estadía',
+        'guide.amenitiesTitle': 'Lo que ofrece este lugar', 'guide.infoTitle': 'Info y reglas de la casa', 'guide.transportTitle': 'Cómo moverte', 'guide.emergencyTitle': 'Emergencia',
+        'amen.showAll': 'Ver las {n} amenidades', 'amen.showLess': 'Ver menos',
+        'amenity.hairdryer': 'Secador', 'amenity.soap': 'Jabón y Shampoo', 'amenity.coffee': 'Cafetera',
+        'amenity.water': 'Botella de Agua', 'amenity.charger': 'Cargador iPhone', 'amenity.towels': 'Toallas',
+        'amenity.guides': 'Guías de la Ciudad', 'amenity.maps': 'Mapas',
+        'info.heating.title': 'Calefacción', 'info.heating.desc': 'Regulá la temperatura con la rueda en la pared después de la puerta principal (lado derecho)',
+        'info.garbage.title': 'Basura', 'info.garbage.desc': 'Tacho en el cuarto de servicio (planta baja), no hace falta separar',
+        'info.security.title': 'Seguridad', 'info.security.desc': 'Cerrá la puerta del depto con llave y la puerta principal del edificio',
+        'info.laundry.title': 'Lavadero', 'info.laundry.desc': 'Último piso, gratis, traé tu propio jabón',
+        'info.bbq.title': 'Parrilla', 'info.bbq.desc': 'En la terraza, gratis, hay que reservar (anotarse en el cuaderno), sin música fuerte, limpiar después de usar',
+        'info.pool.title': 'Pileta', 'info.pool.desc': 'En la terraza, gratis, sin guardavidas, supervisar a los menores, no usar el ascensor mojado',
+        'info.subte.title': 'Subte', 'info.subte.desc': 'Línea D (Plaza Italia, Scalabrini Ortiz) - Sistema de metro limpio y eficiente',
+        'info.buses.title': 'Colectivos', 'info.buses.desc': 'Varias líneas recorren el barrio - Usá tarjeta SUBE en los kioscos',
+        'info.taxis.title': 'Taxis', 'info.taxis.desc': 'Uber y taxis locales disponibles - Usá siempre taxis oficiales o apps',
+        'emergency.police': 'Policía / Bomberos', 'emergency.extinguisher': 'Matafuego', 'emergency.hallway': 'En el pasillo', 'emergency.ambulance': 'Ambulancia',
+        'payment.title': 'Formas de pago',
+        'payment.intro': 'Para pagos directos, estadías extendidas o servicios extra, podés pagar por transferencia bancaria con los datos de abajo.',
+        'payment.usa.title': 'Estados Unidos (USD)', 'payment.europe.title': 'Europa (EUR / IBAN)', 'payment.argentina.title': 'Argentina (ARS)',
+        'payment.cash.title': 'Efectivo (USD, EUR y ARS)',
+        'payment.cash.desc': 'También aceptamos efectivo en dólares, euros o pesos argentinos — se lo entregás directamente a tu anfitriona, sin necesidad de datos bancarios. Escribinos por WhatsApp para coordinarlo.',
+        'payment.holder': 'Titular', 'payment.accountNumber': 'Número de cuenta', 'payment.accountType': 'Tipo de cuenta',
+        'payment.routing': 'Routing (ACH/Wire)', 'payment.bank': 'Banco', 'payment.bankApp': 'Banco / App',
+        'payment.whatsappBtn': 'Escribir por WhatsApp para los datos completos',
+        'payment.note': 'Por seguridad, los números de cuenta completos no están publicados acá. Los compartimos de forma privada por WhatsApp y confirmamos los datos antes de que hagas cualquier transferencia — esto también te protege de estafas con datos bancarios alterados.',
+        'discover.title': 'Descubrí', 'discover.subtitle': 'Nuestros lugares favoritos en Palermo y alrededores',
+        'discover.search': 'Buscar restaurantes, bares, actividades…', 'discover.sortNearest': 'Más cerca primero',
+        'discover.empty': 'No se encontraron lugares', 'discover.emptySaved': 'Tocá el corazón de un lugar para guardarlo acá',
+        'discover.walk': '{n} min caminando', 'discover.km': 'a {n} km', 'discover.directions': 'Cómo llegar', 'discover.save': 'Guardar', 'discover.saved': 'Guardado',
+        'events.title': 'Eventos y experiencias', 'events.subtitle': 'Qué hay durante tu estadía', 'events.empty': 'No hay eventos próximos por ahora',
+        'events.weekly': 'Semanal', 'events.today': 'Hoy', 'events.tomorrow': 'Mañana', 'events.share': 'Compartir',
+        'copied': '¡Copiado!',
+        'category.All': 'Todos', 'category.Restaurants': 'Restaurantes', 'category.Cafes': 'Cafés', 'category.Bars': 'Bares', 'category.Nightlife': 'Vida Nocturna',
+        'category.Listening Bars': 'Bares de Vinilos', 'category.Activities': 'Actividades', 'category.Saved': 'Guardados',
+        'eventcat.all': 'Todos', 'eventcat.music': 'Música', 'eventcat.culture': 'Cultura', 'eventcat.sports': 'Deportes',
+    }
+};
+
+let currentLang = store.get('sb-lang') || ((navigator.language || 'en').toLowerCase().startsWith('es') ? 'es' : 'en');
+const t = key => (T[currentLang] && T[currentLang][key]) || key;
+const locale = () => currentLang === 'es' ? 'es-AR' : 'en-US';
+
+function applyStaticTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.documentElement.lang = currentLang;
+    $('langEnBtn').classList.toggle('active', currentLang === 'en');
+    $('langEsBtn').classList.toggle('active', currentLang === 'es');
+    $('searchInput').placeholder = t('discover.search');
+    updateAmenBtn();
+}
+
+function setLang(lang) {
+    currentLang = lang;
+    store.set('sb-lang', lang);
+    applyStaticTranslations();
+    renderAll();
+    updateTime();
+}
+
+// ===================== Theme =====================
+let mapInstance = null, tileLayer = null;
+function applyTheme(th) {
+    document.documentElement.dataset.theme = th;
+    $('themeBtn').innerHTML = ic(th === 'dark' ? 'sun' : 'moon');
+    const m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', th === 'dark' ? '#121212' : '#ffffff');
+    if (mapInstance) setTiles();
+}
+function toggleTheme() {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    store.set('sb-theme', next);
+    applyTheme(next);
+}
+
+// ===================== Data =====================
         const restaurants = [
-            { name: 'Don Julio', address: 'Guatemela 4699', category: 'Restaurants', phone: '+54 11 4832-6058', website: 'donjulio.com.ar', description: 'Premium steakhouse with exceptional beef cuts and wine selection.', description_es: 'Parrilla premium con cortes de carne excepcionales y gran selección de vinos.' },
+            { name: 'Don Julio', address: 'Guatemala 4699', category: 'Restaurants', phone: '+54 11 4832-6058', website: 'donjulio.com.ar', description: 'Premium steakhouse with exceptional beef cuts and wine selection.', description_es: 'Parrilla premium con cortes de carne excepcionales y gran selección de vinos.' },
             { name: 'La Cabrera', address: 'José Antonio Cabrera 5099', category: 'Restaurants', phone: '+54 11 4831-7002', website: 'lacabrera.com.ar', description: 'Famous parrilla with excellent service and atmosphere.', description_es: 'Parrilla famosa con excelente servicio y ambiente.' },
             { name: 'Narda Comedor', address: 'Humboldt 1573', category: 'Restaurants', phone: '+54 11 3914-1576', description: 'Home-style gourmet cooking in relaxed setting.', description_es: 'Cocina gourmet casera en ambiente relajado.' },
             { name: 'Anafe', address: 'Arévalo 1402', category: 'Restaurants', phone: '+54 11 3965-3888', description: 'Contemporary bistro with creative dishes.', description_es: 'Bistró contemporáneo con platos creativos.' },
@@ -1523,6 +693,7 @@
         const bars = [
             { name: 'Florería Atlántico', address: 'Arroyo 872', category: 'Bars', phone: '+54 11 4313-6093', description: 'Hidden speakeasy bar with craft cocktails.', description_es: 'Speakeasy escondido con cócteles de autor.' },
             { name: 'Gran Dabbang', address: 'Scalabrini Ortiz 1543', category: 'Bars', phone: '+54 11 4834-1314', description: 'Fusion cocktails blending Asian and Argentine influences.', description_es: 'Cócteles fusión con influencias asiáticas y argentinas.' },
+            { name: 'Pony Line', address: 'Posadas 1086 (Four Seasons)', category: 'Bars', description: 'Award-winning hotel bar at the Four Seasons with a cocktail menu inspired by Argentina and DJ nights midweek.', description_es: 'Bar de hotel premiado en el Four Seasons, con una carta de cócteles inspirada en la Argentina y noches de DJ entre semana.' },
             { name: 'Presidente Bar', address: 'Hotel Alvear', category: 'Bars', phone: '+54 11 4808-2100', description: 'Classic cocktail bar in prestigious hotel.', description_es: 'Bar de cócteles clásico en hotel prestigioso.' },
             { name: 'Café Tortoni', address: 'Av. de Mayo 825', category: 'Bars', phone: '+54 11 4342-4328', description: 'Historic café since 1858, iconic Buenos Aires destination.', description_es: 'Café histórico desde 1858, ícono porteño.' },
             { name: 'LAB Training Center', address: 'Honduras 5507', category: 'Bars', phone: '+54 11 6379-0048', description: 'Specialty coffee and training space.', description_es: 'Café de especialidad y espacio de formación.' },
@@ -1535,27 +706,27 @@
         ];
 
         const nightlife = [
-            { name: 'Crobar', address: 'Paseo de la Infanta', category: 'Nightlife', website: 'crobar.com.ar', description: 'Legendary mega club with world-class DJs and dancers.', description_es: 'Mega club legendario con DJs y bailarines de primer nivel.' },
-            { name: 'Jet Lounge', address: 'Av. Rafael Obligado', category: 'Nightlife', description: 'Upscale nightclub on Costanera Norte with river views.', description_es: 'Nightclub exclusivo en Costanera Norte con vista al río.' },
-            { name: 'Tequila', address: 'Honduras 5318', category: 'Nightlife', description: 'Bar and club with live DJ sets and packed dance floor.', description_es: 'Bar y club con DJ en vivo y pista siempre llena.' },
-            { name: 'Niceto Club', address: 'Niceto Vega 5510', category: 'Nightlife', website: 'nicetoclub.com', description: 'Live music and parties with diverse programming.', description_es: 'Música en vivo y fiestas con programación variada.' },
-            { name: 'Kika', address: 'Honduras 5339', category: 'Nightlife', description: 'Multi-floor club with different music styles each level.', description_es: 'Club de varios pisos, un estilo musical por nivel.' },
-            { name: 'The Roxy', address: 'Av. Rivadavia', category: 'Nightlife', description: 'Rock club with live bands and energetic crowds.', description_es: 'Club de rock con bandas en vivo y ambiente enérgico.' },
-            { name: 'Terrazas del Este', address: 'Cecilia Grierson 225', category: 'Nightlife', description: 'Open-air club with spectacular city and river views.', description_es: 'Club al aire libre con vistas espectaculares a la ciudad y al río.' },
-            { name: 'Congo', address: 'Honduras 5329', category: 'Nightlife', description: 'Electronic music focused club for house and techno.', description_es: 'Club enfocado en música electrónica, house y techno.' }
+            { name: 'La Uat Bar', address: 'Thames 1627, Palermo Soho', category: 'Nightlife', description: 'Neon-lit 80s and 90s bar hidden behind Cacho Rotisería, by the creator of Tres Monos. Reinvented 90s cocktails. A few blocks from the studio.', description_es: 'Bar con neones y música de los 80 y 90 escondido detrás de Cacho Rotisería, creado por el bartender de Tres Monos. Cócteles noventosos reinventados. A pocas cuadras del estudio.' },
+            { name: 'Misión BA', address: 'Godoy Cruz 1715, Palermo', category: 'Nightlife', description: 'Calm bar with food until midnight, then a hidden dance floor behind what looks like a bathroom, with house, old-school reggaeton and cachengue.', description_es: 'Bar tranquilo con comida hasta medianoche y, después, una pista secreta detrás de lo que parece un baño, con house, reggaetón viejo y cachengue.' },
+            { name: 'Kika Club', address: 'Honduras 5339, Palermo Soho', category: 'Nightlife', description: 'Palermo Soho club with a different music style each night, typically Thursday to Saturday from midnight.', description_es: 'Club de Palermo Soho con un estilo musical distinto cada noche, por lo general de jueves a sábado desde la medianoche.' },
+            { name: 'Porto Soho', address: 'Av. Scalabrini Ortiz 1425, Palermo Soho', category: 'Nightlife', description: 'One of the trendiest Palermo Soho clubs for reggaeton, cachengue and cumbia. Usually Friday and Saturday from 11:30PM.', description_es: 'Uno de los boliches más de moda de Palermo Soho: reggaetón, cachengue y cumbia. Suele abrir viernes y sábados desde las 23:30.' },
+            { name: 'Niceto Club', address: 'Niceto Vega 5510, Palermo / Villa Crespo', category: 'Nightlife', website: 'nicetoclub.com', description: 'Legendary venue on the Palermo-Villa Crespo border for live international acts and parties. Check the schedule for each night.', description_es: 'Mítico club en el límite Palermo-Villa Crespo con shows internacionales en vivo y fiestas. Revisá la agenda de cada noche.' },
+            { name: 'Costa 7070', address: 'Av. Costanera Rafael Obligado 7070, Costanera Norte', category: 'Nightlife', description: 'Riverside multi-space by bartender Inés de los Santos: Mediterranean tapas and paellas, cocktails, and an 80s-inspired dance floor.', description_es: 'Multiespacio frente al río de la bartender Inés de los Santos: tapas y paellas mediterráneas, tragos y una pista inspirada en los 80.' },
+            { name: 'Augusto y Augusta', address: 'Av. Ernesto Tornquist 6385, Palermo (Golf Palermo)', category: 'Nightlife', description: 'Two lakeside spots for ages 30+: dinner first, then stay to dance to cachengue and current hits. Outdoor bar and cozy indoor room.', description_es: 'Dos espacios junto a los lagos para mayores de 30: primero cenás y después te quedás a bailar cachengue y hits del momento. Bar al aire libre y salón cerrado.' },
+            { name: 'ARTLAB', address: 'Roseti 93, Villa Crespo / Chacarita', category: 'Nightlife', description: 'Warehouse with a listening bar, art gallery and hybrid studio. Some Fridays it turns into a club with avant-garde DJ sets and visuals.', description_es: 'Galpón con listening bar, galería de arte y estudio híbrido. Algunos viernes se convierte en boliche con DJs de vanguardia y visuales.' },
+            { name: 'Suma', address: 'Julián Álvarez 890, Villa Crespo', category: 'Nightlife', description: 'Modern cantina with the spirit of a social club: easy dinner early, then DJs, vinyl and live sets as the night goes on.', description_es: 'Cantina moderna con espíritu de club social: cena tranquila temprano y, más tarde, DJs, vinilos y shows en vivo.' },
+            { name: 'Santos 4040', address: 'Santos Dumont 4040, Chacarita', category: 'Nightlife', description: 'Chacarita venue known for live music, performance and art. Check the agenda before going.', description_es: 'Sala de Chacarita conocida por la música en vivo, la performance y el arte. Revisá la agenda antes de ir.' },
+            { name: 'Deseo', address: 'Av. Chorroarín 1040, Villa Ortúzar', category: 'Nightlife', description: 'Former textile factory by designer Sergio Lacroix, next to Chacarita: dance, art and daytime Sunday sessions.', description_es: 'Ex fábrica textil diseñada por Sergio Lacroix, pegada a Chacarita: baile, arte y ciclo de domingos a plena luz del día.' }
         ];
 
         const listeningBars = [
-            { name: 'Pony Line', address: 'Posadas 1086 (Four Seasons)', category: 'Listening Bars', description: 'Vinyl bar with high-fidelity sound system at luxury hotel.', description_es: 'Bar de vinilos con sistema de sonido de alta fidelidad en hotel de lujo.' },
-            { name: 'Hifi Bar', address: 'Thames 1885', category: 'Listening Bars', description: 'Dedicated listening bar with vinyl-only collection.', description_es: 'Listening bar dedicado, colección exclusivamente en vinilo.' },
-            { name: 'Apóstoles', address: 'Uriarte 1603', category: 'Listening Bars', description: 'Wine and vinyl bar with curated record selection.', description_es: 'Bar de vinos y vinilos con selección curada.' },
-            { name: 'Le Piano du Lac', address: 'Humboldt 1882', category: 'Listening Bars', description: 'Jazz and vinyl in intimate setting.', description_es: 'Jazz y vinilos en ambiente íntimo.' },
-            { name: 'Bar El Federal', address: 'Carlos Calvo 599', category: 'Listening Bars', description: 'Historic bar with occasional live music performances.', description_es: 'Bar histórico con música en vivo ocasional.' },
-            { name: 'Boris Club', address: 'Gorriti 5568', category: 'Listening Bars', description: 'Cocktails with carefully curated playlists.', description_es: 'Cócteles con playlists cuidadosamente seleccionadas.' },
-            { name: 'Uptown BA', address: 'Arévalo 1462', category: 'Listening Bars', description: 'Jazz and soul listening room with quality sound.', description_es: 'Sala de escucha de jazz y soul con gran calidad de sonido.' },
-            { name: 'The Harrison Speakeasy', address: 'Malabia 1738', category: 'Listening Bars', description: 'Hidden bar hosting vinyl sessions and craft drinks.', description_es: 'Bar escondido con sesiones de vinilo y tragos de autor.' },
-            { name: 'Magdalena\'s Party', address: 'Thames 1795', category: 'Listening Bars', description: 'Wine bar with curated music program.', description_es: 'Wine bar con programación musical curada.' },
-            { name: 'Doppelgänger', address: 'Av. Juan de Garay 500', category: 'Listening Bars', description: 'Vinyl bar with dark, intimate atmosphere.', description_es: 'Bar de vinilos con atmósfera oscura e íntima.' }
+            { name: 'Victor Audio Bar', address: 'Soler 5130, Palermo Soho', category: 'Listening Bars', description: "Buenos Aires' first listening bar: vinyl on a hi-fi system, a headphone jukebox and martinis by the Tres Monos team. Tue-Sat from 8PM.", description_es: 'El primer listening bar de Buenos Aires: vinilos en equipo hi-fi, jukebox con auriculares y martinis del equipo de Tres Monos. Mar a sáb desde las 20 h.' },
+            { name: 'Bimbi Nilo', address: 'José León Pagano 2750', category: 'Listening Bars', description: 'Hidden basement lounge down a discreet staircase: custom hi-fi sound, vinyl (jazz, soul, soft electronic) and classic cocktails. Tue-Sat 8PM-2AM.', description_es: 'Lounge secreto en un subsuelo, al bajar una escalera discreta: sonido hi-fi a medida, vinilos (jazz, soul, electrónica suave) y cócteles clásicos. Mar a sáb de 20 a 2 h.' },
+            { name: 'Gris Gris', address: 'Palermo Hollywood', category: 'Listening Bars', description: 'Japanese jazz-kissa inspired bar in Palermo Hollywood: jazz, soul, funk and afrobeat on vinyl with acoustics designed for analog sound.', description_es: 'Bar inspirado en los jazz kissa japoneses, en Palermo Hollywood: jazz, soul, funk y afrobeat en vinilo, con acústica pensada para el sonido analógico.' },
+            { name: 'Mixtape Listening Bar', address: 'Franklin D. Roosevelt 1806, 1° piso, Belgrano', category: 'Listening Bars', description: 'Japanese kissa-style listening bar behind a heavy curtain in Belgrano: dark room with acoustic treatment, vinyl sessions and signature cocktails.', description_es: 'Listening bar estilo kissa japonés detrás de una pesada cortina en Belgrano: sala oscura con tratamiento acústico, sesiones de vinilo y cócteles de autor.' },
+            { name: 'Cucha del Pari', address: 'Batalla del Pari 916, La Paternal', category: 'Listening Bars', description: 'Relaxed neighborhood take on the listening bar: record collection, selected wines and frequent cultural programming. Tue-Sat 6:30PM-1AM.', description_es: 'Versión barrial y relajada del listening bar: colección de discos, vinos seleccionados y programación cultural frecuente. Mar a sáb de 18:30 a 1 h.' },
+            { name: 'Jazz Voyeur', address: 'Posadas 1557 (Meliá Recoleta Plaza), Recoleta', category: 'Listening Bars', description: 'Classic New York-style jazz club in a hotel basement: small tables, low lights and live jazz, blues and soul. Check the schedule and book ahead.', description_es: 'Club de jazz clásico al estilo neoyorquino en el subsuelo de un hotel: mesas pequeñas, luces bajas y jazz, blues y soul en vivo. Revisá la agenda y reservá.' },
+            { name: 'Sótano C Art Media', address: 'Av. Corrientes 6277, Chacarita', category: 'Listening Bars', description: 'Jazz-focused bar inside the C Art Media cultural complex: live music, tapas, cocktails and sushi in an intimate, contemplative setting.', description_es: 'Bar enfocado en el jazz dentro del complejo cultural C Art Media: música en vivo, tapeo, cócteles y sushi en un ambiente íntimo.' }
         ];
 
         const activities = [
@@ -1569,314 +740,7 @@
             { name: 'Feria de San Pedro Telmo', address: 'Plaza Dorrego', category: 'Activities', description: 'Sunday market with antiques, art, and street performers.', description_es: 'Feria dominical con antigüedades, arte y artistas callejeros.' }
         ];
 
-        let events = [
-            { name: 'Free Walking Tour', date: '2026-07-24', location: 'Plaza de Mayo (start point)', time: 'Daily · 10AM & 3PM', time_es: 'Diario · 10 y 15 h', icon: '🚶', category: 'culture', description: 'Free guided walking tours covering Buenos Aires history, architecture and culture. Tips-based. Available in English and Spanish.', description_es: 'Recorridos guiados gratuitos por la historia, arquitectura y cultura de Buenos Aires. A voluntad (propina). Disponible en inglés y español.' },
-            { name: 'San Telmo Market', date: '2026-07-26', location: 'Defensa Street, San Telmo', time: 'Every Sunday · 10AM-5PM', time_es: 'Todos los domingos · 10 a 17 h', icon: '🛍️', category: 'culture', description: 'Antiques, crafts, tango, and street performers in the historic San Telmo neighborhood. One of the best open-air markets in South America.', description_es: 'Antigüedades, artesanías, tango y artistas callejeros en el histórico barrio de San Telmo. Una de las mejores ferias al aire libre de Sudamérica.' },
-            { name: 'La Bomba de Tiempo', date: '2026-07-27', location: 'Ciudad Cultural Konex, Sarmiento 3131', time: 'Every Monday · 7PM', time_es: 'Todos los lunes · 19 h', icon: '🥁', category: 'music', description: 'Legendary percussion show with improvised rhythms. An unmissable Buenos Aires experience every Monday night. Tickets at the door.', description_es: 'Show legendario de percusión con ritmos improvisados. Una experiencia porteña imperdible cada lunes. Entradas en la puerta.' },
-            { name: 'Tango Night at La Viruta', date: '2026-07-28', location: 'La Viruta, Armenia 1366, Palermo', time: 'Tue, Wed, Fri · 11PM', time_es: 'Mar, Mié, Vie · 23 h', icon: '💃', category: 'music', description: 'Authentic milonga experience with live tango orchestra. Classes for beginners earlier in the evening. Walking distance from Studio Borges.', description_es: 'Milonga auténtica con orquesta de tango en vivo. Clases para principiantes más temprano. A pocas cuadras de Studio Borges.' },
-            { name: 'Dan Flavin at MALBA', date: '2026-07-29', location: 'Av. Figueroa Alcorta 3415, Palermo', time: 'Through Aug 26 · Thu-Mon 12-8PM', time_es: 'Hasta el 26 de agosto · Jue-Lun 12 a 20 h', icon: '🎨', category: 'culture', description: "Landmark light installation exhibition at MALBA, part of the museum's 25th anniversary program. 15 min walk from Studio Borges.", description_es: 'Exposición de instalaciones lumínicas en el MALBA, parte del programa por el 25° aniversario del museo. A 15 min caminando de Studio Borges.' },
-            { name: 'Rosalía', date: '2026-08-01', location: 'Movistar Arena, Humboldt 450', time: 'Aug 1, 2, 4 & 6 · 9PM', time_es: '1, 2, 4 y 6 de agosto · 21 h', icon: '🎤', category: 'music', description: 'International pop sensation Rosalía brings her world tour to Buenos Aires for four highly anticipated nights.', description_es: 'La sensación del pop internacional Rosalía llega a Buenos Aires con su gira mundial en cuatro noches muy esperadas.' },
-            { name: 'Feria de Mataderos', date: '2026-08-02', location: 'Av. Lisandro de la Torre 2200', time: 'Sundays · 11AM-7PM', time_es: 'Domingos · 11 a 19 h', icon: '🇦🇷', category: 'culture', description: 'Traditional gaucho fair with folk music, dancing, artisan crafts and authentic Argentine street food. A true cultural immersion.', description_es: 'Feria tradicional gauchesca con música folclórica, baile, artesanías y comida callejera argentina auténtica. Una inmersión cultural total.' },
-            { name: 'Carin León', date: '2026-08-07', location: 'Movistar Arena, Humboldt 450', time: 'Aug 7 · 9PM', time_es: '7 de agosto · 21 h', icon: '🎸', category: 'music', description: 'Regional Mexican star Carin León performs live in Buenos Aires.', description_es: 'El astro del regional mexicano Carin León se presenta en vivo en Buenos Aires.' },
-            { name: 'Soda Stereo', date: '2026-08-10', location: 'Movistar Arena, Humboldt 450', time: 'Aug 10, 11, 12 & 14 · 9PM', time_es: '10, 11, 12 y 14 de agosto · 21 h', icon: '🎸', category: 'music', description: 'Argentine rock icons Soda Stereo return to the stage for a run of highly anticipated shows.', description_es: 'Los íconos del rock argentino Soda Stereo vuelven a los escenarios en una serie de shows muy esperados.' },
-            { name: 'Medio Maratón Internacional de Buenos Aires', date: '2026-08-23', location: 'Costanera / Palermo route', time: 'Sun Aug 23 · Morning', time_es: 'Dom 23 de agosto · Por la mañana', icon: '🏃', category: 'sports', description: "One of Argentina's biggest running events, with thousands of runners through the city's avenues. Expect street closures along the route.", description_es: 'Una de las carreras más grandes de Argentina, con miles de corredores por las avenidas porteñas. Puede haber cortes de calles en el recorrido.' }
-        ];
 
-        // Events are fetched from events.json at runtime so the list can be refreshed
-        // without touching this file. If the fetch fails (offline, etc.) the
-        // hardcoded list above is used as a fallback.
-        async function loadEventsData() {
-            try {
-                const res = await fetch('events.json?t=' + Date.now());
-                if (res.ok) {
-                    const data = await res.json();
-                    if (Array.isArray(data) && data.length) events = data;
-                }
-            } catch (e) {
-                console.error('events.json fetch failed, using built-in fallback list', e);
-            }
-            loadHomeEvents();
-            loadEvents();
-        }
-
-        function copyText(value, btn) {
-            navigator.clipboard.writeText(value);
-            const original = btn.textContent;
-            btn.textContent = '✓';
-            setTimeout(() => { btn.textContent = original; }, 1500);
-        }
-
-        const allDiscover = [...restaurants, ...bars, ...nightlife, ...listeningBars, ...activities];
-        let currentFilter = 'All';
-        let mapInstance;
-        let lastWeatherData = null;
-
-        // Utility Functions
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
-
-            if (pageId === 'mapPage') {
-                setTimeout(() => {
-                    if (mapInstance) mapInstance.invalidateSize();
-                }, 100);
-            }
-        }
-
-        function openModal(title, body) {
-            document.getElementById('sheetTitle').textContent = title;
-            document.getElementById('sheetBody').innerHTML = body;
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('bottomSheet').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-            document.getElementById('bottomSheet').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        // Update Time
-        function updateTime() {
-            const options = { timeZone: 'America/Argentina/Buenos_Aires', hour: '2-digit', minute: '2-digit', hour12: false };
-            const time = new Date().toLocaleString('en-US', options);
-            document.getElementById('currentTime').textContent = time;
-        }
-        updateTime();
-        setInterval(updateTime, 1000);
-
-        // WiFi Copy
-        document.getElementById('wifiCopyBtn').addEventListener('click', () => {
-            navigator.clipboard.writeText('internet2019');
-            const btn = document.getElementById('wifiCopyBtn');
-            btn.textContent = t('wifi.copied');
-            setTimeout(() => { btn.textContent = t('wifi.copy'); }, 2000);
-        });
-
-        // Weather & Exchange
-        async function loadWeather() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-34.5875&longitude=-58.4274&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Argentina/Buenos_Aires');
-                const data = await res.json();
-                lastWeatherData = data;
-                const temp = Math.round(data.current.temperature_2m);
-                document.getElementById('temperature').textContent = temp + '°C';
-
-                // Weather icon based on code
-                const code = data.current.weather_code;
-                let icon = '🌤️';
-                if (code === 0 || code === 1) icon = '☀️';
-                else if (code === 2 || code === 3) icon = '🌤️';
-                else if (code === 45 || code === 48) icon = '🌫️';
-                else if (code >= 51 && code <= 67) icon = '🌧️';
-                else if (code >= 71 && code <= 86) icon = '❄️';
-                document.getElementById('weatherIcon').textContent = icon;
-
-                renderForecast();
-            } catch (e) {
-                console.error('Weather error:', e);
-            }
-        }
-
-        function renderForecast() {
-            if (!lastWeatherData) return;
-            const data = lastWeatherData;
-            const container = document.getElementById('forecastContainer');
-            container.innerHTML = '';
-            const daysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            const daysEs = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-            const dayNames = currentLang === 'es' ? daysEs : daysEn;
-            for (let i = 0; i < 7 && i < data.daily.temperature_2m_max.length; i++) {
-                const max = Math.round(data.daily.temperature_2m_max[i]);
-                const min = Math.round(data.daily.temperature_2m_min[i]);
-                const card = document.createElement('div');
-                card.className = 'scroll-card';
-                card.innerHTML = `<h4>${dayNames[i]}</h4><div style="font-size: 18px;">${max}°</div><p>${min}°</p>`;
-                container.appendChild(card);
-            }
-        }
-
-        async function loadExchange() {
-            try {
-                const res = await fetch('https://dolarapi.com/v1/dolares/blue');
-                const data = await res.json();
-                document.getElementById('exchangeRate').textContent = '$' + data.venta.toFixed(2);
-            } catch (e) {
-                console.error('Exchange error:', e);
-            }
-        }
-
-        loadWeather();
-        loadExchange();
-        setInterval(loadExchange, 300000);
-
-        // Home Events
-        function loadHomeEvents() {
-            const container = document.getElementById('homeEventsContainer');
-            container.innerHTML = '';
-            const upcoming = events.filter(e => e.date >= todayISO()).slice(0, 8);
-            const list = upcoming.length ? upcoming : events;
-            list.forEach(event => {
-                const card = document.createElement('div');
-                card.className = 'scroll-card';
-                card.style.cursor = 'pointer';
-                const time = currentLang === 'es' ? (event.time_es || event.time) : event.time;
-                card.innerHTML = `<div style="font-size: 24px; margin-bottom: 8px;">${event.icon}</div><h4>${event.name}</h4><p>${time}</p>`;
-                card.onclick = () => showEventModal(event);
-                container.appendChild(card);
-            });
-        }
-
-        function todayISO() {
-            const now = new Date();
-            return now.toISOString().slice(0, 10);
-        }
-
-        // Discover Page
-        function loadDiscover() {
-            const container = document.getElementById('filterPills');
-            container.innerHTML = '';
-            const categories = ['All', 'Restaurants', 'Bars', 'Nightlife', 'Listening Bars', 'Activities'];
-            categories.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-filter' + (cat === currentFilter ? ' active' : '');
-                btn.textContent = t('category.' + cat);
-                btn.onclick = (e) => filterDiscover(cat, e.target);
-                container.appendChild(btn);
-            });
-
-            filterDiscover(currentFilter, container.querySelector('.active'));
-        }
-
-        function filterDiscover(category, btnEl) {
-            currentFilter = category;
-            document.querySelectorAll('#filterPills .btn-filter').forEach(btn => btn.classList.remove('active'));
-            if (btnEl) btnEl.classList.add('active');
-
-            const filtered = category === 'All' ? allDiscover : allDiscover.filter(item => item.category === category);
-            const list = document.getElementById('discoverList');
-            list.innerHTML = '';
-
-            filtered.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'discover-card';
-                card.innerHTML = `
-                    <div class="discover-card-header">
-                        <h4>${item.name}</h4>
-                        <span class="category-tag">${t('category.' + item.category)}</span>
-                    </div>
-                    <p>${item.address}</p>
-                `;
-                card.onclick = () => showDiscoverModal(item);
-                list.appendChild(card);
-            });
-        }
-
-        function showDiscoverModal(item) {
-            const desc = currentLang === 'es' ? (item.description_es || item.description) : item.description;
-            let body = `<div class="sheet-info">
-                <strong>${item.name}</strong><br>
-                ${item.address}<br><br>`;
-
-            if (item.phone) body += `<a href="tel:${item.phone.replace(/\s/g, '')}">📞 ${item.phone}</a><br>`;
-            if (item.website) body += `<a href="https://${item.website}" target="_blank">🌐 ${item.website}</a><br>`;
-
-            body += `<br>${desc}`;
-            body += '</div>';
-
-            openModal(item.name, body);
-        }
-
-        loadDiscover();
-
-        // Events Page
-        function loadEvents() {
-            const list = document.getElementById('eventsList');
-            list.innerHTML = '';
-            const sorted = [...events].sort((a, b) => a.date.localeCompare(b.date));
-
-            // Group events by date
-            const grouped = {};
-            sorted.forEach(event => {
-                if (!grouped[event.date]) grouped[event.date] = [];
-                grouped[event.date].push(event);
-            });
-
-            // Render grouped by date
-            Object.entries(grouped).forEach(([date, dateEvents]) => {
-                // Date header
-                const dateObj = new Date(date + 'T12:00:00');
-                const locale = currentLang === 'es' ? 'es-AR' : 'en-US';
-                const dayName = dateObj.toLocaleDateString(locale, { weekday: 'long' });
-                const monthDay = dateObj.toLocaleDateString(locale, { month: 'long', day: 'numeric' });
-
-                const dateHeader = document.createElement('div');
-                dateHeader.style.cssText = 'margin: 20px 0 10px 0; padding: 8px 0; border-bottom: 1px solid rgba(201,169,110,0.3);';
-                dateHeader.innerHTML = `<div style="font-family: 'Playfair Display', serif; font-size: 18px; color: #c9a96e; font-weight: 700; text-transform: capitalize;">${dayName}</div><div style="font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 2px; text-transform: capitalize;">${monthDay}, ${dateObj.getFullYear()}</div>`;
-                list.appendChild(dateHeader);
-
-                // Events for this date
-                dateEvents.forEach(event => {
-                    const time = currentLang === 'es' ? (event.time_es || event.time) : event.time;
-                    const catLabel = event.category ? t('eventcat.' + event.category).toUpperCase() : '';
-                    const card = document.createElement('div');
-                    card.className = 'event-card';
-                    card.innerHTML = `
-                        <div class="event-header">
-                            <div class="event-icon">${event.icon}</div>
-                            <div style="flex: 1;">
-                                <h3 class="event-title">${event.name}</h3>
-                                <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;">${catLabel}</div>
-                            </div>
-                        </div>
-                        <div class="event-meta">
-                            <div>⏰ ${time}</div>
-                            <div>📍 ${event.location}</div>
-                        </div>
-                    `;
-                    card.onclick = () => showEventModal(event);
-                    list.appendChild(card);
-                });
-            });
-        }
-
-        function showEventModal(event) {
-            const time = currentLang === 'es' ? (event.time_es || event.time) : event.time;
-            const desc = currentLang === 'es' ? (event.description_es || event.description) : event.description;
-            const body = `<div class="sheet-info">
-                <strong>${event.name}</strong><br>
-                📍 ${event.location}<br>
-                ⏰ ${time}<br><br>
-                ${desc}
-            </div>`;
-            openModal(event.name, body);
-        }
-
-        // Map
-        let mapMarkers = {};
-        let mapFilterState = {};
-
-        function initMap() {
-            mapInstance = L.map('map', { scrollWheelZoom: true }).setView([-34.5875, -58.4274], 14);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: 'CartoDB',
-                maxZoom: 19
-            }).addTo(mapInstance);
-
-            // Studio Borges marker (home)
-            L.marker([-34.5875, -58.4274], {
-                icon: L.divIcon({
-                    className: '',
-                    html: '<div style="background:#c9a96e;color:#111;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.5);">🏠</div>',
-                    iconSize: [28, 28],
-                    iconAnchor: [14, 14]
-                })
-            }).addTo(mapInstance).bindPopup('<strong style="color:#111;">Studio Borges</strong><br>Jorge Luis Borges 2018, Apt 6');
-
-            // POI data with geocoded coordinates from Nominatim
             const poiData = {
                 'Restaurants': {
                     color: '#EF5350', emoji: '🍽️',
@@ -1897,6 +761,7 @@
                     places: [
                         { name: 'Florería Atlántico', addr: 'Arroyo 872', lat: -34.5916, lng: -58.3797, desc: 'Hidden speakeasy with craft cocktails' },
                         { name: 'Gran Dabbang', addr: 'Scalabrini Ortiz 1543', lat: -34.5911, lng: -58.4255, desc: 'Fusion cocktails, Asian-Argentine' },
+                        { name: 'Pony Line', addr: 'Posadas 1086', lat: -34.5906, lng: -58.3826, desc: 'Award-winning hotel bar, Four Seasons' },
                         { name: 'Presidente Bar', addr: 'Alvear 1891', lat: -34.5876, lng: -58.3888, desc: 'Classic cocktail bar, Hotel Alvear' },
                         { name: 'Café Tortoni', addr: 'Av. de Mayo 825', lat: -34.6087, lng: -58.3781, desc: 'Historic café since 1858' },
                         { name: 'LAB Training Center', addr: 'Honduras 5507', lat: -34.5847, lng: -58.4354, desc: 'Specialty coffee and training' },
@@ -1911,29 +776,29 @@
                 'Nightlife': {
                     color: '#AB47BC', emoji: '🎶',
                     places: [
-                        { name: 'Crobar', addr: 'Paseo de la Infanta', lat: -34.5706, lng: -58.4215, desc: 'Mega club with world-class DJs' },
-                        { name: 'Jet Lounge', addr: 'Av. Rafael Obligado', lat: -34.5522, lng: -58.4264, desc: 'Upscale club, Costanera Norte' },
-                        { name: 'Tequila', addr: 'Honduras 5318', lat: -34.5867, lng: -58.4333, desc: 'Bar and club with live DJ sets' },
+                        { name: 'La Uat Bar', addr: 'Thames 1627', lat: -34.5885, lng: -58.4292, desc: '80s/90s neon bar behind Cacho Rotisería' },
+                        { name: 'Misión BA', addr: 'Godoy Cruz 1715', lat: -34.5890, lng: -58.4290, desc: 'Hidden dance floor, Palermo' },
+                        { name: 'Kika Club', addr: 'Honduras 5339', lat: -34.5862, lng: -58.4331, desc: 'Multi-style club' },
+                        { name: 'Porto Soho', addr: 'Scalabrini Ortiz 1425', lat: -34.5890, lng: -58.4258, desc: 'Reggaeton and cachengue' },
                         { name: 'Niceto Club', addr: 'Niceto Vega 5510', lat: -34.5874, lng: -58.4389, desc: 'Live music and parties' },
-                        { name: 'Kika', addr: 'Honduras 5339', lat: -34.5862, lng: -58.4331, desc: 'Multi-floor club' },
-                        { name: 'The Roxy', addr: 'Niceto Vega 5542', lat: -34.5871, lng: -58.4390, desc: 'Rock club with live bands' },
-                        { name: 'Terrazas del Este', addr: 'Cecilia Grierson 225', lat: -34.5983, lng: -58.3648, desc: 'Open-air club, river views' },
-                        { name: 'Congo', addr: 'Honduras 5329', lat: -34.5865, lng: -58.4332, desc: 'Electronic & techno' }
+                        { name: 'Costa 7070', addr: 'Costanera Rafael Obligado 7070', lat: -34.5445, lng: -58.4480, desc: 'Riverside restaurant and 80s dance floor' },
+                        { name: 'Augusto y Augusta', addr: 'Av. Tornquist 6385', lat: -34.5715, lng: -58.4120, desc: 'Lakeside, ages 30+' },
+                        { name: 'ARTLAB', addr: 'Roseti 93', lat: -34.5955, lng: -58.4475, desc: 'Warehouse club, art and listening bar' },
+                        { name: 'Suma', addr: 'Julián Álvarez 890', lat: -34.5985, lng: -58.4345, desc: 'Cantina with DJs, Villa Crespo' },
+                        { name: 'Santos 4040', addr: 'Santos Dumont 4040', lat: -34.5855, lng: -58.4560, desc: 'Live music venue, Chacarita' },
+                        { name: 'Deseo', addr: 'Av. Chorroarín 1040', lat: -34.5830, lng: -58.4600, desc: 'Former textile factory club' }
                     ]
                 },
                 'Listening Bars': {
                     color: '#FF9800', emoji: '🎵',
                     places: [
-                        { name: 'Pony Line', addr: 'Posadas 1086', lat: -34.5906, lng: -58.3826, desc: 'Vinyl bar at Four Seasons' },
-                        { name: 'Hifi Bar', addr: 'Thames 1885', lat: -34.5862, lng: -58.4282, desc: 'Vinyl-only listening bar' },
-                        { name: 'Apóstoles', addr: 'Uriarte 1603', lat: -34.5874, lng: -58.4319, desc: 'Wine and vinyl bar' },
-                        { name: 'Le Piano du Lac', addr: 'Humboldt 1882', lat: -34.5835, lng: -58.4340, desc: 'Jazz and vinyl, intimate setting' },
-                        { name: 'Bar El Federal', addr: 'Carlos Calvo 599', lat: -34.6196, lng: -58.3742, desc: 'Historic bar with live music' },
-                        { name: 'Boris Club', addr: 'Gorriti 5568', lat: -34.5845, lng: -58.4380, desc: 'Cocktails with curated playlists' },
-                        { name: 'Uptown BA', addr: 'Arévalo 1462', lat: -34.5830, lng: -58.4429, desc: 'Jazz and soul listening room' },
-                        { name: 'The Harrison Speakeasy', addr: 'Malabia 1738', lat: -34.5898, lng: -58.4258, desc: 'Hidden bar, vinyl sessions' },
-                        { name: "Magdalena's Party", addr: 'Thames 1795', lat: -34.5869, lng: -58.4292, desc: 'Wine bar, curated music' },
-                        { name: 'Doppelgänger', addr: 'Av. Juan de Garay 500', lat: -34.6220, lng: -58.3795, desc: 'Vinyl bar, dark atmosphere' }
+                        { name: 'Victor Audio Bar', addr: 'Soler 5130', lat: -34.5868, lng: -58.4265, desc: 'First listening bar in BA, Palermo Soho' },
+                        { name: 'Bimbi Nilo', addr: 'José León Pagano 2750', lat: -34.5875, lng: -58.4000, desc: 'Hidden hi-fi vinyl lounge' },
+                        { name: 'Gris Gris', addr: 'Palermo Hollywood', lat: -34.5800, lng: -58.4380, desc: 'Jazz-kissa style vinyl bar' },
+                        { name: 'Mixtape Listening Bar', addr: 'Franklin D. Roosevelt 1806, Belgrano', lat: -34.5610, lng: -58.4530, desc: 'Japanese kissa-style listening bar' },
+                        { name: 'Cucha del Pari', addr: 'Batalla del Pari 916, La Paternal', lat: -34.5960, lng: -58.4665, desc: 'Neighborhood vinyl bar' },
+                        { name: 'Jazz Voyeur', addr: 'Posadas 1557', lat: -34.5880, lng: -58.3905, desc: 'New York-style jazz club, Recoleta' },
+                        { name: 'Sótano C Art Media', addr: 'Av. Corrientes 6277', lat: -34.5935, lng: -58.4540, desc: 'Live jazz and cocktails, Chacarita' }
                     ]
                 },
                 'Activities': {
@@ -1951,76 +816,409 @@
                 }
             };
 
-            // Create markers for each category
-            Object.entries(poiData).forEach(([cat, data]) => {
-                mapMarkers[cat] = [];
-                mapFilterState[cat] = true;
-                data.places.forEach(place => {
-                    const marker = L.circleMarker([place.lat, place.lng], {
-                        radius: 7,
-                        fillColor: data.color,
-                        color: '#fff',
-                        weight: 1.5,
-                        opacity: 1,
-                        fillOpacity: 0.85
-                    }).addTo(mapInstance);
 
-                    marker.bindPopup(`
-                        <div style="min-width:160px;">
-                            <strong style="color:#111;font-size:13px;">${data.emoji} ${place.name}</strong><br>
-                            <span style="color:#555;font-size:11px;">📍 ${place.addr}</span><br>
-                            <span style="color:#333;font-size:11px;">${place.desc}</span>
-                        </div>
-                    `);
+const CAFE_NAMES = ['LAB Training Center', 'Lattente', 'Negro Cueva de Café', 'Bioma'];
+const cafes = bars.filter(b => CAFE_NAMES.includes(b.name)).map(b => ({ ...b, category: 'Cafes' }));
+const pureBars = bars.filter(b => !CAFE_NAMES.includes(b.name));
+const allDiscover = [...restaurants, ...cafes, ...pureBars, ...nightlife, ...listeningBars, ...activities];
 
-                    mapMarkers[cat].push(marker);
-                });
-            });
+if (poiData.Bars) {
+    const cafePlaces = poiData.Bars.places.filter(p => CAFE_NAMES.includes(p.name));
+    poiData.Bars.places = poiData.Bars.places.filter(p => !CAFE_NAMES.includes(p.name));
+    poiData.Cafes = { color: '#A8743F', emoji: '☕', places: cafePlaces };
+}
 
-            // Filter buttons
-            const filterDiv = document.getElementById('mapFilters');
-            filterDiv.innerHTML = '';
-            Object.entries(poiData).forEach(([cat, data]) => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-filter active';
-                btn.style.cssText = `border: 1px solid ${data.color}; color: #fff; font-size: 11px; padding: 6px 10px;`;
-                btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${data.color};margin-right:4px;"></span>${t('category.' + cat)}`;
-                btn.onclick = () => {
-                    mapFilterState[cat] = !mapFilterState[cat];
-                    btn.classList.toggle('active');
-                    mapMarkers[cat].forEach(m => {
-                        if (mapFilterState[cat]) {
-                            m.addTo(mapInstance);
-                        } else {
-                            mapInstance.removeLayer(m);
-                        }
-                    });
-                };
-                filterDiv.appendChild(btn);
-            });
+const CAT_EMOJI = { Restaurants: '🍽️', Cafes: '☕', Bars: '🍸', Nightlife: '🎶', 'Listening Bars': '🎵', Activities: '🎭' };
+const CATS = [
+    { k: 'All', e: '🧭' }, { k: 'Restaurants', e: '🍽️' }, { k: 'Cafes', e: '☕' }, { k: 'Bars', e: '🍸' },
+    { k: 'Nightlife', e: '🎶' }, { k: 'Listening Bars', e: '🎵' }, { k: 'Activities', e: '🎭' }, { k: 'Saved', e: '♥' }
+];
+const gcls = c => 'g-' + String(c).replace(/\s+/g, '');
+
+// distances from the apartment
+function haversine(a, b) {
+    const R = 6371, rad = x => x * Math.PI / 180;
+    const dLat = rad(b[0] - a[0]), dLng = rad(b[1] - a[1]);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+}
+const ALIAS = { 'Museo Nacional de Bellas Artes': 'Museo Bellas Artes', 'Feria de San Pedro Telmo': 'Feria San Telmo', 'Planetario Galileo Galilei': 'Planetario' };
+const coordIndex = {};
+Object.values(poiData).forEach(c => c.places.forEach(p => { coordIndex[p.name] = p; }));
+allDiscover.forEach(it => {
+    const p = coordIndex[ALIAS[it.name] || it.name];
+    it.dist = p ? haversine(HOME, [p.lat, p.lng]) : null;
+});
+function distLabel(km) {
+    if (km == null) return '';
+    if (km <= 2.2) return t('discover.walk').replace('{n}', Math.max(1, Math.round(km * 1000 / 66)));
+    return t('discover.km').replace('{n}', km.toFixed(1));
+}
+
+// favorites
+let favs = [];
+try { favs = JSON.parse(store.get('sb-favs') || '[]'); } catch (e) { favs = []; }
+function toggleFav(name, ev) {
+    if (ev) ev.stopPropagation();
+    const i = favs.indexOf(name);
+    if (i >= 0) favs.splice(i, 1); else favs.push(name);
+    store.set('sb-favs', JSON.stringify(favs));
+    renderDiscover();
+}
+
+// ===================== Events =====================
+let events = [];
+let eventFilter = 'all';
+
+function baToday() { return new Date().toLocaleDateString('en-CA', { timeZone: TZ }); }
+function addDays(iso, n) { const d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+function weekday(iso) { return new Date(iso + 'T12:00:00Z').getUTCDay(); }
+
+// Returns the next date this event happens on (or null if finished)
+function nextOccurrence(e, from) {
+    const end = e.until || e.date;
+    if (end < from) return null;
+    if (Array.isArray(e.days) && e.days.length) {
+        let d = e.date > from ? e.date : from;
+        for (let i = 0; i < 14; i++, d = addDays(d, 1)) {
+            if (d > end) return null;
+            if (e.days.includes(weekday(d))) return d;
         }
+        return null;
+    }
+    return e.date > from ? e.date : from;
+}
+function upcomingEvents() {
+    const from = baToday();
+    return events.map(e => ({ ...e, when: nextOccurrence(e, from) }))
+        .filter(e => e.when)
+        .sort((a, b) => a.when.localeCompare(b.when) || a.name.localeCompare(b.name));
+}
+const fmtDate = (iso, opts) => new Date(iso + 'T12:00:00Z').toLocaleDateString(locale(), { timeZone: 'UTC', ...opts });
+const evTime = e => currentLang === 'es' ? (e.time_es || e.time) : e.time;
+const evDesc = e => currentLang === 'es' ? (e.description_es || e.description) : e.description;
+const isRecurring = e => Array.isArray(e.days) && e.days.length > 0;
 
-        // Initialize map when map page is shown
-        const originalShowPage = showPage;
-        showPage = function(pageId) {
-            originalShowPage.call(this, pageId);
-            if (pageId === 'mapPage') {
-                if (!mapInstance) {
-                    setTimeout(() => initMap(), 200);
-                } else {
-                    setTimeout(() => mapInstance.invalidateSize(), 200);
-                }
-            }
-        };
+async function loadEventsData() {
+    try {
+        const res = await fetch('events.json?t=' + Date.now());
+        if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data.length) events = data;
+        }
+    } catch (e) { console.error('events.json fetch failed', e); }
+    renderHomeEvents();
+    renderEvents();
+}
 
-        // Close modal on ESC key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
+function whenLabel(iso) {
+    const today = baToday();
+    if (iso === today) return t('events.today');
+    if (iso === addDays(today, 1)) return t('events.tomorrow');
+    return fmtDate(iso, { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function renderHomeEvents() {
+    const c = $('homeEventsContainer');
+    const list = upcomingEvents().filter(e => !isRecurring(e)).slice(0, 8);
+    const use = list.length ? list : upcomingEvents().slice(0, 8);
+    if (!use.length) { c.innerHTML = '<p class="sub">' + esc(t('events.empty')) + '</p>'; return; }
+    c.innerHTML = use.map((e, i) => `
+        <button class="card" onclick="showEventModal(${events.indexOf(events.find(x => x.name === e.name))})">
+            <div class="tile g-${esc(e.category)}"><span class="badge">${esc(whenLabel(e.when))}</span>${esc(e.icon)}</div>
+            <h4>${esc(e.name)}</h4><p>${esc(evTime(e))}</p>
+        </button>`).join('');
+}
+
+function renderEventCats() {
+    const present = new Set(upcomingEvents().map(e => e.category));
+    const cats = ['all', 'music', 'culture', 'sports'].filter(k => k === 'all' || present.has(k));
+    if (!cats.includes(eventFilter)) eventFilter = 'all';
+    const em = { all: '🧭', music: '🎵', culture: '🎨', sports: '🏃' };
+    $('eventCats').innerHTML = cats.map(k => `<button class="cat ${eventFilter === k ? 'active' : ''}" onclick="setEventFilter('${k}')"><span class="e">${em[k]}</span>${esc(t('eventcat.' + k))}</button>`).join('');
+}
+function setEventFilter(k) { eventFilter = k; renderEventCats(); renderEvents(); }
+
+function renderEvents() {
+    renderEventCats();
+    const list = $('eventsList');
+    const evs = upcomingEvents().filter(e => eventFilter === 'all' || e.category === eventFilter);
+    if (!evs.length) { list.innerHTML = '<div class="empty">' + esc(t('events.empty')) + '</div>'; return; }
+    const groups = {};
+    evs.forEach(e => { (groups[e.when] = groups[e.when] || []).push(e); });
+    list.innerHTML = Object.keys(groups).sort().map(d => {
+        const head = `<div class="ev-day">${esc(fmtDate(d, { weekday: 'long' }))}<small>${esc(fmtDate(d, { month: 'long', day: 'numeric' }))}</small></div>`;
+        const rows = groups[d].map(e => `
+            <div class="ev" onclick="showEventModal(${events.findIndex(x => x.name === e.name)})">
+                <div class="tile g-${esc(e.category)}">${esc(e.icon)}</div>
+                <div><h4>${esc(e.name)}</h4><p>${esc(evTime(e))}</p><p>📍 ${esc(e.location)}</p>
+                <span class="tag">${esc(t('eventcat.' + e.category))}${isRecurring(e) ? ' · ' + esc(t('events.weekly')) : ''}</span></div>
+            </div>`).join('');
+        return head + rows;
+    }).join('');
+}
+
+function mapsLink(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
+
+function showEventModal(i) {
+    const e = events[i]; if (!e) return;
+    const occ = nextOccurrence(e, baToday());
+    const body = `
+        <div class="sheet-tile g-${esc(e.category)}">${esc(e.icon)}</div>
+        <h2>${esc(e.name)}</h2>
+        <span class="tag" style="margin-top:2px">${esc(t('eventcat.' + e.category))}</span>
+        <div class="sheet-meta">
+            ${occ ? `<div><i class="ic">${ic('calendar')}</i><span>${esc(fmtDate(occ, { weekday: 'long', month: 'long', day: 'numeric' }))}</span></div>` : ''}
+            <div><i class="ic">${ic('clock')}</i><span>${esc(evTime(e))}</span></div>
+            <div><i class="ic">${ic('pin')}</i><span>${esc(e.location)}</span></div>
+        </div>
+        <p>${esc(evDesc(e))}</p>
+        <div class="sheet-actions">
+            <a class="btn btn-brand" target="_blank" rel="noopener" href="${mapsLink(e.location + ' Buenos Aires')}">${ic('map')}<span>${esc(t('discover.directions'))}</span></a>
+            ${navigator.share ? `<button class="btn" onclick="shareText(${i})">${ic('share')}<span>${esc(t('events.share'))}</span></button>` : ''}
+        </div>`;
+    openModal(e.name, body);
+}
+function shareText(i) {
+    const e = events[i];
+    navigator.share({ title: e.name, text: e.name + ' — ' + evTime(e) + ' — ' + e.location }).catch(() => {});
+}
+
+// ===================== Discover =====================
+let currentFilter = 'All';
+let sortNearest = true;
+
+function renderCatBar() {
+    $('filterPills').innerHTML = CATS.map(c => `<button class="cat ${currentFilter === c.k ? 'active' : ''}" onclick="setFilter('${c.k}')"><span class="e">${c.e}</span>${esc(t('category.' + c.k))}</button>`).join('');
+}
+function setFilter(k) { currentFilter = k; renderDiscover(); }
+function toggleSort() { sortNearest = !sortNearest; renderDiscover(); }
+
+function renderDiscover() {
+    renderCatBar();
+    $('sortBtn').classList.toggle('on', sortNearest);
+    const q = ($('searchInput').value || '').trim().toLowerCase();
+    let items = allDiscover.filter(it => {
+        if (currentFilter === 'Saved') return favs.includes(it.name);
+        if (currentFilter !== 'All') return it.category === currentFilter;
+        return true;
+    });
+    if (q) items = items.filter(it => (it.name + ' ' + it.address + ' ' + t('category.' + it.category) + ' ' + (it.description || '') + ' ' + (it.description_es || '')).toLowerCase().includes(q));
+    if (sortNearest) items = [...items].sort((a, b) => (a.dist == null ? 99 : a.dist) - (b.dist == null ? 99 : b.dist));
+    const list = $('discoverList');
+    if (!items.length) { list.innerHTML = '<div class="empty" style="grid-column:1/-1">' + esc(currentFilter === 'Saved' && !q ? t('discover.emptySaved') : t('discover.empty')) + '</div>'; return; }
+    list.innerHTML = items.map(it => `
+        <div class="pcard" onclick="showDiscoverModal(${allDiscover.indexOf(it)})">
+            <div class="tile ${gcls(it.category)}">${CAT_EMOJI[it.category] || '📍'}</div>
+            <button class="fav ${favs.includes(it.name) ? 'on' : ''}" aria-label="${esc(t('discover.save'))}" onclick="toggleFav('${esc(it.name).replace(/&#39;/g, "\\'")}', event)">${ic('heart')}</button>
+            <div class="t"><div><h4>${esc(it.name)}</h4><p>${esc(it.address)}</p></div><span class="tag" style="margin:0;height:fit-content;white-space:nowrap">${esc(t('category.' + it.category))}</span></div>
+            ${it.dist != null ? `<p class="dist">🚶 ${esc(distLabel(it.dist))}</p>` : ''}
+        </div>`).join('');
+}
+
+function showDiscoverModal(i) {
+    const it = allDiscover[i]; if (!it) return;
+    const desc = currentLang === 'es' ? (it.description_es || it.description) : it.description;
+    const saved = favs.includes(it.name);
+    const body = `
+        <div class="sheet-tile ${gcls(it.category)}">${CAT_EMOJI[it.category] || '📍'}</div>
+        <h2>${esc(it.name)}</h2>
+        <span class="tag" style="margin-top:2px">${esc(t('category.' + it.category))}</span>
+        <div class="sheet-meta">
+            <div><i class="ic">${ic('pin')}</i><span>${esc(it.address)}</span></div>
+            ${it.dist != null ? `<div><i class="ic">${ic('walk')}</i><span>${esc(distLabel(it.dist))}</span></div>` : ''}
+            ${it.phone ? `<div><i class="ic">${ic('phone')}</i><a href="tel:${esc(it.phone.replace(/\s/g, ''))}">${esc(it.phone)}</a></div>` : ''}
+            ${it.website ? `<div><i class="ic">${ic('globe')}</i><a href="https://${esc(it.website)}" target="_blank" rel="noopener">${esc(it.website)}</a></div>` : ''}
+        </div>
+        <p>${esc(desc)}</p>
+        <div class="sheet-actions">
+            <a class="btn btn-brand" target="_blank" rel="noopener" href="${mapsLink(it.name + ' ' + it.address + ' Buenos Aires')}">${ic('map')}<span>${esc(t('discover.directions'))}</span></a>
+            <button class="btn" onclick="toggleFav(this.dataset.n); closeModal();" data-n="${esc(it.name)}">${ic('heart')}<span>${esc(saved ? t('discover.saved') : t('discover.save'))}</span></button>
+        </div>`;
+    openModal(it.name, body);
+}
+
+function renderNearby() {
+    const pool = allDiscover.filter(it => ['Restaurants', 'Cafes', 'Bars'].includes(it.category) && it.dist != null)
+        .sort((a, b) => a.dist - b.dist).slice(0, 8);
+    $('nearbyContainer').innerHTML = pool.map(it => `
+        <button class="card" onclick="showDiscoverModal(${allDiscover.indexOf(it)})">
+            <div class="tile ${gcls(it.category)}">${CAT_EMOJI[it.category]}</div>
+            <h4>${esc(it.name)}</h4><p>${esc(distLabel(it.dist))}</p>
+        </button>`).join('');
+}
+
+// ===================== UI =====================
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    $(pageId).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));
+    window.scrollTo(0, 0);
+    document.querySelector('.fab').classList.toggle('hidden', pageId === 'mapPage');
+    if (pageId === 'mapPage') {
+        if (!mapInstance) setTimeout(initMap, 60); else setTimeout(() => mapInstance.invalidateSize(), 80);
+    }
+}
+
+function openModal(title, body) {
+    $('sheetTitleTop').textContent = '';
+    $('sheetBody').innerHTML = body;
+    $('modalOverlay').classList.add('active');
+    $('bottomSheet').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+    $('modalOverlay').classList.remove('active');
+    $('bottomSheet').classList.remove('active');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeLightbox(); } });
+
+let toastTimer;
+function toast(msg) {
+    const el = $('toast'); el.textContent = msg; el.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 1600);
+}
+function copyText(value, btn, label) {
+    const done = () => {
+        toast(t('copied'));
+        if (btn && btn.classList.contains('copy-btn')) {
+            btn.classList.add('done'); btn.innerHTML = ic('check');
+            setTimeout(() => { btn.classList.remove('done'); btn.innerHTML = ic('copy'); }, 1500);
+        }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(value).then(done).catch(() => fallbackCopy(value, done));
+    } else fallbackCopy(value, done);
+}
+function fallbackCopy(value, done) {
+    const ta = document.createElement('textarea'); ta.value = value; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+}
+
+// amenities
+function toggleAmenities() { $('amenGrid').classList.toggle('collapsed'); updateAmenBtn(); }
+function updateAmenBtn() {
+    const g = $('amenGrid'); if (!g) return;
+    const n = g.children.length;
+    $('amenBtn').textContent = g.classList.contains('collapsed') ? t('amen.showAll').replace('{n}', n) : t('amen.showLess');
+}
+
+// gallery
+function renderGallery() {
+    $('galTrack').innerHTML = PHOTOS.map((p, i) => `<img src="${esc(p)}" alt="Studio Borges ${i + 1}" ${i ? 'loading="lazy"' : ''} onclick="openLightbox()">`).join('');
+    const multi = PHOTOS.length > 1;
+    $('galCount').classList.toggle('hidden', !multi);
+    document.querySelector('.gal-btn').classList.toggle('hidden', !multi);
+    $('galCount').textContent = '1 / ' + PHOTOS.length;
+    $('galTrack').addEventListener('scroll', () => {
+        const tr = $('galTrack');
+        $('galCount').textContent = (Math.round(tr.scrollLeft / tr.clientWidth) + 1) + ' / ' + PHOTOS.length;
+    }, { passive: true });
+}
+function openLightbox() {
+    $('lbImgs').innerHTML = PHOTOS.map((p, i) => `<img src="${esc(p)}" alt="Studio Borges ${i + 1}">`).join('');
+    $('lbCount').textContent = PHOTOS.length + ' ' + (currentLang === 'es' ? 'fotos' : 'photos');
+    $('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function closeLightbox() { $('lightbox').classList.remove('active'); document.body.style.overflow = ''; }
+
+// ===================== Weather / exchange / clock =====================
+let lastWeatherData = null;
+function wIcon(code) {
+    if (code === 0 || code === 1) return '☀️';
+    if (code === 2 || code === 3) return '🌤️';
+    if (code === 45 || code === 48) return '🌫️';
+    if (code >= 51 && code <= 67) return '🌧️';
+    if (code >= 71 && code <= 86) return '❄️';
+    if (code >= 95) return '⛈️';
+    return '🌤️';
+}
+async function loadWeather() {
+    try {
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-34.5875&longitude=-58.4274&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Argentina/Buenos_Aires');
+        lastWeatherData = await res.json();
+        $('temperature').textContent = Math.round(lastWeatherData.current.temperature_2m) + '°C';
+        $('weatherIcon').textContent = wIcon(lastWeatherData.current.weather_code);
+        renderForecast();
+    } catch (e) { console.error('Weather error', e); }
+}
+function renderForecast() {
+    const d = lastWeatherData; if (!d) return;
+    $('forecastContainer').innerHTML = d.daily.time.slice(0, 7).map((day, i) => `
+        <div class="fc"><b>${esc(fmtDate(day, { weekday: 'short' }))}</b><div>${wIcon(d.daily.weather_code[i])}</div>
+        <span>${Math.round(d.daily.temperature_2m_max[i])}°</span><small>${Math.round(d.daily.temperature_2m_min[i])}°</small></div>`).join('');
+}
+async function loadExchange() {
+    try {
+        const res = await fetch('https://dolarapi.com/v1/dolares/blue');
+        const data = await res.json();
+        $('exchangeRate').textContent = '$' + Math.round(data.venta).toLocaleString('es-AR');
+    } catch (e) { console.error('Exchange error', e); }
+}
+function updateTime() {
+    const time = new Date().toLocaleTimeString('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit' });
+    $('currentTime').textContent = 'Buenos Aires · ' + time;
+}
+
+// ===================== Map =====================
+let mapMarkers = {}, mapFilterState = {};
+function setTiles() {
+    if (tileLayer) mapInstance.removeLayer(tileLayer);
+    const dark = document.documentElement.dataset.theme === 'dark';
+    const url = dark ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    tileLayer = L.tileLayer(url, { attribution: '© OpenStreetMap · © CARTO', maxZoom: 19 }).addTo(mapInstance);
+    tileLayer.bringToBack();
+}
+function initMap() {
+    if (mapInstance) return;
+    mapInstance = L.map('map', { zoomControl: false }).setView(HOME, 14);
+    L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
+    setTiles();
+    L.marker(HOME, { icon: L.divIcon({ className: '', html: '<div class="pin home">' + ic('home').replace('<svg', '<svg width="20" height="20"') + '</div>', iconSize: [40, 40], iconAnchor: [20, 20] }) })
+        .addTo(mapInstance).bindPopup('<strong>Studio Borges</strong><br>Jorge Luis Borges 2018, Apt 6');
+    Object.entries(poiData).forEach(([cat, data]) => {
+        const group = L.layerGroup().addTo(mapInstance);
+        mapMarkers[cat] = group; mapFilterState[cat] = true;
+        data.places.forEach(place => {
+            const m = L.marker([place.lat, place.lng], { icon: L.divIcon({ className: '', html: `<div class="pin" style="--c:${data.color}">${data.emoji}</div>`, iconSize: [34, 34], iconAnchor: [17, 17] }) });
+            m.bindPopup(`<div style="min-width:170px"><strong style="font-size:14px">${esc(data.emoji)} ${esc(place.name)}</strong><br><span style="color:#6a6a6a">${esc(place.addr)}</span><br>${esc(place.desc)}<br>
+                <a style="color:#e31c5f;font-weight:600;text-decoration:none" target="_blank" rel="noopener" href="${mapsLink(place.name + ' ' + place.addr + ' Buenos Aires')}">${esc(t('discover.directions'))} →</a></div>`);
+            m.addTo(group);
         });
+    });
+    renderMapFilters();
+}
+function renderMapFilters() {
+    const div = $('mapFilters');
+    div.innerHTML = Object.entries(poiData).map(([cat, data]) =>
+        `<button class="chip ${mapFilterState[cat] === false ? '' : 'on'}" data-cat="${esc(cat)}"><span style="width:9px;height:9px;border-radius:50%;background:${data.color};display:inline-block"></span>${esc(t('category.' + cat))}</button>`).join('');
+    div.querySelectorAll('.chip').forEach(btn => btn.onclick = () => {
+        const cat = btn.dataset.cat;
+        mapFilterState[cat] = !mapFilterState[cat];
+        btn.classList.toggle('on', mapFilterState[cat]);
+        if (mapFilterState[cat]) mapMarkers[cat].addTo(mapInstance); else mapInstance.removeLayer(mapMarkers[cat]);
+    });
+}
 
-        // Init translations on load
-        applyStaticTranslations();
-        loadEventsData();
-    </script>
+// ===================== Init =====================
+function renderAll() {
+    renderHomeEvents(); renderEvents(); renderDiscover(); renderNearby(); renderForecast();
+    if (mapInstance) renderMapFilters();
+}
+
+applyTheme(store.get('sb-theme') || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+paintIcons();
+renderGallery();
+applyStaticTranslations();
+renderAll();
+updateTime(); setInterval(updateTime, 30000);
+loadWeather(); loadExchange(); setInterval(loadExchange, 300000);
+loadEventsData();
+
+</script>
 </body>
 </html>
