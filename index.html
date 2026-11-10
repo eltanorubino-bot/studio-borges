@@ -1013,14 +1013,44 @@ async function findPhotoName(it) {
         return n;
     } catch (e) { return null; }
 }
+// Free photos for landmarks from Wikipedia (no key needed)
+const WIKI_Q = {
+    'MALBA': 'MALBA Museo de Arte Latinoamericano Buenos Aires',
+    'Teatro Colón': 'Teatro Colón Buenos Aires',
+    'Jardín Botánico': 'Jardín Botánico Carlos Thays',
+    'Cementerio de Recoleta': 'Cementerio de la Recoleta',
+    'Planetario Galileo Galilei': 'Planetario Galileo Galilei',
+    'Museo Nacional de Bellas Artes': 'Museo Nacional de Bellas Artes Argentina',
+    'Café Tortoni': 'Café Tortoni',
+    'Mercado de San Telmo': 'Plaza Dorrego San Telmo',
+    'Feria de San Pedro Telmo': 'Plaza Dorrego San Telmo'
+};
+async function wikiPhoto(it) {
+    const q = WIKI_Q[it.name]; if (!q) return null;
+    const key = 'w:' + it.name, c = photoCache[key];
+    if (c && Date.now() - c.t < 30 * 24 * 3600 * 1000) return c.u;
+    try {
+        const r = await fetch('https://es.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' + encodeURIComponent(q) + '&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=800&format=json&origin=*');
+        if (!r.ok) return null;
+        const d = await r.json();
+        const p = d.query && Object.values(d.query.pages)[0];
+        const u = p && p.thumbnail ? p.thumbnail.source : null;
+        photoCache[key] = { u, t: Date.now() };
+        store.set('sb-photos', JSON.stringify(photoCache));
+        return u;
+    } catch (e) { return null; }
+}
 function hydratePhotos(root) {
-    if (!GOOGLE_KEY) return;
     (root || document).querySelectorAll('[data-place]:not([data-ph])').forEach(async el => {
         el.dataset.ph = '1';
         const it = allDiscover.find(x => x.name === el.dataset.place);
         if (!it) return;
-        const n = await findPhotoName(it);
-        if (n) { el.style.backgroundImage = 'url("' + photoUrl(n) + '")'; el.classList.add('has-photo'); }
+        let url = null, credit = '';
+        if (GOOGLE_KEY) { const n = await findPhotoName(it); if (n) { url = photoUrl(n); credit = 'Google Maps'; } }
+        if (!url) { url = await wikiPhoto(it); credit = 'Wikipedia'; }
+        if (!url) return;
+        el.style.backgroundImage = 'url("' + url + '")'; el.classList.add('has-photo');
+        if (el.classList.contains('sheet-tile')) el.insertAdjacentHTML('afterend', '<p class="sub" style="font-size:11px;margin:-8px 0 12px">Photo: ' + credit + '</p>');
     });
 }
 
@@ -1104,7 +1134,7 @@ function showPage(pageId) {
 
 function openModal(title, body) {
     $('sheetTitleTop').textContent = '';
-    $('sheetBody').innerHTML = body + (GOOGLE_KEY && body.includes('data-place') ? '<p class="sub" style="margin-top:14px;font-size:11px">Photos: Google Maps</p>' : '');
+    $('sheetBody').innerHTML = body;
     hydratePhotos($('sheetBody'));
     $('modalOverlay').classList.add('active');
     $('bottomSheet').classList.add('active');
