@@ -107,6 +107,7 @@ h3{font-size:16px;font-weight:600}
 .card .tile{height:150px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;overflow:hidden}
 .card h4{font-size:14px;font-weight:600;margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card p{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.has-photo{background-size:cover!important;background-position:center;font-size:0!important}
 .card .badge{position:absolute;left:10px;top:10px;background:var(--surface);color:var(--text);font-size:12px;font-weight:600;padding:4px 9px;border-radius:999px;box-shadow:var(--shadow-sm)}
 .g-music{background:linear-gradient(135deg,#ff8aa0,#e61e4d)}
 .g-culture{background:linear-gradient(135deg,#ffc371,#ff8a3d)}
@@ -195,6 +196,7 @@ h3{font-size:16px;font-weight:600}
 .map-chips .chip:not(.on){opacity:.75}
 .pin{width:34px;height:34px;border-radius:50%;background:#fff;border:2.5px solid var(--c,#222);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 3px 8px rgba(0,0,0,.3)}
 .pin.home{background:var(--brand);border-color:#fff;color:#fff;width:40px;height:40px;font-size:19px}
+[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88)}
 .leaflet-popup-content-wrapper{border-radius:14px}
 .leaflet-popup-content{font-family:'Inter',sans-serif;color:#222;font-size:13px;margin:12px 14px}
 
@@ -483,6 +485,8 @@ const HOME = [-34.5875, -58.4274];
 const TZ = 'America/Argentina/Buenos_Aires';
 // Add more apartment photos here (files uploaded next to index.html). 1 photo = simple hero, 2+ = swipeable gallery.
 const PHOTOS = ['hero.jpg'];
+// Google Places API (New) key, restricted by HTTP referrer to this site. Leave empty to use the colored tiles.
+const GOOGLE_KEY = '';
 
 // ===================== Helpers =====================
 const store = {
@@ -984,6 +988,42 @@ function shareText(i) {
     navigator.share({ title: e.name, text: e.name + ' — ' + evTime(e) + ' — ' + e.location }).catch(() => {});
 }
 
+
+// ===================== Place photos (Google Places API) =====================
+let photoCache = {};
+try { photoCache = JSON.parse(store.get('sb-photos') || '{}'); } catch (e) { photoCache = {}; }
+const PHOTO_TTL = 3 * 24 * 3600 * 1000; // photo references must be refreshed regularly
+const photoUrl = n => 'https://places.googleapis.com/v1/' + n + '/media?maxWidthPx=800&key=' + GOOGLE_KEY;
+async function findPhotoName(it) {
+    const c = photoCache[it.name];
+    if (c && Date.now() - c.t < PHOTO_TTL) return c.n;
+    try {
+        const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': GOOGLE_KEY, 'X-Goog-FieldMask': 'places.photos' },
+            body: JSON.stringify({ textQuery: it.name + ', ' + it.address + ', Buenos Aires, Argentina', maxResultCount: 1,
+                locationBias: { circle: { center: { latitude: HOME[0], longitude: HOME[1] }, radius: 15000 } } })
+        });
+        if (!r.ok) return null;
+        const d = await r.json();
+        const p = d.places && d.places[0] && d.places[0].photos && d.places[0].photos[0];
+        const n = p ? p.name : null;
+        photoCache[it.name] = { n, t: Date.now() };
+        store.set('sb-photos', JSON.stringify(photoCache));
+        return n;
+    } catch (e) { return null; }
+}
+function hydratePhotos(root) {
+    if (!GOOGLE_KEY) return;
+    (root || document).querySelectorAll('[data-place]:not([data-ph])').forEach(async el => {
+        el.dataset.ph = '1';
+        const it = allDiscover.find(x => x.name === el.dataset.place);
+        if (!it) return;
+        const n = await findPhotoName(it);
+        if (n) { el.style.backgroundImage = 'url("' + photoUrl(n) + '")'; el.classList.add('has-photo'); }
+    });
+}
+
 // ===================== Discover =====================
 let currentFilter = 'All';
 let sortNearest = true;
@@ -1009,11 +1049,12 @@ function renderDiscover() {
     if (!items.length) { list.innerHTML = '<div class="empty" style="grid-column:1/-1">' + esc(currentFilter === 'Saved' && !q ? t('discover.emptySaved') : t('discover.empty')) + '</div>'; return; }
     list.innerHTML = items.map(it => `
         <div class="pcard" onclick="showDiscoverModal(${allDiscover.indexOf(it)})">
-            <div class="tile ${gcls(it.category)}">${CAT_EMOJI[it.category] || '📍'}</div>
+            <div class="tile ${gcls(it.category)}" data-place="${esc(it.name)}">${CAT_EMOJI[it.category] || '📍'}</div>
             <button class="fav ${favs.includes(it.name) ? 'on' : ''}" aria-label="${esc(t('discover.save'))}" onclick="toggleFav('${esc(it.name).replace(/&#39;/g, "\\'")}', event)">${ic('heart')}</button>
             <div class="t"><div><h4>${esc(it.name)}</h4><p>${esc(it.address)}</p></div><span class="tag" style="margin:0;height:fit-content;white-space:nowrap">${esc(t('category.' + it.category))}</span></div>
             ${it.dist != null ? `<p class="dist">🚶 ${esc(distLabel(it.dist))}</p>` : ''}
         </div>`).join('');
+    hydratePhotos(list);
 }
 
 function showDiscoverModal(i) {
@@ -1021,7 +1062,7 @@ function showDiscoverModal(i) {
     const desc = currentLang === 'es' ? (it.description_es || it.description) : it.description;
     const saved = favs.includes(it.name);
     const body = `
-        <div class="sheet-tile ${gcls(it.category)}">${CAT_EMOJI[it.category] || '📍'}</div>
+        <div class="sheet-tile ${gcls(it.category)}" data-place="${esc(it.name)}">${CAT_EMOJI[it.category] || '📍'}</div>
         <h2>${esc(it.name)}</h2>
         <span class="tag" style="margin-top:2px">${esc(t('category.' + it.category))}</span>
         <div class="sheet-meta">
@@ -1043,9 +1084,10 @@ function renderNearby() {
         .sort((a, b) => a.dist - b.dist).slice(0, 8);
     $('nearbyContainer').innerHTML = pool.map(it => `
         <button class="card" onclick="showDiscoverModal(${allDiscover.indexOf(it)})">
-            <div class="tile ${gcls(it.category)}">${CAT_EMOJI[it.category]}</div>
+            <div class="tile ${gcls(it.category)}" data-place="${esc(it.name)}">${CAT_EMOJI[it.category]}</div>
             <h4>${esc(it.name)}</h4><p>${esc(distLabel(it.dist))}</p>
         </button>`).join('');
+    hydratePhotos($('nearbyContainer'));
 }
 
 // ===================== UI =====================
@@ -1062,7 +1104,8 @@ function showPage(pageId) {
 
 function openModal(title, body) {
     $('sheetTitleTop').textContent = '';
-    $('sheetBody').innerHTML = body;
+    $('sheetBody').innerHTML = body + (GOOGLE_KEY && body.includes('data-place') ? '<p class="sub" style="margin-top:14px;font-size:11px">Photos: Google Maps</p>' : '');
+    hydratePhotos($('sheetBody'));
     $('modalOverlay').classList.add('active');
     $('bottomSheet').classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -1168,9 +1211,8 @@ function updateTime() {
 let mapMarkers = {}, mapFilterState = {};
 function setTiles() {
     if (tileLayer) mapInstance.removeLayer(tileLayer);
-    const dark = document.documentElement.dataset.theme === 'dark';
-    const url = dark ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-    tileLayer = L.tileLayer(url, { attribution: '© OpenStreetMap · © CARTO', maxZoom: 19 }).addTo(mapInstance);
+    // OpenStreetMap tiles need no API key; dark mode is done with a CSS filter on the tile pane.
+    tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 }).addTo(mapInstance);
     tileLayer.bringToBack();
 }
 function initMap() {
