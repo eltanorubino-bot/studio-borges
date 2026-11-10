@@ -32,15 +32,14 @@ PROMPT = f"""Today is {TODAY.isoformat()} (Buenos Aires). You maintain events.js
 
 Use web search to find REAL, confirmed events in Buenos Aires from today through {END.isoformat()} (about 6 weeks). Good sources: indiehoy.com monthly and weekly agendas, meteored.com.ar festival guides, movistararena.com.ar, buenosaires.gob.ar/descubrir, timeout.com/es/buenos-aires, bairessecreta.com. Prefer Palermo and nearby venues, but include major concerts and festivals anywhere in the city.
 
-Return 18-26 events:
-- Recurring staples you can still verify as running (keep them with "days"): Free Walking Tour (Plaza de Mayo, daily 10AM & 3PM); La Bomba de Tiempo (Ciudad Cultural Konex, Sarmiento 3131, Mondays 7PM); Tango Night at La Viruta (Armenia 1366, Tue/Wed/Fri 11PM); San Telmo Market (Defensa St, Sundays 10AM-5PM); Feria de Mataderos (Av. Lisandro de la Torre 2200, Sundays).
+Return 15-25 events:
+- Do NOT include recurring weekly or daily events (tours, markets, weekly shows). Only dated one-off events.
 - Confirmed one-off events: concerts (Movistar Arena, Luna Park, Niceto Club, C Art Media, stadiums), festivals, museum exhibitions currently on view, sports events, seasonal city events (Christmas, New Year's Eve, etc).
 - NEVER invent names, dates or venues. If unsure, leave it out. Drop anything that ended before today.
 
 Output ONLY a JSON array (no prose, no code fences). Each object has these fields:
-  "name", "date" (YYYY-MM-DD, first date; for recurring use {TODAY.isoformat()}),
-  "until" (OPTIONAL YYYY-MM-DD last date; REQUIRED for multi-day events and for recurring staples, use {END.isoformat()} for staples),
-  "days" (OPTIONAL list of weekday numbers, 0=Sunday..6=Saturday; only for recurring staples),
+  "name", "date" (YYYY-MM-DD, first date; ),
+  "until" (OPTIONAL YYYY-MM-DD last date; REQUIRED for multi-day events),
   "location", "time" (English), "time_es" (Spanish), "icon" (one emoji),
   "category" ("music" | "culture" | "sports"), "description" (1-2 sentences, English), "description_es" (same in Spanish)."""
 
